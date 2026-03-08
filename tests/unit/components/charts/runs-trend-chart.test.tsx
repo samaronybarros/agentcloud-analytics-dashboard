@@ -31,8 +31,26 @@ describe('RunsTrendChart', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
+  it('renders an AreaChart', () => {
+    render(<RunsTrendChart data={mockData} />);
+    expect(screen.getByTestId('area-chart')).toBeInTheDocument();
+  });
+
+  it('renders three Area elements for success, retry, and error', () => {
+    render(<RunsTrendChart data={mockData} />);
+    const areas = screen.getAllByTestId('area');
+    expect(areas).toHaveLength(3);
+  });
+
   it('renders with empty data', () => {
     render(<RunsTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+  });
+
+  it('renders axes and grid', () => {
+    render(<RunsTrendChart data={mockData} />);
+    expect(screen.getByTestId('x-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('y-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
   });
 });

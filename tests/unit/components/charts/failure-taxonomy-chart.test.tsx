@@ -32,8 +32,30 @@ describe('FailureTaxonomyChart', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
+  it('renders a BarChart', () => {
+    render(<FailureTaxonomyChart data={mockData} />);
+    expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
+  });
+
+  it('renders a Bar element', () => {
+    render(<FailureTaxonomyChart data={mockData} />);
+    expect(screen.getByTestId('bar')).toBeInTheDocument();
+  });
+
   it('renders with empty data', () => {
     render(<FailureTaxonomyChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+  });
+
+  it('renders axes and grid', () => {
+    render(<FailureTaxonomyChart data={mockData} />);
+    expect(screen.getByTestId('x-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('y-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
+  });
+
+  it('renders with a single error type', () => {
+    render(<FailureTaxonomyChart data={[mockData[0]]} />);
+    expect(screen.getByTestId('bar-chart')).toBeInTheDocument();
   });
 });

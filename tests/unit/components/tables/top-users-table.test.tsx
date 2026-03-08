@@ -34,4 +34,26 @@ describe('TopUsersTable', () => {
     const rows = screen.queryAllByRole('row');
     expect(rows).toHaveLength(1);
   });
+
+  it('renders a single user correctly', () => {
+    render(<TopUsersTable data={[mockData[0]]} />);
+    const rows = screen.queryAllByRole('row');
+    expect(rows).toHaveLength(2);
+    expect(screen.getByText('Alice Chen')).toBeInTheDocument();
+    expect(screen.getByText('Platform')).toBeInTheDocument();
+  });
+
+  it('displays correct run counts', () => {
+    render(<TopUsersTable data={mockData} />);
+    expect(screen.getByText('120')).toBeInTheDocument();
+    expect(screen.getByText('95')).toBeInTheDocument();
+  });
+
+  it('renders zero cost correctly', () => {
+    const zeroCostUser: TopUserEntry[] = [
+      { userId: 'user-99', userName: 'New User', team: 'Data', totalRuns: 1, totalCost: 0 },
+    ];
+    render(<TopUsersTable data={zeroCostUser} />);
+    expect(screen.getByText('$0.00')).toBeInTheDocument();
+  });
 });

@@ -47,16 +47,33 @@ describe('AgentLeaderboard', () => {
     expect(screen.getByText('65.0%')).toBeInTheDocument();
   });
 
-  it('applies green color for high success rate', () => {
+  it('applies green color for high success rate (>= 90%)', () => {
     render(<AgentLeaderboard data={mockData} />);
     const highSuccess = screen.getByText('92.5%');
     expect(highSuccess.className).toContain('text-green-600');
   });
 
-  it('applies red color for low success rate', () => {
+  it('applies red color for low success rate (< 70%)', () => {
     render(<AgentLeaderboard data={mockData} />);
     const lowSuccess = screen.getByText('65.0%');
     expect(lowSuccess.className).toContain('text-red-600');
+  });
+
+  it('applies amber color for medium success rate (70%–89%)', () => {
+    const mediumData: AgentLeaderboardEntry[] = [
+      {
+        agentId: 'agent-03',
+        agentName: 'TestRunner',
+        team: 'Platform',
+        totalRuns: 50,
+        successRate: 0.82,
+        avgLatencyMs: 2000,
+        totalCost: 30.0,
+      },
+    ];
+    render(<AgentLeaderboard data={mediumData} />);
+    const mediumSuccess = screen.getByText('82.0%');
+    expect(mediumSuccess.className).toContain('text-amber-600');
   });
 
   it('formats cost with dollar sign', () => {
@@ -65,11 +82,57 @@ describe('AgentLeaderboard', () => {
     expect(screen.getByText('$120.00')).toBeInTheDocument();
   });
 
+  it('formats latency with ms suffix', () => {
+    render(<AgentLeaderboard data={mockData} />);
+    expect(screen.getByText('3,200ms')).toBeInTheDocument();
+    expect(screen.getByText('5,100ms')).toBeInTheDocument();
+  });
+
   it('renders empty table body with no data', () => {
     render(<AgentLeaderboard data={[]} />);
     expect(screen.getByText('Agent')).toBeInTheDocument();
     const rows = screen.queryAllByRole('row');
-    // Only header row
     expect(rows).toHaveLength(1);
+  });
+
+  it('renders a single agent row', () => {
+    render(<AgentLeaderboard data={[mockData[0]]} />);
+    const rows = screen.queryAllByRole('row');
+    expect(rows).toHaveLength(2); // header + 1 data row
+    expect(screen.getByText('CodeReviewer')).toBeInTheDocument();
+  });
+
+  it('renders boundary success rate at exactly 90%', () => {
+    const boundary: AgentLeaderboardEntry[] = [
+      {
+        agentId: 'agent-04',
+        agentName: 'BoundaryBot',
+        team: 'Backend',
+        totalRuns: 100,
+        successRate: 0.9,
+        avgLatencyMs: 1000,
+        totalCost: 10.0,
+      },
+    ];
+    render(<AgentLeaderboard data={boundary} />);
+    const rate = screen.getByText('90.0%');
+    expect(rate.className).toContain('text-green-600');
+  });
+
+  it('renders boundary success rate at exactly 70%', () => {
+    const boundary: AgentLeaderboardEntry[] = [
+      {
+        agentId: 'agent-05',
+        agentName: 'EdgeBot',
+        team: 'Backend',
+        totalRuns: 100,
+        successRate: 0.7,
+        avgLatencyMs: 1000,
+        totalCost: 10.0,
+      },
+    ];
+    render(<AgentLeaderboard data={boundary} />);
+    const rate = screen.getByText('70.0%');
+    expect(rate.className).toContain('text-amber-600');
   });
 });

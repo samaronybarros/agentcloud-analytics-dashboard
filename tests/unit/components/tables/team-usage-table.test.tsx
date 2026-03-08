@@ -41,4 +41,29 @@ describe('TeamUsageTable', () => {
     const rows = screen.queryAllByRole('row');
     expect(rows).toHaveLength(1);
   });
+
+  it('renders a single team correctly', () => {
+    render(<TeamUsageTable data={[mockData[0]]} />);
+    const rows = screen.queryAllByRole('row');
+    expect(rows).toHaveLength(2);
+    expect(screen.getByText('Platform')).toBeInTheDocument();
+  });
+
+  it('renders team with zero cost', () => {
+    const zeroCost: TeamUsageEntry[] = [
+      { team: 'NewTeam', totalRuns: 5, activeAgents: 1, activeUsers: 1, totalCost: 0 },
+    ];
+    render(<TeamUsageTable data={zeroCost} />);
+    expect(screen.getByText('$0.00')).toBeInTheDocument();
+    expect(screen.getByText('NewTeam')).toBeInTheDocument();
+  });
+
+  it('renders team with single agent and user', () => {
+    const minimal: TeamUsageEntry[] = [
+      { team: 'Solo', totalRuns: 1, activeAgents: 1, activeUsers: 1, totalCost: 0.01 },
+    ];
+    render(<TeamUsageTable data={minimal} />);
+    expect(screen.getByText('Solo')).toBeInTheDocument();
+    expect(screen.getByText('$0.01')).toBeInTheDocument();
+  });
 });

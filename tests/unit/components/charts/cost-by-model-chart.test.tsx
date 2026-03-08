@@ -30,8 +30,35 @@ describe('CostByModelChart', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
+  it('renders a PieChart (donut)', () => {
+    render(<CostByModelChart data={mockData} />);
+    expect(screen.getByTestId('pie-chart')).toBeInTheDocument();
+  });
+
+  it('renders a Pie element', () => {
+    render(<CostByModelChart data={mockData} />);
+    expect(screen.getByTestId('pie')).toBeInTheDocument();
+  });
+
+  it('renders one Cell per model', () => {
+    render(<CostByModelChart data={mockData} />);
+    const cells = screen.getAllByTestId('cell');
+    expect(cells).toHaveLength(2);
+  });
+
+  it('renders a Legend', () => {
+    render(<CostByModelChart data={mockData} />);
+    expect(screen.getByTestId('legend')).toBeInTheDocument();
+  });
+
   it('renders with empty data', () => {
     render(<CostByModelChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+  });
+
+  it('renders with a single model', () => {
+    render(<CostByModelChart data={[mockData[0]]} />);
+    const cells = screen.getAllByTestId('cell');
+    expect(cells).toHaveLength(1);
   });
 });

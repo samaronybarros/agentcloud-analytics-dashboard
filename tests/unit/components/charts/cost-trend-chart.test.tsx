@@ -31,8 +31,26 @@ describe('CostTrendChart', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
+  it('renders an AreaChart', () => {
+    render(<CostTrendChart data={mockData} />);
+    expect(screen.getByTestId('area-chart')).toBeInTheDocument();
+  });
+
+  it('renders one Area element for cost', () => {
+    render(<CostTrendChart data={mockData} />);
+    const areas = screen.getAllByTestId('area');
+    expect(areas).toHaveLength(1);
+  });
+
   it('renders with empty data', () => {
     render(<CostTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+  });
+
+  it('renders axes and grid', () => {
+    render(<CostTrendChart data={mockData} />);
+    expect(screen.getByTestId('x-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('y-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
   });
 });

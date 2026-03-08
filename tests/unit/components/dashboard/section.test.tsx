@@ -22,4 +22,24 @@ describe('Section', () => {
     );
     expect(screen.getByTestId('child')).toBeInTheDocument();
   });
+
+  it('renders multiple children', () => {
+    render(
+      <Section title="Multi">
+        <span data-testid="first">A</span>
+        <span data-testid="second">B</span>
+      </Section>,
+    );
+    expect(screen.getByTestId('first')).toBeInTheDocument();
+    expect(screen.getByTestId('second')).toBeInTheDocument();
+  });
+
+  it('uses a section element for semantic structure', () => {
+    const { container } = render(
+      <Section title="Semantic">
+        <p>Content</p>
+      </Section>,
+    );
+    expect(container.querySelector('section')).toBeInTheDocument();
+  });
 });

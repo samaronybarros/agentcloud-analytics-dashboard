@@ -31,8 +31,26 @@ describe('LatencyTrendChart', () => {
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
+  it('renders a LineChart (not AreaChart)', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument();
+  });
+
+  it('renders two Line elements for p50 and p95', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    const lines = screen.getAllByTestId('line');
+    expect(lines).toHaveLength(2);
+  });
+
   it('renders with empty data', () => {
     render(<LatencyTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
+  });
+
+  it('renders axes and grid', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    expect(screen.getByTestId('x-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('y-axis')).toBeInTheDocument();
+    expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
   });
 });
