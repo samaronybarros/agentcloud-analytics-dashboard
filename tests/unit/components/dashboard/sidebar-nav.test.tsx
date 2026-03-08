@@ -5,6 +5,15 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
 
+jest.mock('next/link', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) =>
+      React.createElement('a', { href, className, 'data-testid': 'next-link' }, children),
+  };
+});
+
 import SidebarNav from '@/components/dashboard/sidebar-nav';
 import { usePathname } from 'next/navigation';
 
@@ -52,6 +61,13 @@ describe('SidebarNav', () => {
     const overviewLink = screen.getByText('Overview').closest('a')!;
     expect(overviewLink.className).toContain('text-gray-600');
     expect(overviewLink.className).not.toContain('font-medium');
+  });
+
+  it('uses Next.js Link for client-side navigation', () => {
+    render(<SidebarNav />);
+    const nav = screen.getByRole('navigation');
+    const nextLinks = within(nav).getAllByTestId('next-link');
+    expect(nextLinks).toHaveLength(4);
   });
 
   it('produces consistent className output for same pathname across renders', () => {
