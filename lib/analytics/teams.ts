@@ -1,6 +1,7 @@
 import type {
   Agent,
   CostByModelEntry,
+  ModelId,
   Run,
   TeamUsageEntry,
   TopUserEntry,
@@ -8,23 +9,112 @@ import type {
 } from '@/lib/types';
 
 export function computeTeamUsage(
-  _runs: readonly Run[],
-  _agents: readonly Agent[],
+  runs: readonly Run[],
+  agents: readonly Agent[],
   _users: readonly User[],
 ): TeamUsageEntry[] {
-  throw new Error('Not implemented');
+  if (runs.length === 0) return [];
+
+  const agentMap = new Map(agents.map((a) => [a.id, a]));
+
+  const teamData = new Map<
+    string,
+    { runs: number; agents: Set<string>; users: Set<string>; cost: number }
+  >();
+
+  for (const run of runs) {
+    const agent = agentMap.get(run.agentId);
+    if (!agent) continue;
+
+    const team = agent.team;
+    let data = teamData.get(team);
+    if (!data) {
+      data = { runs: 0, agents: new Set(), users: new Set(), cost: 0 };
+      teamData.set(team, data);
+    }
+
+    data.runs++;
+    data.agents.add(run.agentId);
+    data.users.add(run.userId);
+    data.cost += run.estimatedCost;
+  }
+
+  const entries: TeamUsageEntry[] = [];
+  for (const [team, data] of teamData) {
+    entries.push({
+      team,
+      totalRuns: data.runs,
+      activeAgents: data.agents.size,
+      activeUsers: data.users.size,
+      totalCost: data.cost,
+    });
+  }
+
+  return entries.sort((a, b) => b.totalRuns - a.totalRuns);
 }
 
 export function computeCostByModel(
-  _runs: readonly Run[],
-  _agents: readonly Agent[],
+  runs: readonly Run[],
+  agents: readonly Agent[],
 ): CostByModelEntry[] {
-  throw new Error('Not implemented');
+  if (runs.length === 0) return [];
+
+  const agentMap = new Map(agents.map((a) => [a.id, a]));
+  const modelCosts = new Map<ModelId, number>();
+
+  for (const run of runs) {
+    const agent = agentMap.get(run.agentId);
+    if (!agent) continue;
+    modelCosts.set(
+      agent.model,
+      (modelCosts.get(agent.model) ?? 0) + run.estimatedCost,
+    );
+  }
+
+  const totalCost = [...modelCosts.values()].reduce((sum, c) => sum + c, 0);
+
+  const entries: CostByModelEntry[] = [];
+  for (const [model, cost] of modelCosts) {
+    entries.push({
+      model,
+      totalCost: cost,
+      percentage: cost / totalCost,
+    });
+  }
+
+  return entries.sort((a, b) => b.totalCost - a.totalCost);
 }
 
 export function computeTopUsers(
-  _runs: readonly Run[],
-  _users: readonly User[],
+  runs: readonly Run[],
+  users: readonly User[],
 ): TopUserEntry[] {
-  throw new Error('Not implemented');
+  if (runs.length === 0) return [];
+
+  const userMap = new Map(users.map((u) => [u.id, u]));
+  const userData = new Map<string, { runs: number; cost: number }>();
+
+  for (const run of runs) {
+    let data = userData.get(run.userId);
+    if (!data) {
+      data = { runs: 0, cost: 0 };
+      userData.set(run.userId, data);
+    }
+    data.runs++;
+    data.cost += run.estimatedCost;
+  }
+
+  const entries: TopUserEntry[] = [];
+  for (const [userId, data] of userData) {
+    const user = userMap.get(userId);
+    entries.push({
+      userId,
+      userName: user?.name ?? userId,
+      team: user?.team ?? 'Unknown',
+      totalRuns: data.runs,
+      totalCost: data.cost,
+    });
+  }
+
+  return entries.sort((a, b) => b.totalRuns - a.totalRuns);
 }
