@@ -11,8 +11,7 @@ import { KPICardSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton'
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
 import { formatNumber, formatCost, formatPercent, formatLatency } from '@/lib/utils/format';
-import type { OverviewKPIs } from '@/lib/types';
-import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
+import type { OverviewKPIs, DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/types';
 
 function OverviewSkeleton() {
   return (

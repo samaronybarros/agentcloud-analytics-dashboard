@@ -1,6 +1,6 @@
 'use client';
 
-import { useDateRange } from '@/lib/hooks/use-date-range';
+import { useDateRange, isPresetKey } from '@/lib/hooks/use-date-range';
 
 const PRESETS = [
   { value: '7d', label: 'Last 7 days' },
@@ -20,7 +20,10 @@ export function DateRangePicker() {
       <select
         id="date-range"
         value={preset}
-        onChange={(e) => setPreset(e.target.value as typeof preset)}
+        onChange={(e) => {
+          const value = e.target.value;
+          if (isPresetKey(value)) setPreset(value);
+        }}
         className="rounded-md border border-gray-300 bg-white px-3 py-1.5 text-sm text-gray-700 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
       >
         {PRESETS.map(({ value, label }) => (

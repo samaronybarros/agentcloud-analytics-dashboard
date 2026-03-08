@@ -419,6 +419,22 @@ Never introduce:
 - `any`
 - unsafe casts without clear reason
 - hidden loose typing in analytics code
+- single-letter variable names
+
+### Variable naming
+
+Always use readable, descriptive variable names. Single-letter variables are not allowed.
+
+Instead of `(r) => r.status`, write `(run) => run.status`.
+Instead of `(a, b) => a - b`, write `(left, right) => left - right`.
+Instead of `(s) => s.totalCost`, write `(stat) => stat.totalCost`.
+Instead of `(a) => [a.id, a]`, write `(agent) => [agent.id, agent]`.
+
+Accepted exceptions:
+
+- `_` for intentionally unused parameters
+- `i` for index in traditional `for` loops
+- `e` for event handler parameters (React convention)
 
 Clarity beats cleverness.
 

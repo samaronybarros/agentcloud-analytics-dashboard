@@ -33,9 +33,9 @@ function groupRunsByDate(runs: readonly Run[]): Map<string, Run[]> {
   return groups;
 }
 
-function percentile(sorted: number[], p: number): number {
+function percentile(sorted: number[], rank: number): number {
   if (sorted.length === 0) return 0;
-  const idx = Math.ceil(sorted.length * p) - 1;
+  const idx = Math.ceil(sorted.length * rank) - 1;
   return sorted[Math.max(0, idx)];
 }
 
@@ -47,13 +47,13 @@ export function computeRunsTrend(runs: readonly Run[]): DailyRunsTrend[] {
     entries.push({
       date,
       total: dayRuns.length,
-      success: dayRuns.filter((r) => r.status === 'success').length,
-      error: dayRuns.filter((r) => r.status === 'error').length,
-      retry: dayRuns.filter((r) => r.status === 'retry').length,
+      success: dayRuns.filter((run) => run.status === 'success').length,
+      error: dayRuns.filter((run) => run.status === 'error').length,
+      retry: dayRuns.filter((run) => run.status === 'retry').length,
     });
   }
 
-  return entries.sort((a, b) => a.date.localeCompare(b.date));
+  return entries.sort((left, right) => left.date.localeCompare(right.date));
 }
 
 export function computeLatencyTrend(runs: readonly Run[]): DailyLatencyTrend[] {
@@ -61,7 +61,7 @@ export function computeLatencyTrend(runs: readonly Run[]): DailyLatencyTrend[] {
   const entries: DailyLatencyTrend[] = [];
 
   for (const [date, dayRuns] of groups) {
-    const sorted = dayRuns.map((r) => r.durationMs).sort((a, b) => a - b);
+    const sorted = dayRuns.map((run) => run.durationMs).sort((left, right) => left - right);
     entries.push({
       date,
       p50: percentile(sorted, 0.5),
@@ -69,7 +69,7 @@ export function computeLatencyTrend(runs: readonly Run[]): DailyLatencyTrend[] {
     });
   }
 
-  return entries.sort((a, b) => a.date.localeCompare(b.date));
+  return entries.sort((left, right) => left.date.localeCompare(right.date));
 }
 
 export function computeCostTrend(runs: readonly Run[]): DailyCostTrend[] {
@@ -79,9 +79,9 @@ export function computeCostTrend(runs: readonly Run[]): DailyCostTrend[] {
   for (const [date, dayRuns] of groups) {
     entries.push({
       date,
-      cost: dayRuns.reduce((sum, r) => sum + r.estimatedCost, 0),
+      cost: dayRuns.reduce((sum, run) => sum + run.estimatedCost, 0),
     });
   }
 
-  return entries.sort((a, b) => a.date.localeCompare(b.date));
+  return entries.sort((left, right) => left.date.localeCompare(right.date));
 }

@@ -6,7 +6,7 @@ export function generateInsights(
 ): Insight[] {
   if (runs.length === 0) return [];
 
-  const agentMap = new Map(agents.map((a) => [a.id, a]));
+  const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
   const insights: Insight[] = [];
   let idCounter = 0;
 
@@ -27,10 +27,10 @@ export function generateInsights(
     { totalCost: number; successRate: number; avgLatencyMs: number; totalRuns: number }
   >();
   for (const [agentId, agentRuns] of runsByAgent) {
-    const successCount = agentRuns.filter((r) => r.status === 'success').length;
-    const totalCost = agentRuns.reduce((sum, r) => sum + r.estimatedCost, 0);
+    const successCount = agentRuns.filter((run) => run.status === 'success').length;
+    const totalCost = agentRuns.reduce((sum, run) => sum + run.estimatedCost, 0);
     const avgLatencyMs =
-      agentRuns.reduce((sum, r) => sum + r.durationMs, 0) / agentRuns.length;
+      agentRuns.reduce((sum, run) => sum + run.durationMs, 0) / agentRuns.length;
     agentStats.set(agentId, {
       totalCost,
       successRate: successCount / agentRuns.length,
@@ -62,7 +62,7 @@ export function generateInsights(
   }
 
   // --- High cost + low success (cost above median, success rate below 70%) ---
-  const costs = [...agentStats.values()].map((s) => s.totalCost).sort((a, b) => a - b);
+  const costs = [...agentStats.values()].map((stat) => stat.totalCost).sort((left, right) => left - right);
   const medianCost = costs[Math.floor(costs.length / 2)];
 
   for (const [agentId, stats] of agentStats) {
@@ -82,8 +82,8 @@ export function generateInsights(
 
   // --- Degraded latency (agents with avg latency above overall p75) ---
   const allLatencies = [...agentStats.values()]
-    .map((s) => s.avgLatencyMs)
-    .sort((a, b) => a - b);
+    .map((stat) => stat.avgLatencyMs)
+    .sort((left, right) => left - right);
   const p75Latency = allLatencies[Math.ceil(allLatencies.length * 0.75) - 1];
 
   for (const [agentId, stats] of agentStats) {
@@ -105,7 +105,7 @@ export function generateInsights(
   for (const [agentId, stats] of agentStats) {
     if (stats.successRate < 0.7 && stats.totalRuns >= 10) {
       // Skip if already flagged as high-cost-low-success
-      if (insights.some((i) => i.type === 'high-cost-low-success' && i.agentId === agentId)) {
+      if (insights.some((insight) => insight.type === 'high-cost-low-success' && insight.agentId === agentId)) {
         continue;
       }
       const agent = agentMap.get(agentId);
