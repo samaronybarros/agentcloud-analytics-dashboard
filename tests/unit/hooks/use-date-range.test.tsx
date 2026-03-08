@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, act } from '@testing-library/react';
-import { DateRangeProvider, useDateRange } from '@/lib/hooks/use-date-range';
+import { DateRangeProvider, useDateRange, isPresetKey } from '@/lib/hooks/use-date-range';
 
 function TestConsumer() {
   const { range, preset, setPreset } = useDateRange();
@@ -100,5 +100,20 @@ describe('useDateRange', () => {
     });
     expect(screen.getByTestId('from').textContent).toBe('none');
     expect(screen.getByTestId('to').textContent).toBe('none');
+  });
+});
+
+describe('isPresetKey', () => {
+  it('returns true for valid preset keys', () => {
+    expect(isPresetKey('7d')).toBe(true);
+    expect(isPresetKey('14d')).toBe(true);
+    expect(isPresetKey('30d')).toBe(true);
+    expect(isPresetKey('all')).toBe(true);
+  });
+
+  it('returns false for invalid values', () => {
+    expect(isPresetKey('60d')).toBe(false);
+    expect(isPresetKey('')).toBe(false);
+    expect(isPresetKey('custom')).toBe(false);
   });
 });

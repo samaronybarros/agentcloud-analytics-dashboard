@@ -15,7 +15,7 @@ export function computeTeamUsage(
 ): TeamUsageEntry[] {
   if (runs.length === 0) return [];
 
-  const agentMap = new Map(agents.map((a) => [a.id, a]));
+  const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
 
   const teamData = new Map<
     string,
@@ -50,7 +50,7 @@ export function computeTeamUsage(
     });
   }
 
-  return entries.sort((a, b) => b.totalRuns - a.totalRuns);
+  return entries.sort((left, right) => right.totalRuns - left.totalRuns);
 }
 
 export function computeCostByModel(
@@ -59,7 +59,7 @@ export function computeCostByModel(
 ): CostByModelEntry[] {
   if (runs.length === 0) return [];
 
-  const agentMap = new Map(agents.map((a) => [a.id, a]));
+  const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
   const modelCosts = new Map<ModelId, number>();
 
   for (const run of runs) {
@@ -71,7 +71,7 @@ export function computeCostByModel(
     );
   }
 
-  const totalCost = [...modelCosts.values()].reduce((sum, c) => sum + c, 0);
+  const totalCost = [...modelCosts.values()].reduce((sum, cost) => sum + cost, 0);
 
   const entries: CostByModelEntry[] = [];
   for (const [model, cost] of modelCosts) {
@@ -82,7 +82,7 @@ export function computeCostByModel(
     });
   }
 
-  return entries.sort((a, b) => b.totalCost - a.totalCost);
+  return entries.sort((left, right) => right.totalCost - left.totalCost);
 }
 
 export function computeTopUsers(
@@ -91,7 +91,7 @@ export function computeTopUsers(
 ): TopUserEntry[] {
   if (runs.length === 0) return [];
 
-  const userMap = new Map(users.map((u) => [u.id, u]));
+  const userMap = new Map(users.map((user) => [user.id, user]));
   const userData = new Map<string, { runs: number; cost: number }>();
 
   for (const run of runs) {
@@ -116,5 +116,5 @@ export function computeTopUsers(
     });
   }
 
-  return entries.sort((a, b) => b.totalRuns - a.totalRuns);
+  return entries.sort((left, right) => right.totalRuns - left.totalRuns);
 }

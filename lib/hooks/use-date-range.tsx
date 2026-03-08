@@ -4,7 +4,13 @@ import { createContext, useContext, useState, useMemo, useCallback } from 'react
 import type { ReactNode } from 'react';
 import type { DateRange } from '@/lib/types';
 
-type PresetKey = '7d' | '14d' | '30d' | 'all';
+export type PresetKey = '7d' | '14d' | '30d' | 'all';
+
+const VALID_PRESETS: ReadonlySet<string> = new Set<PresetKey>(['7d', '14d', '30d', 'all']);
+
+export function isPresetKey(value: string): value is PresetKey {
+  return VALID_PRESETS.has(value);
+}
 
 interface DateRangeContextValue {
   range: DateRange;
@@ -35,8 +41,8 @@ export function DateRangeProvider({ children }: { children: ReactNode }) {
 
   const range = useMemo(() => computeRange(preset), [preset]);
 
-  const setPreset = useCallback((p: PresetKey) => {
-    setPresetState(p);
+  const setPreset = useCallback((newPreset: PresetKey) => {
+    setPresetState(newPreset);
   }, []);
 
   const value = useMemo(() => ({ range, preset, setPreset }), [range, preset, setPreset]);

@@ -6,7 +6,7 @@ export function computeAgentLeaderboard(
 ): AgentLeaderboardEntry[] {
   if (runs.length === 0) return [];
 
-  const agentMap = new Map(agents.map((a) => [a.id, a]));
+  const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
 
   // Group runs by agent
   const grouped = new Map<string, Run[]>();
@@ -25,9 +25,9 @@ export function computeAgentLeaderboard(
     if (!agent) continue;
 
     const totalRuns = agentRuns.length;
-    const successCount = agentRuns.filter((r) => r.status === 'success').length;
-    const totalDuration = agentRuns.reduce((sum, r) => sum + r.durationMs, 0);
-    const totalCost = agentRuns.reduce((sum, r) => sum + r.estimatedCost, 0);
+    const successCount = agentRuns.filter((run) => run.status === 'success').length;
+    const totalDuration = agentRuns.reduce((sum, run) => sum + run.durationMs, 0);
+    const totalCost = agentRuns.reduce((sum, run) => sum + run.estimatedCost, 0);
 
     entries.push({
       agentId,
@@ -40,19 +40,21 @@ export function computeAgentLeaderboard(
     });
   }
 
-  return entries.sort((a, b) => b.totalRuns - a.totalRuns);
+  return entries.sort((left, right) => right.totalRuns - left.totalRuns);
 }
 
 export function computeFailureTaxonomy(
   runs: readonly Run[],
 ): FailureTaxonomyEntry[] {
-  const errorRuns = runs.filter((r) => r.errorType !== null);
+  const errorRuns = runs.filter(
+    (run): run is Run & { errorType: NonNullable<Run['errorType']> } =>
+      run.errorType !== null,
+  );
   if (errorRuns.length === 0) return [];
 
   const counts = new Map<string, number>();
   for (const run of errorRuns) {
-    const key = run.errorType!;
-    counts.set(key, (counts.get(key) ?? 0) + 1);
+    counts.set(run.errorType, (counts.get(run.errorType) ?? 0) + 1);
   }
 
   const totalErrors = errorRuns.length;
@@ -65,5 +67,5 @@ export function computeFailureTaxonomy(
     });
   }
 
-  return entries.sort((a, b) => b.count - a.count);
+  return entries.sort((left, right) => right.count - left.count);
 }
