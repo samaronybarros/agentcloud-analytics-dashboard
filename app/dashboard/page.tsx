@@ -9,6 +9,7 @@ import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
 import { CostTrendChart } from '@/components/charts/cost-trend-chart';
 import { KPICardSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
+import { ErrorState } from '@/components/dashboard/error-state';
 import { formatNumber, formatCost, formatPercent, formatLatency } from '@/lib/utils/format';
 import type { OverviewKPIs } from '@/lib/types';
 import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
@@ -69,10 +70,12 @@ function OverviewContent({
 
 export default function OverviewPage() {
   const { range } = useDateRange();
-  const { data: kpis, isLoading: kpisLoading } = useOverviewKPIs(range);
-  const { data: trends, isLoading: trendsLoading } = useTrends(range);
+  const { data: kpis, isLoading: kpisLoading, isError: kpisError, error: kpisErr } = useOverviewKPIs(range);
+  const { data: trends, isLoading: trendsLoading, isError: trendsError, error: trendsErr } = useTrends(range);
 
   const isLoading = kpisLoading || trendsLoading;
+  const isError = kpisError || trendsError;
+  const error = kpisErr || trendsErr;
 
   return (
     <div>
@@ -83,8 +86,10 @@ export default function OverviewPage() {
 
       {isLoading ? (
         <OverviewSkeleton />
+      ) : isError ? (
+        <ErrorState detail={error instanceof Error ? error.message : undefined} />
       ) : !kpis || !trends ? (
-        <p className="mt-6 text-sm text-red-500">Failed to load analytics data.</p>
+        <ErrorState />
       ) : kpis.totalRuns === 0 ? (
         <EmptyState />
       ) : (

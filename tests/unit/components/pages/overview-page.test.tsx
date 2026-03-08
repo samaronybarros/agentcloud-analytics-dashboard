@@ -114,11 +114,17 @@ describe('OverviewPage', () => {
     expect(screen.getByText('No data available for the selected time period.')).toBeInTheDocument();
   });
 
-  it('shows error state when data is null', () => {
-    mockUseOverviewKPIs.mockReturnValue({ data: null, isLoading: false });
-    mockUseTrends.mockReturnValue({ data: null, isLoading: false });
+  it('shows error state when query fails', () => {
+    mockUseOverviewKPIs.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new Error('Network error'),
+    });
+    mockUseTrends.mockReturnValue({ data: undefined, isLoading: false, isError: false, error: null });
     render(<OverviewPage />);
     expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
-    expect(screen.getByText('Failed to load analytics data.')).toBeInTheDocument();
+    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    expect(screen.getByText('Network error')).toBeInTheDocument();
   });
 });

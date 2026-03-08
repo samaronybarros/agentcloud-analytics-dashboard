@@ -6,6 +6,7 @@ import { Section } from '@/components/dashboard/section';
 import { InsightCard } from '@/components/insights/insight-card';
 import { Skeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
+import { ErrorState } from '@/components/dashboard/error-state';
 import type { Insight } from '@/lib/types';
 
 function OptimizationSkeleton() {
@@ -66,7 +67,7 @@ function OptimizationContent({ insights }: { insights: Insight[] }) {
 
 export default function OptimizationPage() {
   const { range } = useDateRange();
-  const { data, isLoading } = useInsights(range);
+  const { data, isLoading, isError, error } = useInsights(range);
 
   return (
     <div>
@@ -77,8 +78,10 @@ export default function OptimizationPage() {
 
       {isLoading ? (
         <OptimizationSkeleton />
+      ) : isError ? (
+        <ErrorState detail={error instanceof Error ? error.message : undefined} />
       ) : !data ? (
-        <p className="mt-6 text-sm text-red-500">Failed to load insights.</p>
+        <ErrorState />
       ) : (
         <OptimizationContent insights={data.insights} />
       )}
