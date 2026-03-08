@@ -15,6 +15,14 @@ const config = {
   ],
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
+  coverageThreshold: {
+    global: {
+      statements: 90,
+      branches: 80,
+      functions: 90,
+      lines: 90,
+    },
+  },
 };
 
 module.exports = config;
