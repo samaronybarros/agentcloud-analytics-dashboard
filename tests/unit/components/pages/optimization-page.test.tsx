@@ -77,15 +77,17 @@ describe('OptimizationPage', () => {
     expect(screen.queryByRole('heading', { name: 'Warnings' })).not.toBeInTheDocument();
   });
 
-  it('shows loading state', () => {
+  it('shows loading state with skeletons', () => {
     mockUseInsights.mockReturnValue({ data: undefined, isLoading: true });
     render(<OptimizationPage />);
-    expect(screen.getByText('Loading insights...')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Optimization' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('skeleton').length).toBeGreaterThanOrEqual(3);
   });
 
   it('shows error state when data is null', () => {
     mockUseInsights.mockReturnValue({ data: null, isLoading: false });
     render(<OptimizationPage />);
+    expect(screen.getByRole('heading', { name: 'Optimization' })).toBeInTheDocument();
     expect(screen.getByText('Failed to load insights.')).toBeInTheDocument();
   });
 });

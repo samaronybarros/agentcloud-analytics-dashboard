@@ -6,27 +6,35 @@ import { Section } from '@/components/dashboard/section';
 import { RunsTrendChart } from '@/components/charts/runs-trend-chart';
 import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
 import { CostTrendChart } from '@/components/charts/cost-trend-chart';
+import { KPICardSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { formatNumber, formatCost, formatPercent, formatLatency } from '@/lib/utils/format';
+import type { OverviewKPIs } from '@/lib/types';
+import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
 
-export default function OverviewPage() {
-  const { data: kpis, isLoading: kpisLoading } = useOverviewKPIs();
-  const { data: trends, isLoading: trendsLoading } = useTrends();
-
-  if (kpisLoading || trendsLoading) {
-    return <p className="text-sm text-gray-400">Loading analytics...</p>;
-  }
-
-  if (!kpis || !trends) {
-    return <p className="text-sm text-red-500">Failed to load analytics data.</p>;
-  }
-
+function OverviewSkeleton() {
   return (
-    <div>
-      <h2 className="text-2xl font-semibold tracking-tight">Overview</h2>
-      <p className="mt-1 text-sm text-gray-500">
-        Organization-wide agent analytics at a glance.
-      </p>
+    <>
+      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        {Array.from({ length: 8 }, (_, i) => (
+          <KPICardSkeleton key={i} />
+        ))}
+      </div>
+      <Section title="Runs Over Time"><ChartSkeleton /></Section>
+      <Section title="Latency Trend (p50 / p95)"><ChartSkeleton /></Section>
+      <Section title="Cost Trend"><ChartSkeleton /></Section>
+    </>
+  );
+}
 
+function OverviewContent({
+  kpis,
+  trends,
+}: {
+  kpis: OverviewKPIs;
+  trends: { runsTrend: DailyRunsTrend[]; latencyTrend: DailyLatencyTrend[]; costTrend: DailyCostTrend[] };
+}) {
+  return (
+    <>
       <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
         <KPICard label="Total Runs" value={formatNumber(kpis.totalRuns)} />
         <KPICard label="Active Users" value={formatNumber(kpis.activeUsers)} />
@@ -53,6 +61,30 @@ export default function OverviewPage() {
       <Section title="Cost Trend">
         <CostTrendChart data={trends.costTrend} />
       </Section>
+    </>
+  );
+}
+
+export default function OverviewPage() {
+  const { data: kpis, isLoading: kpisLoading } = useOverviewKPIs();
+  const { data: trends, isLoading: trendsLoading } = useTrends();
+
+  const isLoading = kpisLoading || trendsLoading;
+
+  return (
+    <div>
+      <h2 className="text-2xl font-semibold tracking-tight">Overview</h2>
+      <p className="mt-1 text-sm text-gray-500">
+        Organization-wide agent analytics at a glance.
+      </p>
+
+      {isLoading ? (
+        <OverviewSkeleton />
+      ) : !kpis || !trends ? (
+        <p className="mt-6 text-sm text-red-500">Failed to load analytics data.</p>
+      ) : (
+        <OverviewContent kpis={kpis} trends={trends} />
+      )}
     </div>
   );
 }
