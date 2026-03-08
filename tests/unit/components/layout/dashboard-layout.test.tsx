@@ -151,6 +151,39 @@ describe('DashboardLayout', () => {
     expect(nav.parentElement).toBe(main.parentElement);
   });
 
+  describe('hydration safety', () => {
+    it('layout produces identical markup regardless of pathname', () => {
+      mockUsePathname.mockReturnValue('/dashboard');
+      const { container: containerA } = render(
+        <DashboardLayout>
+          <p>Content</p>
+        </DashboardLayout>,
+      );
+
+      mockUsePathname.mockReturnValue('/dashboard/agents');
+      const { container: containerB } = render(
+        <DashboardLayout>
+          <p>Content</p>
+        </DashboardLayout>,
+      );
+
+      const mainA = containerA.querySelector('main')!.innerHTML;
+      const mainB = containerB.querySelector('main')!.innerHTML;
+      expect(mainA).toBe(mainB);
+    });
+
+    it('layout does not use usePathname directly', () => {
+      // The layout module should not import usePathname — that belongs in SidebarNav.
+      // If the layout called usePathname, it would need 'use client', risking hydration mismatches.
+      const layoutSource = require('fs').readFileSync(
+        require('path').resolve(__dirname, '../../../../app/dashboard/layout.tsx'),
+        'utf-8',
+      );
+      expect(layoutSource).not.toContain('usePathname');
+      expect(layoutSource).not.toContain("'use client'");
+    });
+  });
+
   describe('active navigation highlighting', () => {
     it('highlights Overview when on /dashboard', () => {
       mockUsePathname.mockReturnValue('/dashboard');
