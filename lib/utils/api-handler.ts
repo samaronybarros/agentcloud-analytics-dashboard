@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server';
  * Passes the incoming Request to the handler so it can read query parameters.
  * Returns structured JSON on both success and failure.
  */
-export function withErrorHandler<T>(
+export function withErrorHandler<T extends object>(
   fn: (request: Request) => T,
 ): (request: Request) => NextResponse {
   return (request: Request) => {

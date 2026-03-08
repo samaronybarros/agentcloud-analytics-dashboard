@@ -131,6 +131,37 @@ export interface Insight {
 }
 
 // ---------------------------------------------------------------------------
+// API response types — shared contract between routes and hooks
+// ---------------------------------------------------------------------------
+
+import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
+
+export type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend };
+
+export type OverviewResponse = OverviewKPIs;
+
+export interface AgentsResponse {
+  leaderboard: AgentLeaderboardEntry[];
+  failureTaxonomy: FailureTaxonomyEntry[];
+}
+
+export interface TeamsResponse {
+  teamUsage: TeamUsageEntry[];
+  costByModel: CostByModelEntry[];
+  topUsers: TopUserEntry[];
+}
+
+export interface TrendsResponse {
+  runsTrend: DailyRunsTrend[];
+  latencyTrend: DailyLatencyTrend[];
+  costTrend: DailyCostTrend[];
+}
+
+export interface InsightsResponse {
+  insights: Insight[];
+}
+
+// ---------------------------------------------------------------------------
 // Filter types
 // ---------------------------------------------------------------------------
 
