@@ -8,53 +8,106 @@ This project uses **Test-Driven Development (TDD)**. Tests are written before im
 
 - **Jest** with `ts-jest` for TypeScript support
 - **React Testing Library** for component tests
-- **jest-environment-jsdom** for DOM simulation
+- **jest-environment-jsdom** for DOM simulation (unit/component tests)
+- **jest-environment-node** for API integration tests (via `@jest-environment` docblock)
 
 ## Test Organization
 
 ```
 tests/
-  unit/              # Pure logic — no React, no DOM
-    analytics/       # Metric calculations
-    utils/           # Utility functions
-  integration/       # API routes, component + data flow
-    api/             # API response shape tests
-    components/      # Component rendering with data
-  e2e/               # Full page smoke tests
+  setup.ts                    # @testing-library/jest-dom setup
+  unit/                       # Pure logic and component rendering
+    analytics/                # Metric calculations (5 suites, 64 tests)
+      overview.test.ts
+      agents.test.ts
+      teams.test.ts
+      insights.test.ts
+      trends.test.ts
+    utils/                    # Utility functions (1 suite, 16 tests)
+      format.test.ts
+    components/               # Component rendering with mocked data
+      charts/                 # Chart components (5 suites, ~30 tests)
+      dashboard/              # KPI card, section, sidebar nav (3 suites, ~18 tests)
+      tables/                 # Data tables (3 suites, ~27 tests)
+      insights/               # Insight cards (1 suite, 10 tests)
+      layout/                 # Dashboard layout (1 suite, 21 tests)
+      pages/                  # Page-level rendering (4 suites, 26 tests)
+  integration/                # API response shape validation
+    api/                      # Route handler tests (5 suites, 32 tests)
+      overview.test.ts
+      agents.test.ts
+      teams.test.ts
+      insights.test.ts
+      trends.test.ts
 ```
+
+## Coverage Summary
+
+| Category | Suites | Tests |
+|----------|--------|-------|
+| Analytics logic | 5 | 64 |
+| Components | 12 | 76 |
+| Pages | 4 | 26 |
+| Layout & nav | 2 | 25 |
+| Utilities | 1 | 16 |
+| API integration | 5 | 32 |
+| **Total** | **28** | **242** |
 
 ## Priority Coverage
 
-### Highest Priority (must have)
+### Highest Priority (implemented)
 - Overview KPI aggregation (total runs, success rate, latency, cost)
 - Agent leaderboard metrics (per-agent runs, success rate, avg latency)
 - Failure taxonomy aggregation
 - API route response shape validation
+- Trend calculations (daily runs, latency, cost)
 
-### Medium Priority (should have)
-- Insight generation logic
-- Team-level aggregation
-- Date range filtering behavior
-- Edge cases (empty data, single agent, all failures)
+### Medium Priority (implemented)
+- Insight generation logic (thresholds, severity, unique IDs)
+- Team-level aggregation (usage, cost by model, top users)
+- Edge cases (empty data, single agent, all failures, boundary values)
+- Component rendering with loading/error/empty states
 
-### Lower Priority (nice to have)
-- Presentational component rendering
-- Chart axis labels and formatting
+### Lower Priority (implemented)
+- Chart component rendering (axes, data series, empty states)
+- Active nav highlighting across routes
+- Table formatting (color-coded success rates, currency, percentages)
 
 ## Test Conventions
 
 - Tests must be **deterministic** — no random data, no Date.now()
-- Tests must be **fast** — no network, no database, no file I/O
+- Tests must be **fast** — no network, no database (~2s for full suite)
 - Tests must be **isolated** — no shared mutable state between tests
 - Tests must be **readable** — clear names, arrange/act/assert structure
 
-## Naming Convention
+## Mocking Strategies
 
-```
-describe('computeOverviewKPIs', () => {
-  it('returns correct total runs count', () => { ... });
-  it('returns zero success rate when no runs exist', () => { ... });
+### Recharts
+Charts are mocked with inline factory functions to avoid circular requires:
+```tsx
+jest.mock('recharts', () => {
+  const React = require('react');
+  const mock = (name: string) =>
+    ({ children }: { children?: React.ReactNode }) =>
+      React.createElement('div', { 'data-testid': name }, children);
+  return { ResponsiveContainer: mock('responsive-container'), ... };
 });
+```
+
+### React Query Hooks
+Page tests mock the hook module and control return values per test:
+```tsx
+jest.mock('@/lib/hooks/use-analytics', () => ({
+  useOverviewKPIs: jest.fn(),
+}));
+```
+
+### Next.js Navigation
+Layout tests mock `usePathname` to test active nav highlighting:
+```tsx
+jest.mock('next/navigation', () => ({
+  usePathname: jest.fn(),
+}));
 ```
 
 ## Running Tests

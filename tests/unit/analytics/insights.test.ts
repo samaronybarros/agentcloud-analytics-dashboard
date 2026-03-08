@@ -1,7 +1,7 @@
 import { generateInsights } from '@/lib/analytics/insights';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
-import type { Insight, Run } from '@/lib/types';
+import type { Run } from '@/lib/types';
 
 describe('generateInsights', () => {
   const insights = generateInsights(runs, agents);
@@ -97,6 +97,111 @@ describe('generateInsights', () => {
     expect(result.filter((i) => i.type === 'rising-failures')).toHaveLength(0);
     // Should still identify top cost driver
     expect(result.filter((i) => i.type === 'top-cost-driver')).toHaveLength(1);
+  });
+
+  it('handles agents with exactly 10 runs at rising-failures boundary', () => {
+    const boundaryRuns: Run[] = [
+      // agent-01: exactly 10 runs, all failures → should trigger rising-failures
+      ...Array.from({ length: 10 }, (_, j) => ({
+        id: `boundary-01-${j}`,
+        agentId: 'agent-01',
+        userId: 'user-01',
+        status: 'error' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 1000,
+        tokensInput: 100,
+        tokensOutput: 100,
+        estimatedCost: 0.5,
+        errorType: 'timeout' as const,
+      })),
+      // agent-02: cheap + all success (keeps median cost low)
+      ...Array.from({ length: 10 }, (_, j) => ({
+        id: `boundary-02-${j}`,
+        agentId: 'agent-02',
+        userId: 'user-02',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 200,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 0.5,
+        errorType: null,
+      })),
+      // agent-03: cheap + all success
+      ...Array.from({ length: 10 }, (_, j) => ({
+        id: `boundary-03-${j}`,
+        agentId: 'agent-03',
+        userId: 'user-03',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 200,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 0.1,
+        errorType: null,
+      })),
+    ];
+    const result = generateInsights(boundaryRuns, agents);
+    const risingFailures = result.filter(
+      (i) => i.agentId === 'agent-01' && (i.type === 'rising-failures' || i.type === 'high-cost-low-success'),
+    );
+    expect(risingFailures.length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('handles agents with 9 runs (below rising-failures threshold)', () => {
+    const belowThreshold: Run[] = [
+      // agent-01: 9 runs, all failures → should NOT trigger rising-failures
+      ...Array.from({ length: 9 }, (_, j) => ({
+        id: `below-01-${j}`,
+        agentId: 'agent-01',
+        userId: 'user-01',
+        status: 'error' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 1000,
+        tokensInput: 100,
+        tokensOutput: 100,
+        estimatedCost: 0.1,
+        errorType: 'timeout' as const,
+      })),
+      // agent-02: enough runs to create stats
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `below-02-${j}`,
+        agentId: 'agent-02',
+        userId: 'user-02',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 200,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 1.0,
+        errorType: null,
+      })),
+    ];
+    const result = generateInsights(belowThreshold, agents);
+    const risingFailures = result.filter(
+      (i) => i.agentId === 'agent-01' && i.type === 'rising-failures',
+    );
+    expect(risingFailures).toHaveLength(0);
+  });
+
+  it('does not produce NaN values in insight descriptions with single agent', () => {
+    const singleAgentRuns: Run[] = Array.from({ length: 5 }, (_, j) => ({
+      id: `single-${j}`,
+      agentId: 'agent-01',
+      userId: 'user-01',
+      status: 'success' as const,
+      startedAt: '2026-03-01T10:00:00Z',
+      durationMs: 1000,
+      tokensInput: 100,
+      tokensOutput: 100,
+      estimatedCost: 5.0,
+      errorType: null,
+    }));
+    const result = generateInsights(singleAgentRuns, agents);
+    for (const insight of result) {
+      expect(insight.description).not.toContain('NaN');
+      expect(insight.title).not.toContain('NaN');
+    }
   });
 
   it('flags an agent that is both expensive and unreliable', () => {

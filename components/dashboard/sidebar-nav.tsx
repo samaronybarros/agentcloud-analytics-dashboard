@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 
 const navItems = [
@@ -25,7 +26,7 @@ export default function SidebarNav() {
               : pathname.startsWith(href);
           return (
             <li key={href}>
-              <a
+              <Link
                 href={href}
                 className={`block rounded-md px-3 py-2 hover:bg-gray-100 ${
                   isActive
@@ -34,7 +35,7 @@ export default function SidebarNav() {
                 }`}
               >
                 {label}
-              </a>
+              </Link>
             </li>
           );
         })}

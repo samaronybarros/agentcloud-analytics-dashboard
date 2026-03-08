@@ -87,17 +87,20 @@ describe('OverviewPage', () => {
     expect(screen.getByRole('heading', { name: 'Cost Trend' })).toBeInTheDocument();
   });
 
-  it('shows loading state', () => {
+  it('shows loading state with skeletons', () => {
     mockUseOverviewKPIs.mockReturnValue({ data: undefined, isLoading: true });
     mockUseTrends.mockReturnValue({ data: undefined, isLoading: true });
     render(<OverviewPage />);
-    expect(screen.getByText('Loading analytics...')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('kpi-skeleton').length).toBe(8);
+    expect(screen.getAllByTestId('chart-skeleton').length).toBe(3);
   });
 
   it('shows error state when data is null', () => {
     mockUseOverviewKPIs.mockReturnValue({ data: null, isLoading: false });
     mockUseTrends.mockReturnValue({ data: null, isLoading: false });
     render(<OverviewPage />);
+    expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getByText('Failed to load analytics data.')).toBeInTheDocument();
   });
 });

@@ -66,15 +66,18 @@ describe('TeamsPage', () => {
     expect(screen.getByText('Alice Chen')).toBeInTheDocument();
   });
 
-  it('shows loading state', () => {
+  it('shows loading state with skeletons', () => {
     mockUseTeamAnalytics.mockReturnValue({ data: undefined, isLoading: true });
     render(<TeamsPage />);
-    expect(screen.getByText('Loading team analytics...')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Teams' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
   });
 
   it('shows error state when data is null', () => {
     mockUseTeamAnalytics.mockReturnValue({ data: null, isLoading: false });
     render(<TeamsPage />);
+    expect(screen.getByRole('heading', { name: 'Teams' })).toBeInTheDocument();
     expect(screen.getByText('Failed to load team data.')).toBeInTheDocument();
   });
 });

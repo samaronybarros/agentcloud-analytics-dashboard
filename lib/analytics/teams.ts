@@ -78,7 +78,7 @@ export function computeCostByModel(
     entries.push({
       model,
       totalCost: cost,
-      percentage: cost / totalCost,
+      percentage: totalCost === 0 ? 0 : cost / totalCost,
     });
   }
 

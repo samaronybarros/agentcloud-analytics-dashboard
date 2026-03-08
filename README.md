@@ -1,147 +1,117 @@
-# Agent Cloud Analytics Dashboard - README.md
+# AgentCloud Analytics Dashboard
 
-An opinionated, safety-first workflow for building software with AI assistance. It keeps agents contained, enforces TDD, and walks contributors from foundations through deployment without losing sight of quality or UX.
+A production-quality organizational analytics dashboard for cloud-hosted AI agents. Built as a take-home assignment demonstrating product thinking, engineering quality, and TDD discipline.
 
-## AgentOps dashboard
-
-This repository now also includes an organizational analytics dashboard for cloud-hosted agents (Next.js + Tailwind + React Query + Recharts). Data is mocked deterministically through Next API routes, so it runs locally without external services.
-
-### Quick start
+## Quick Start
 
 ```bash
 npm install
-npm run dev   # open http://localhost:3000
-npm test      # run Jest + RTL tests (TDD — tests written before implementation)
+npm run dev       # http://localhost:3000
+npm test          # 28 suites, 242 tests
+npm run test:coverage
 ```
 
-### Feature map
+No external services required — all data is deterministically mocked.
 
-- **Overview KPIs**: total runs, active users, active agents, success rate, average latency, p95 latency, token volume, estimated cost.
-- **Trend charts**: runs over time, success/error/retry trend, latency trend (p50/p95), cost trend.
-- **Breakdown views**: cost by model (donut), usage by team, top agents with reliability, top users, failure taxonomy.
-- **Insight views**: high-cost / low-success agents, rising failure trends, top cost drivers, agents with degraded latency, optimization opportunities.
-- **Tables**: recent runs per agent, agent leaderboard.
-- **Alerts**: mocked policy and latency guardrails; CSV export endpoint.
-- **Agent detail**: per-agent metrics and run log snapshot.
+## What It Does
 
-## Overview
+The dashboard helps engineering organizations understand their AI agent fleet across four dimensions:
 
-This repository documents the Agent Cloud Analytics Dashboard development workflow. The goal is to make AI-assisted development predictable: sandbox the AI, require tests first, optimize intentionally, and ship through verified gates. XP discipline, not one-shot prompts, makes AI productive.
+| Page | Purpose |
+|------|---------|
+| **Overview** | Adoption and health at a glance — 8 KPI cards + trend charts |
+| **Agents** | Agent-level reliability — leaderboard, failure taxonomy |
+| **Teams** | Team-level visibility — usage by team, cost by model, top users |
+| **Optimization** | Actionable insights — high-cost/low-success agents, degraded latency, rising failures |
 
-## Workflow Overview
+## Architecture
 
-The workflow is a top-to-bottom lifecycle. Each phase has a clear checkpoint so new contributors know when to move forward:
-
-1. **AI Jail** - lock down isolation/security before doing anything else.
-2. **Foundation** - settle architecture, dependencies, monorepo structure, and agent config.
-3. **TDD** - write failing tests first; refuse code changes until tests exist (AI moves faster when tests are the guardrails).
-4. **Code** - implement only what the tests demand.
-5. **Optimization** - profile, manage resources, and refactor.
-6. **UI / UX** - design, test with users, and integrate feedback.
-7. **Deployment** - run CI gates, prepare production, deploy with rollback; every commit should be production-ready (small releases).
-
-### Visual Flow
-
-```mermaid
-%% palette chosen for contrast + color-blind friendliness
-%% keep shapes consistent: rectangles for phases, rounded for guardrails, dashed for quality gates
-flowchart TB
-  %% Nodes
-  subgraph AIJAIL[AI Jail]
-    direction TB
-    ISEC{{Isolation & Security}}:::note
-  end
-
-  subgraph FOUNDATION[Foundation]
-    direction LR
-    ARCH[Architecture]:::core --> CONFIG[Config & Dependencies]:::core --> MONO[Monorepo Structure]:::core --> AGENTS[Agents Files]:::core
-  end
-
-  subgraph TDD[Test-Driven Development]
-    direction LR
-    TESTS([Write tests first]):::guard --> REFUSE([Refuse code without tests]):::guard
-  end
-
-  CODE[Codebase]:::core
-
-  subgraph OPTIM[Optimization]
-    direction LR
-    PERF[Performance]:::core --> RES[Resource Mgmt]:::core --> REFACT[Refactoring]:::core
-  end
-
-  subgraph UX[UI / UX]
-    direction LR
-    DESIGN[Design Principles]:::core --> USE[Usability Testing]:::core --> FEED[User Feedback Integration]:::core
-  end
-
-  subgraph DEPLOY[Deployment]
-    direction LR
-    CICD([CI/CD Pipeline]):::core --> PROD[Setup Production]:::core --> SHIP([Deploy]):::core
-    CICD -.->|gate| VAL[Code Validation]:::gate
-    CICD -.-> LINT[Linting]:::gate
-    CICD -.-> TEST[Automated Testing]:::gate
-    CICD -.-> SMELL[Code Smell Detection]:::gate
-    CICD -.-> VULN[Security Scan]:::gate
-  end
-
-  %% Flow
-  AIJAIL ===> FOUNDATION ===> TDD ===> CODE ===> OPTIM ===> UX ===> DEPLOY
-
-  %% Styles
-  classDef core fill:#0f766e,stroke:#052e16,color:#f0fdf4,stroke-width:1.5px;
-  classDef guard fill:#1d4ed8,stroke:#0b277a,color:#e0ecff,stroke-width:1.5px;
-  classDef gate fill:#fbbf24,stroke:#854d0e,color:#1f1300,stroke-dasharray:5 3,stroke-width:1.5px;
-  classDef note fill:#e2e8f0,stroke:#475569,color:#0f172a,stroke-width:1px;
-
-  linkStyle default stroke:#0f172a,stroke-width:1.8px;
-  class FOUNDATION,TDD,CODE,OPTIM,UX,DEPLOY core
-  class AIJAIL guard
-
-  %% Animation markers retained for live diagrams
-  linkStyle 0,1,2,3,4,5,6 stroke-width:2px,animate:true
+```
+Mock Data (lib/mock-data)
+  → Analytics Logic (lib/analytics)
+    → API Routes (app/api/analytics)
+      → React Query Hooks (lib/hooks)
+        → Components (components/)
+          → Pages (app/dashboard/)
 ```
 
-## How to Use This Workflow
+### Stack
 
-1. **Start in AI Jail**: run AI agents sandboxed; scrub secrets; review outbound writes.
-2. **Lock the Foundation**: create/update an ADR [CLAUDE.md](./CLAUDE.md); pin and scan dependencies; settle monorepo layout; commit agent configs.
-3. **Pair program with the agent**: keep prompts short, iterate; you provide direction and domain context, the agent provides scaffolding and options.
-4. **Enforce TDD**: write failing tests first; do not accept code changes until tests exist. Let the agent draft tests; you validate intent.
-5. **Build to the tests**: write only the code required to satisfy the current test set; keep changes small and reviewable. Commit-by-commit CI is expected (small releases).
-6. **Optimize deliberately**: profile, enforce performance/resource budgets, refactor continuously instead of batching "big refactors."
-7. **Validate UX**: run a design pass, do a quick moderated usability check, fold in user feedback.
-8. **Ship safely**: ensure CI gates (lint, tests, smells, vuln scan) are green; confirm prod parity; deploy with a rollback plan.
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Language | TypeScript (strict, zero `any`) |
+| Styling | Tailwind CSS v4 |
+| Data fetching | React Query v5 |
+| Charts | Recharts 2 |
+| Testing | Jest + React Testing Library |
 
-## Development Guidelines
+### Key Design Decisions
 
-- Keep PRs scoped to one phase when possible; link PRs to the checklist items below.
-- Prefer automation over policy: wire refusal rules into tooling (pre-commit, CI) instead of relying on memory.
-- Document decisions: update ADRs and agent configs when behavior changes; maintain a living spec (e.g., `CLAUDE.md`) that the agent can ingest each session.
-- Budget-first optimization: measure before refactoring; avoid premature optimization.
+1. **Business logic in `lib/analytics/`** — never in components or pages. Charts render prepared data.
+2. **API routes are thin** — call analytics functions, shape responses. No business logic.
+3. **Deterministic mock data** — seeded PRNG (seed=42), same output every run. 10 agents, 8 users, 500 runs across 30 days.
+4. **TDD workflow** — tests written before implementation for all analytics logic and components.
+5. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
 
-### What the AI Does Well
+### Project Structure
 
-- Boilerplate/scaffolding, mechanical refactors, and generating edge-case tests.
-- Fast lookup of standards/RFCs; consistent application of existing patterns.
+```
+app/
+  api/analytics/        # 5 API routes (overview, agents, teams, insights, trends)
+  dashboard/            # 4 pages + layout with active nav highlighting
+components/
+  charts/               # 5 chart components (Recharts wrappers)
+  dashboard/            # KPI card, section header, sidebar nav
+  tables/               # 3 table components
+  insights/             # Severity-styled insight cards
+lib/
+  analytics/            # Pure metric logic (overview, agents, teams, insights, trends)
+  mock-data/            # Deterministic entities (agents, runs, users, seeded PRNG)
+  hooks/                # React Query hooks
+  utils/                # Formatting helpers
+tests/
+  unit/                 # 23 suites — analytics, components, pages, utils
+  integration/          # 5 suites — API route response shape validation
+```
 
-### Where Humans Must Lead
+## Test Coverage
 
-- Architecture and prioritization (the agent tends to over-engineer).
-- Security posture and non-obvious protections (rate limits, SSRF, encryption).
-- Domain knowledge and trade-offs; saying "no" when the agent says "yes" to everything.
+| Category | Suites | Tests |
+|----------|--------|-------|
+| Analytics logic | 5 | 64 |
+| Components (charts, tables, insights, dashboard) | 12 | 76 |
+| Pages | 4 | 26 |
+| Layout & nav | 2 | 25 |
+| Utilities | 1 | 16 |
+| API integration | 5 | 32 |
+| **Total** | **28** | **242** |
 
-## Phase Checklists
+Tests are deterministic, fast (~2s), and isolated. No network, no database.
 
-- **AI Jail**: sandboxed execution; secrets redacted; outbound writes reviewed.
-- **Foundation**: ADR exists; deps pinned and scanned; monorepo layout agreed; agent configs committed.
-- **TDD**: failing tests first; refusal rule enforced until tests present.
-- **Code**: implementation matches tests; small, reviewable changes.
-- **Optimization**: hotspots profiled; budgets enforced; refactor before feature creep.
-- **UI / UX**: design pass done; moderated usability check; feedback integrated.
-- **Deployment**: CI gates green (lint, tests, smells, vulns); prod parity confirmed; rollback ready.
+## Mock Data
 
-## Bibliography
+All data is generated from a seeded PRNG (mulberry32, seed=42):
 
-- [Do Zero à Pós-Produção em 1 Semana](https://akitaonrails.com/2026/02/20/do-zero-a-pos-producao-em-1-semana-como-usar-ia-em-projetos-de-verdade-bastidores-do-the-m-akita-chronicles/)
-- [How to Use CLAUDE.md in Claude Code in 5 Minutes](https://www.youtube.com/watch?v=h7QJL2_gEXA)
-- [Writing a Good CLAUDE.md](https://www.humanlayer.dev/blog/writing-a-good-claude-md)
+- **10 agents** across 4 teams (Platform, Backend, Data, Frontend) using 4 models
+- **8 users** with realistic names and roles
+- **500 runs** over 30 days with ~75% success, ~15% error, ~10% retry distribution
+
+The dataset supports meaningful aggregation for adoption, reliability, performance, and cost analysis.
+
+## Documentation
+
+- [`docs/requirements-spec.md`](docs/requirements-spec.md) — Product requirements and user personas
+- [`docs/technical-spec.md`](docs/technical-spec.md) — Architecture, stack, data flow
+- [`docs/testing-spec.md`](docs/testing-spec.md) — TDD approach and test organization
+- [`docs/product-decisions.md`](docs/product-decisions.md) — Key product decisions with rationale
+- [`docs/ai-workflow.md`](docs/ai-workflow.md) — How AI was used, what was human-led
+- [`docs/development-workflow.md`](docs/development-workflow.md) — Phase-based workflow with mermaid diagram
+
+## AI-Assisted Development
+
+This project was built with Claude Code following a disciplined workflow:
+
+- **Human-led:** Architecture, product requirements, stack choices, quality standards, and all product decisions
+- **AI-assisted:** Implementation scaffolding, test generation, documentation drafting
+- **Guardrails:** CLAUDE.md enforces TDD, inspect-before-code, minimal scope, and architectural boundaries

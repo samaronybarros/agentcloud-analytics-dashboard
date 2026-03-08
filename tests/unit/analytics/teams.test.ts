@@ -88,6 +88,26 @@ describe('computeCostByModel', () => {
   it('returns empty array for empty runs', () => {
     expect(computeCostByModel([], agents)).toEqual([]);
   });
+
+  it('returns zero percentages when all runs have zero cost', () => {
+    const zeroCostRuns: Run[] = [
+      {
+        id: 'zc1', agentId: 'agent-01', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 100,
+        tokensInput: 10, tokensOutput: 10, estimatedCost: 0, errorType: null,
+      },
+      {
+        id: 'zc2', agentId: 'agent-02', userId: 'user-02', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 200,
+        tokensInput: 20, tokensOutput: 20, estimatedCost: 0, errorType: null,
+      },
+    ];
+    const result = computeCostByModel(zeroCostRuns, agents);
+    for (const entry of result) {
+      expect(Number.isFinite(entry.percentage)).toBe(true);
+      expect(entry.percentage).toBe(0);
+    }
+  });
 });
 
 describe('computeTopUsers', () => {

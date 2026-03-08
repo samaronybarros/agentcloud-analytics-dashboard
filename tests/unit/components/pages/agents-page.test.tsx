@@ -60,15 +60,18 @@ describe('AgentsPage', () => {
     expect(screen.getByRole('heading', { name: 'Failure Taxonomy' })).toBeInTheDocument();
   });
 
-  it('shows loading state', () => {
+  it('shows loading state with skeletons', () => {
     mockUseAgentAnalytics.mockReturnValue({ data: undefined, isLoading: true });
     render(<AgentsPage />);
-    expect(screen.getByText('Loading agent analytics...')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Agents' })).toBeInTheDocument();
+    expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
   });
 
   it('shows error state when data is null', () => {
     mockUseAgentAnalytics.mockReturnValue({ data: null, isLoading: false });
     render(<AgentsPage />);
+    expect(screen.getByRole('heading', { name: 'Agents' })).toBeInTheDocument();
     expect(screen.getByText('Failed to load agent data.')).toBeInTheDocument();
   });
 });

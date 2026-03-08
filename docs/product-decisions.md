@@ -43,3 +43,27 @@ This document records key product decisions, their rationale, and alternatives c
 **Decision:** Next.js API routes call analytics functions with mock data and return shaped JSON. No database, no external service.
 
 **Rationale:** This keeps the project self-contained and runnable with zero setup. The architecture still demonstrates proper separation (API → analytics → mock data) so it would be straightforward to swap in a real data source.
+
+---
+
+## PD-006: Active navigation highlighting via client component extraction
+
+**Decision:** The sidebar nav is a separate `'use client'` component (`SidebarNav`), while the dashboard layout remains a server component.
+
+**Rationale:** Active nav highlighting requires `usePathname()`, which needs a client component. Putting `'use client'` on the entire layout would make the layout's static HTML path-dependent, risking hydration mismatches. Extracting just the nav keeps the hydration-safe boundary minimal.
+
+---
+
+## PD-007: Severity-grouped insight cards
+
+**Decision:** Insights on the Optimization page are grouped by severity (Critical → Warnings → Information) rather than by type.
+
+**Rationale:** Severity-first grouping helps users prioritize action. A critical insight (high cost + low success) should appear above an informational one (top cost driver), regardless of category. Empty severity groups are hidden to avoid visual noise.
+
+---
+
+## PD-008: Color-coded success rates in agent leaderboard
+
+**Decision:** Success rates in the agent leaderboard use color coding: green (≥90%), amber (≥70%), red (<70%).
+
+**Rationale:** Color makes it immediately scannable which agents need attention. The thresholds (90/70) match common SRE conventions, making them intuitive for the target audience (engineering managers and platform teams).

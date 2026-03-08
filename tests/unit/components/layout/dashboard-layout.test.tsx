@@ -5,6 +5,15 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
 
+jest.mock('next/link', () => {
+  const React = require('react');
+  return {
+    __esModule: true,
+    default: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) =>
+      React.createElement('a', { href, className }, children),
+  };
+});
+
 import DashboardLayout from '@/app/dashboard/layout';
 import { usePathname } from 'next/navigation';
 
