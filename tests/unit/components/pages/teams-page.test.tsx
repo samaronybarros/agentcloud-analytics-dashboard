@@ -21,6 +21,10 @@ jest.mock('@/lib/hooks/use-analytics', () => ({
   useTeamAnalytics: jest.fn(),
 }));
 
+jest.mock('@/lib/hooks/use-date-range', () => ({
+  useDateRange: () => ({ range: {}, preset: 'all', setPreset: jest.fn() }),
+}));
+
 import TeamsPage from '@/app/dashboard/teams/page';
 import { useTeamAnalytics } from '@/lib/hooks/use-analytics';
 
@@ -64,6 +68,16 @@ describe('TeamsPage', () => {
     render(<TeamsPage />);
     expect(screen.getByRole('heading', { name: 'Top Users' })).toBeInTheDocument();
     expect(screen.getByText('Alice Chen')).toBeInTheDocument();
+  });
+
+  it('shows empty state when teamUsage is empty', () => {
+    mockUseTeamAnalytics.mockReturnValue({
+      data: { teamUsage: [], costByModel: [], topUsers: [] },
+      isLoading: false,
+    });
+    render(<TeamsPage />);
+    expect(screen.getByRole('heading', { name: 'Teams' })).toBeInTheDocument();
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
   });
 
   it('shows loading state with skeletons', () => {

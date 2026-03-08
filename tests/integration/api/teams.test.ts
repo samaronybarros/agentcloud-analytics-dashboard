@@ -4,22 +4,24 @@
 import { GET } from '@/app/api/analytics/teams/route';
 import type { TeamUsageEntry, CostByModelEntry, TopUserEntry } from '@/lib/types';
 
+const req = (params = '') => new Request(`http://localhost/api/analytics/teams${params}`);
+
 describe('GET /api/analytics/teams', () => {
   it('returns a valid JSON response', async () => {
-    const response = await GET();
+    const response = await GET(req());
     expect(response.status).toBe(200);
     expect(response.headers.get('content-type')).toContain('application/json');
   });
 
   it('returns teamUsage, costByModel, and topUsers arrays', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     expect(Array.isArray(data.teamUsage)).toBe(true);
     expect(Array.isArray(data.costByModel)).toBe(true);
     expect(Array.isArray(data.topUsers)).toBe(true);
   });
 
   it('teamUsage entries have required fields', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     const entry: TeamUsageEntry = data.teamUsage[0];
     expect(entry).toHaveProperty('team');
     expect(entry).toHaveProperty('totalRuns');
@@ -29,7 +31,7 @@ describe('GET /api/analytics/teams', () => {
   });
 
   it('costByModel entries have required fields', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     const entry: CostByModelEntry = data.costByModel[0];
     expect(entry).toHaveProperty('model');
     expect(entry).toHaveProperty('totalCost');
@@ -37,7 +39,7 @@ describe('GET /api/analytics/teams', () => {
   });
 
   it('costByModel percentages sum to approximately 1', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     const total = data.costByModel.reduce(
       (sum: number, e: CostByModelEntry) => sum + e.percentage,
       0,
@@ -46,7 +48,7 @@ describe('GET /api/analytics/teams', () => {
   });
 
   it('topUsers entries have required fields', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     const entry: TopUserEntry = data.topUsers[0];
     expect(entry).toHaveProperty('userId');
     expect(entry).toHaveProperty('userName');
@@ -56,7 +58,7 @@ describe('GET /api/analytics/teams', () => {
   });
 
   it('all numeric fields are finite (not NaN or Infinity)', async () => {
-    const data = await (await GET()).json();
+    const data = await (await GET(req())).json();
     for (const entry of data.teamUsage) {
       expect(Number.isFinite(entry.totalRuns)).toBe(true);
       expect(Number.isFinite(entry.activeAgents)).toBe(true);
@@ -74,8 +76,8 @@ describe('GET /api/analytics/teams', () => {
   });
 
   it('returns deterministic values across calls', async () => {
-    const first = await (await GET()).json();
-    const second = await (await GET()).json();
+    const first = await (await GET(req())).json();
+    const second = await (await GET(req())).json();
     expect(first).toEqual(second);
   });
 });

@@ -1,9 +1,11 @@
 'use client';
 
 import { useInsights } from '@/lib/hooks/use-analytics';
+import { useDateRange } from '@/lib/hooks/use-date-range';
 import { Section } from '@/components/dashboard/section';
 import { InsightCard } from '@/components/insights/insight-card';
 import { Skeleton } from '@/components/dashboard/skeleton';
+import { EmptyState } from '@/components/dashboard/empty-state';
 import type { Insight } from '@/lib/types';
 
 function OptimizationSkeleton() {
@@ -23,9 +25,7 @@ function OptimizationContent({ insights }: { insights: Insight[] }) {
 
   if (insights.length === 0) {
     return (
-      <p className="mt-8 text-sm text-gray-400">
-        No optimization insights at this time. All agents are performing well.
-      </p>
+      <EmptyState message="No optimization insights at this time. All agents are performing well." />
     );
   }
 
@@ -65,7 +65,8 @@ function OptimizationContent({ insights }: { insights: Insight[] }) {
 }
 
 export default function OptimizationPage() {
-  const { data, isLoading } = useInsights();
+  const { range } = useDateRange();
+  const { data, isLoading } = useInsights(range);
 
   return (
     <div>

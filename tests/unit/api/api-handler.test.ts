@@ -3,6 +3,10 @@
  */
 import { withErrorHandler } from '@/lib/utils/api-handler';
 
+function makeRequest(url = 'http://localhost/api/test'): Request {
+  return new Request(url);
+}
+
 describe('withErrorHandler', () => {
   it('returns a function', () => {
     const handler = withErrorHandler(() => ({ foo: 'bar' }));
@@ -11,7 +15,7 @@ describe('withErrorHandler', () => {
 
   it('returns 200 with JSON data on success', async () => {
     const handler = withErrorHandler(() => ({ foo: 'bar' }));
-    const response = handler();
+    const response = handler(makeRequest());
     expect(response.status).toBe(200);
     const data = await response.json();
     expect(data).toEqual({ foo: 'bar' });
@@ -21,7 +25,7 @@ describe('withErrorHandler', () => {
     const handler = withErrorHandler(() => {
       throw new Error('Something broke');
     });
-    const response = handler();
+    const response = handler(makeRequest());
     expect(response.status).toBe(500);
     const data = await response.json();
     expect(data).toHaveProperty('error');
@@ -32,7 +36,7 @@ describe('withErrorHandler', () => {
     const handler = withErrorHandler(() => {
       throw new Error('secret database credentials');
     });
-    const response = handler();
+    const response = handler(makeRequest());
     const data = await response.json();
     expect(JSON.stringify(data)).not.toContain('secret');
     expect(JSON.stringify(data)).not.toContain('database');
@@ -42,9 +46,19 @@ describe('withErrorHandler', () => {
     const handler = withErrorHandler(() => {
       throw 'string error';
     });
-    const response = handler();
+    const response = handler(makeRequest());
     expect(response.status).toBe(500);
     const data = await response.json();
     expect(data.error).toBe('Internal server error');
+  });
+
+  it('passes the request to the handler function', async () => {
+    const handler = withErrorHandler((req: Request) => {
+      const url = new URL(req.url);
+      return { from: url.searchParams.get('from') };
+    });
+    const response = handler(makeRequest('http://localhost/api/test?from=2026-03-01'));
+    const data = await response.json();
+    expect(data).toEqual({ from: '2026-03-01' });
   });
 });

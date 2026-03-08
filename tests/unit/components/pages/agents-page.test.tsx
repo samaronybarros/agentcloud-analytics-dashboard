@@ -22,6 +22,10 @@ jest.mock('@/lib/hooks/use-analytics', () => ({
   useAgentAnalytics: jest.fn(),
 }));
 
+jest.mock('@/lib/hooks/use-date-range', () => ({
+  useDateRange: () => ({ range: {}, preset: 'all', setPreset: jest.fn() }),
+}));
+
 import AgentsPage from '@/app/dashboard/agents/page';
 import { useAgentAnalytics } from '@/lib/hooks/use-analytics';
 
@@ -58,6 +62,16 @@ describe('AgentsPage', () => {
   it('renders Failure Taxonomy section', () => {
     render(<AgentsPage />);
     expect(screen.getByRole('heading', { name: 'Failure Taxonomy' })).toBeInTheDocument();
+  });
+
+  it('shows empty state when leaderboard is empty', () => {
+    mockUseAgentAnalytics.mockReturnValue({
+      data: { leaderboard: [], failureTaxonomy: [] },
+      isLoading: false,
+    });
+    render(<AgentsPage />);
+    expect(screen.getByRole('heading', { name: 'Agents' })).toBeInTheDocument();
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
   });
 
   it('shows loading state with skeletons', () => {

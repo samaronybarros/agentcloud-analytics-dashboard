@@ -44,6 +44,10 @@ jest.mock('@/lib/hooks/use-analytics', () => ({
   useTrends: jest.fn(),
 }));
 
+jest.mock('@/lib/hooks/use-date-range', () => ({
+  useDateRange: () => ({ range: {}, preset: 'all', setPreset: jest.fn() }),
+}));
+
 import OverviewPage from '@/app/dashboard/page';
 import { useOverviewKPIs, useTrends } from '@/lib/hooks/use-analytics';
 
@@ -94,6 +98,20 @@ describe('OverviewPage', () => {
     expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getAllByTestId('kpi-skeleton').length).toBe(8);
     expect(screen.getAllByTestId('chart-skeleton').length).toBe(3);
+  });
+
+  it('shows empty state when totalRuns is zero', () => {
+    const emptyKPIs: OverviewKPIs = {
+      totalRuns: 0, activeUsers: 0, activeAgents: 0, successRate: 0,
+      avgLatencyMs: 0, p95LatencyMs: 0, totalTokens: 0, estimatedCost: 0,
+    };
+    const emptyTrends = { runsTrend: [], latencyTrend: [], costTrend: [] };
+    mockUseOverviewKPIs.mockReturnValue({ data: emptyKPIs, isLoading: false });
+    mockUseTrends.mockReturnValue({ data: emptyTrends, isLoading: false });
+    render(<OverviewPage />);
+    expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
+    expect(screen.getByText('No data available for the selected time period.')).toBeInTheDocument();
   });
 
   it('shows error state when data is null', () => {

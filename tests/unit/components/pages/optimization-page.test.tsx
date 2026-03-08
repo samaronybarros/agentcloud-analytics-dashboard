@@ -6,6 +6,10 @@ jest.mock('@/lib/hooks/use-analytics', () => ({
   useInsights: jest.fn(),
 }));
 
+jest.mock('@/lib/hooks/use-date-range', () => ({
+  useDateRange: () => ({ range: {}, preset: 'all', setPreset: jest.fn() }),
+}));
+
 import OptimizationPage from '@/app/dashboard/optimization/page';
 import { useInsights } from '@/lib/hooks/use-analytics';
 
@@ -60,6 +64,7 @@ describe('OptimizationPage', () => {
   it('shows empty state when no insights', () => {
     mockUseInsights.mockReturnValue({ data: { insights: [] }, isLoading: false });
     render(<OptimizationPage />);
+    expect(screen.getByTestId('empty-state')).toBeInTheDocument();
     expect(screen.getByText(/No optimization insights/)).toBeInTheDocument();
   });
 
