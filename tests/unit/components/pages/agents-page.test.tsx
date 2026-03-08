@@ -82,10 +82,16 @@ describe('AgentsPage', () => {
     expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
   });
 
-  it('shows error state when data is null', () => {
-    mockUseAgentAnalytics.mockReturnValue({ data: null, isLoading: false });
+  it('shows error state when query fails', () => {
+    mockUseAgentAnalytics.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new Error('Failed to fetch agents'),
+    });
     render(<AgentsPage />);
     expect(screen.getByRole('heading', { name: 'Agents' })).toBeInTheDocument();
-    expect(screen.getByText('Failed to load agent data.')).toBeInTheDocument();
+    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    expect(screen.getByText('Failed to fetch agents')).toBeInTheDocument();
   });
 });

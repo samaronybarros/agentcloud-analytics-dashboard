@@ -88,10 +88,16 @@ describe('TeamsPage', () => {
     expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
   });
 
-  it('shows error state when data is null', () => {
-    mockUseTeamAnalytics.mockReturnValue({ data: null, isLoading: false });
+  it('shows error state when query fails', () => {
+    mockUseTeamAnalytics.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new Error('Failed to fetch team data'),
+    });
     render(<TeamsPage />);
     expect(screen.getByRole('heading', { name: 'Teams' })).toBeInTheDocument();
-    expect(screen.getByText('Failed to load team data.')).toBeInTheDocument();
+    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    expect(screen.getByText('Failed to fetch team data')).toBeInTheDocument();
   });
 });

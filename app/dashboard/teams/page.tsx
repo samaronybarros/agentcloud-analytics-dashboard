@@ -8,6 +8,7 @@ import { TopUsersTable } from '@/components/tables/top-users-table';
 import { CostByModelChart } from '@/components/charts/cost-by-model-chart';
 import { TableSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
+import { ErrorState } from '@/components/dashboard/error-state';
 import type { TeamUsageEntry, CostByModelEntry, TopUserEntry } from '@/lib/types';
 
 function TeamsSkeleton() {
@@ -54,7 +55,7 @@ function TeamsContent({
 
 export default function TeamsPage() {
   const { range } = useDateRange();
-  const { data, isLoading } = useTeamAnalytics(range);
+  const { data, isLoading, isError, error } = useTeamAnalytics(range);
 
   return (
     <div>
@@ -65,8 +66,10 @@ export default function TeamsPage() {
 
       {isLoading ? (
         <TeamsSkeleton />
+      ) : isError ? (
+        <ErrorState detail={error instanceof Error ? error.message : undefined} />
       ) : !data ? (
-        <p className="mt-6 text-sm text-red-500">Failed to load team data.</p>
+        <ErrorState />
       ) : data.teamUsage.length === 0 ? (
         <EmptyState />
       ) : (

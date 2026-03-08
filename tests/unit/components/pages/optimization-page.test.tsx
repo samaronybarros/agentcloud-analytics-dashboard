@@ -89,10 +89,16 @@ describe('OptimizationPage', () => {
     expect(screen.getAllByTestId('skeleton').length).toBeGreaterThanOrEqual(3);
   });
 
-  it('shows error state when data is null', () => {
-    mockUseInsights.mockReturnValue({ data: null, isLoading: false });
+  it('shows error state when query fails', () => {
+    mockUseInsights.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      isError: true,
+      error: new Error('Insights service unavailable'),
+    });
     render(<OptimizationPage />);
     expect(screen.getByRole('heading', { name: 'Optimization' })).toBeInTheDocument();
-    expect(screen.getByText('Failed to load insights.')).toBeInTheDocument();
+    expect(screen.getByTestId('error-state')).toBeInTheDocument();
+    expect(screen.getByText('Insights service unavailable')).toBeInTheDocument();
   });
 });

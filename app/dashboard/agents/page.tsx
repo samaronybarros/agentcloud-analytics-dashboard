@@ -7,6 +7,7 @@ import { AgentLeaderboard } from '@/components/tables/agent-leaderboard';
 import { FailureTaxonomyChart } from '@/components/charts/failure-taxonomy-chart';
 import { TableSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
+import { ErrorState } from '@/components/dashboard/error-state';
 import type { AgentLeaderboardEntry, FailureTaxonomyEntry } from '@/lib/types';
 
 function AgentsSkeleton() {
@@ -44,7 +45,7 @@ function AgentsContent({
 
 export default function AgentsPage() {
   const { range } = useDateRange();
-  const { data, isLoading } = useAgentAnalytics(range);
+  const { data, isLoading, isError, error } = useAgentAnalytics(range);
 
   return (
     <div>
@@ -55,8 +56,10 @@ export default function AgentsPage() {
 
       {isLoading ? (
         <AgentsSkeleton />
+      ) : isError ? (
+        <ErrorState detail={error instanceof Error ? error.message : undefined} />
       ) : !data ? (
-        <p className="mt-6 text-sm text-red-500">Failed to load agent data.</p>
+        <ErrorState />
       ) : data.leaderboard.length === 0 ? (
         <EmptyState />
       ) : (
