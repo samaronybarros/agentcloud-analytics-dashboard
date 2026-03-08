@@ -1,5 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
+import { buildUrl } from '@/lib/utils/build-url';
 import type {
+  DateRange,
   OverviewKPIs,
   AgentLeaderboardEntry,
   FailureTaxonomyEntry,
@@ -14,58 +16,60 @@ import type {
   DailyCostTrend,
 } from '@/lib/analytics/trends';
 
+export type { DateRange } from '@/lib/types';
+
 async function fetchJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Failed to fetch ${url}`);
   return res.json();
 }
 
-export function useOverviewKPIs() {
+export function useOverviewKPIs(range?: DateRange) {
   return useQuery({
-    queryKey: ['analytics', 'overview'],
-    queryFn: () => fetchJson<OverviewKPIs>('/api/analytics/overview'),
+    queryKey: ['analytics', 'overview', range],
+    queryFn: () => fetchJson<OverviewKPIs>(buildUrl('/api/analytics/overview', range)),
   });
 }
 
-export function useTrends() {
+export function useTrends(range?: DateRange) {
   return useQuery({
-    queryKey: ['analytics', 'trends'],
+    queryKey: ['analytics', 'trends', range],
     queryFn: () =>
       fetchJson<{
         runsTrend: DailyRunsTrend[];
         latencyTrend: DailyLatencyTrend[];
         costTrend: DailyCostTrend[];
-      }>('/api/analytics/trends'),
+      }>(buildUrl('/api/analytics/trends', range)),
   });
 }
 
-export function useAgentAnalytics() {
+export function useAgentAnalytics(range?: DateRange) {
   return useQuery({
-    queryKey: ['analytics', 'agents'],
+    queryKey: ['analytics', 'agents', range],
     queryFn: () =>
       fetchJson<{
         leaderboard: AgentLeaderboardEntry[];
         failureTaxonomy: FailureTaxonomyEntry[];
-      }>('/api/analytics/agents'),
+      }>(buildUrl('/api/analytics/agents', range)),
   });
 }
 
-export function useTeamAnalytics() {
+export function useTeamAnalytics(range?: DateRange) {
   return useQuery({
-    queryKey: ['analytics', 'teams'],
+    queryKey: ['analytics', 'teams', range],
     queryFn: () =>
       fetchJson<{
         teamUsage: TeamUsageEntry[];
         costByModel: CostByModelEntry[];
         topUsers: TopUserEntry[];
-      }>('/api/analytics/teams'),
+      }>(buildUrl('/api/analytics/teams', range)),
   });
 }
 
-export function useInsights() {
+export function useInsights(range?: DateRange) {
   return useQuery({
-    queryKey: ['analytics', 'insights'],
+    queryKey: ['analytics', 'insights', range],
     queryFn: () =>
-      fetchJson<{ insights: Insight[] }>('/api/analytics/insights'),
+      fetchJson<{ insights: Insight[] }>(buildUrl('/api/analytics/insights', range)),
   });
 }

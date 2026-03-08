@@ -5,6 +5,14 @@ jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
 }));
 
+jest.mock('@/lib/hooks/use-date-range', () => ({
+  DateRangeProvider: ({ children }: { children: React.ReactNode }) => children,
+}));
+
+jest.mock('@/components/dashboard/dashboard-header', () => ({
+  DashboardHeader: () => null,
+}));
+
 jest.mock('next/link', () => {
   const React = require('react');
   return {

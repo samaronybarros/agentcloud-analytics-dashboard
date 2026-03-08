@@ -1,12 +1,14 @@
 'use client';
 
 import { useOverviewKPIs, useTrends } from '@/lib/hooks/use-analytics';
+import { useDateRange } from '@/lib/hooks/use-date-range';
 import { KPICard } from '@/components/dashboard/kpi-card';
 import { Section } from '@/components/dashboard/section';
 import { RunsTrendChart } from '@/components/charts/runs-trend-chart';
 import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
 import { CostTrendChart } from '@/components/charts/cost-trend-chart';
 import { KPICardSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
+import { EmptyState } from '@/components/dashboard/empty-state';
 import { formatNumber, formatCost, formatPercent, formatLatency } from '@/lib/utils/format';
 import type { OverviewKPIs } from '@/lib/types';
 import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
@@ -66,8 +68,9 @@ function OverviewContent({
 }
 
 export default function OverviewPage() {
-  const { data: kpis, isLoading: kpisLoading } = useOverviewKPIs();
-  const { data: trends, isLoading: trendsLoading } = useTrends();
+  const { range } = useDateRange();
+  const { data: kpis, isLoading: kpisLoading } = useOverviewKPIs(range);
+  const { data: trends, isLoading: trendsLoading } = useTrends(range);
 
   const isLoading = kpisLoading || trendsLoading;
 
@@ -82,6 +85,8 @@ export default function OverviewPage() {
         <OverviewSkeleton />
       ) : !kpis || !trends ? (
         <p className="mt-6 text-sm text-red-500">Failed to load analytics data.</p>
+      ) : kpis.totalRuns === 0 ? (
+        <EmptyState />
       ) : (
         <OverviewContent kpis={kpis} trends={trends} />
       )}

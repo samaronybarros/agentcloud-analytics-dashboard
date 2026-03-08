@@ -129,3 +129,12 @@ export interface Insight {
   team?: string;
   value?: number;
 }
+
+// ---------------------------------------------------------------------------
+// Filter types
+// ---------------------------------------------------------------------------
+
+export interface DateRange {
+  from?: string;
+  to?: string;
+}

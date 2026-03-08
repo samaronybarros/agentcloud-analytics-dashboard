@@ -1,4 +1,6 @@
 import SidebarNav from '@/components/dashboard/sidebar-nav';
+import { DateRangeProvider } from '@/lib/hooks/use-date-range';
+import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 
 export default function DashboardLayout({
   children,
@@ -8,7 +10,12 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       <SidebarNav />
-      <main className="flex-1 overflow-y-auto p-8">{children}</main>
+      <DateRangeProvider>
+        <main className="flex-1 overflow-y-auto p-8">
+          <DashboardHeader />
+          {children}
+        </main>
+      </DateRangeProvider>
     </div>
   );
 }

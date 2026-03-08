@@ -1,11 +1,13 @@
 'use client';
 
 import { useTeamAnalytics } from '@/lib/hooks/use-analytics';
+import { useDateRange } from '@/lib/hooks/use-date-range';
 import { Section } from '@/components/dashboard/section';
 import { TeamUsageTable } from '@/components/tables/team-usage-table';
 import { TopUsersTable } from '@/components/tables/top-users-table';
 import { CostByModelChart } from '@/components/charts/cost-by-model-chart';
 import { TableSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
+import { EmptyState } from '@/components/dashboard/empty-state';
 import type { TeamUsageEntry, CostByModelEntry, TopUserEntry } from '@/lib/types';
 
 function TeamsSkeleton() {
@@ -51,7 +53,8 @@ function TeamsContent({
 }
 
 export default function TeamsPage() {
-  const { data, isLoading } = useTeamAnalytics();
+  const { range } = useDateRange();
+  const { data, isLoading } = useTeamAnalytics(range);
 
   return (
     <div>
@@ -64,6 +67,8 @@ export default function TeamsPage() {
         <TeamsSkeleton />
       ) : !data ? (
         <p className="mt-6 text-sm text-red-500">Failed to load team data.</p>
+      ) : data.teamUsage.length === 0 ? (
+        <EmptyState />
       ) : (
         <TeamsContent
           teamUsage={data.teamUsage}
