@@ -26,7 +26,7 @@ npm test      # run Jest + RTL tests (TDD — tests written before implementatio
 
 ## Overview
 
-This repository documents the "Anti Vibe Coding" flow. The workflow's goal is to make AI-assisted development predictable: sandbox the AI, require tests first, optimize intentionally, and ship through verified gates. The principles mirror the build of "The M.Akita Chronicles" (274 commits in 8 days, 1,323 tests) where XP discipline, not one-shot prompts, made AI productive.
+This repository documents the Agent Cloud Analytics Dashboard development workflow. The goal is to make AI-assisted development predictable: sandbox the AI, require tests first, optimize intentionally, and ship through verified gates. XP discipline, not one-shot prompts, makes AI productive.
 
 ## Workflow Overview
 
