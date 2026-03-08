@@ -36,7 +36,7 @@ export function AgentLeaderboard({ data }: { data: AgentLeaderboardEntry[] }) {
                 </span>
               </td>
               <td className="px-3 py-3 text-right">
-                {Math.round(entry.avgLatencyMs).toLocaleString()}ms
+                {Math.round(entry.avgLatencyMs).toLocaleString('en-US')}ms
               </td>
               <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
             </tr>
