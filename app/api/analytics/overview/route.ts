@@ -1,8 +1,7 @@
-import { NextResponse } from 'next/server';
+import { withErrorHandler } from '@/lib/utils/api-handler';
 import { computeOverviewKPIs } from '@/lib/analytics/overview';
 import { agents, runs, users } from '@/lib/mock-data';
 
-export function GET() {
-  const kpis = computeOverviewKPIs(runs, agents, users);
-  return NextResponse.json(kpis);
-}
+export const GET = withErrorHandler(() =>
+  computeOverviewKPIs(runs, agents, users)
+);
