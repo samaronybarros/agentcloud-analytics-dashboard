@@ -67,3 +67,125 @@ This document records key product decisions, their rationale, and alternatives c
 **Decision:** Success rates in the agent leaderboard use color coding: green (≥90%), amber (≥70%), red (<70%).
 
 **Rationale:** Color makes it immediately scannable which agents need attention. The thresholds (90/70) match common SRE conventions, making them intuitive for the target audience (engineering managers and platform teams).
+
+---
+
+## PD-009: Preset-based date range with Context API
+
+**Decision:** Date range is managed via React Context (`useDateRange`) with four fixed presets: 7d, 14d, 30d, and "all".
+
+**Rationale:** Presets make common time windows one-click accessible without calendar complexity. Context API keeps selection global across all dashboard pages, avoiding prop drilling. The "all" preset passes empty `from`/`to` values, allowing unrestricted filtering.
+
+**Alternatives considered:** Calendar date picker, URL-based state. Calendar adds UX complexity without clear value for this scope. URL state was considered but Context is simpler and sufficient.
+
+---
+
+## PD-010: Daily bucketing for trends with p50/p95 latency percentiles
+
+**Decision:** Trend data (runs, latency, cost) is bucketed by calendar day. Latency trends report p50 and p95 percentiles, not averages.
+
+**Rationale:** Daily bucketing aligns with how users think about performance ("yesterday's numbers"). Percentiles — especially p95 — are more actionable than averages for identifying tail latency, which is standard SRE practice.
+
+---
+
+## PD-011: Inclusive date range filtering via string comparison
+
+**Decision:** Date filtering uses string comparison (`date >= from && date <= to`), inclusive on both boundaries.
+
+**Rationale:** YYYY-MM-DD format is lexicographically sortable, so string comparison is correct and avoids timezone issues from `Date` parsing. Inclusive boundaries match user expectations ("from the 1st to the 7th" means both days included).
+
+---
+
+## PD-012: React Query with 60-second stale time, no window refetch
+
+**Decision:** React Query is configured globally with `staleTime: 60_000` and `refetchOnWindowFocus: false`.
+
+**Rationale:** Analytics data doesn't need real-time updates. 60-second stale time balances cache efficiency with freshness. Disabling window refetch prevents unexpected re-fetches when switching tabs, keeping the UX predictable. Data refreshes on date range change via query key invalidation.
+
+---
+
+## PD-013: Locale-aware formatting with fixed decimal conventions
+
+**Decision:** All numeric formatting uses `toLocaleString()`. Cost displays as `$X.XX`, percentages as `XX.X%`, latency as `NNNms` with comma separators.
+
+**Rationale:** Locale-aware formatting respects regional conventions. Fixed decimal places (2 for cost, 1 for percentage) make metrics consistently scannable across the dashboard.
+
+---
+
+## PD-014: Mulberry32 PRNG with seed 42 for 500 runs over 30 days
+
+**Decision:** Mock data uses the mulberry32 algorithm with seed 42. The dataset is 500 runs spanning 30 days (2026-03-01 to 2026-03-30), generated once at module load.
+
+**Rationale:** 500 runs provide enough volume for meaningful trends and aggregation without being overwhelming. 30 days matches common analytics reporting periods. Module-level generation ensures data is created once and shared across all consumers.
+
+---
+
+## PD-015: Run status distribution — 75% success, 15% error, 10% retry
+
+**Decision:** Mock runs follow a 75/15/10 split (success/error/retry). Error runs have longer duration (base + 1–4s extra).
+
+**Rationale:** 75% success is realistic for production AI systems. Error runs being slower reflects real failure modes (timeouts, retries). This distribution gives the Optimization page enough anomalies to flag without being unrealistic.
+
+---
+
+## PD-016: User-agent team affinity at 70%
+
+**Decision:** When generating a run, the assigned user is from the same team as the agent 70% of the time; otherwise a random user is picked.
+
+**Rationale:** Creates realistic team cohesion (teams tend to use their own agents) while allowing cross-team usage. This makes team usage and cost breakdown metrics more interesting and believable.
+
+---
+
+## PD-017: Model-aware cost multipliers with ±20% variance
+
+**Decision:** Estimated cost uses per-model multipliers (Sonnet ≈ 0.003, GPT-4o ≈ 0.0025, Haiku ≈ 0.0008, GPT-4o-mini ≈ 0.0004) with ±20% random variance per run.
+
+**Rationale:** Reflects real LLM pricing differences. The variance prevents identical costs for same-model runs, mimicking real-world variability in token usage and pricing.
+
+---
+
+## PD-018: Agent leaderboard sorted by total runs, not cost or success rate
+
+**Decision:** The agent leaderboard ranks agents by `totalRuns` descending.
+
+**Rationale:** Sorting by volume answers the adoption question first — which agents are most actively used. Cost and reliability are visible in the same row for secondary comparison, but adoption drives the primary ordering.
+
+---
+
+## PD-019: Insight thresholds — median cost, p75 latency, 70% success, minimum 10 runs
+
+**Decision:** Insight generation uses: cost > median AND success < 70% for high-cost-low-success; avg latency > p75 for degraded latency; success < 70% with minimum 10 runs for rising failures.
+
+**Rationale:** Median is more robust than mean for cost comparison. P75 flags only the slowest quartile. 70% success aligns with SRE conventions (PD-008). Minimum 10 runs prevents false positives on low-volume agents.
+
+---
+
+## PD-020: Insight de-duplication — critical preempts warning
+
+**Decision:** If an agent is flagged as "high-cost-low-success" (critical), it is excluded from "rising-failures" (warning) even if it qualifies.
+
+**Rationale:** Avoids redundant insights on the same agent. The highest-severity insight takes precedence, keeping the Optimization page focused and actionable.
+
+---
+
+## PD-021: Centralized API error handler via higher-order function
+
+**Decision:** All API routes use `withErrorHandler()`, which catches exceptions and returns `{ error: 'Internal server error' }` with status 500.
+
+**Rationale:** Ensures consistent error responses across endpoints without repeated try-catch blocks. Prevents information leakage (no stack traces sent to client). Generic typing preserves type safety.
+
+---
+
+## PD-022: Discriminated union for RunStatus with nullable errorType
+
+**Decision:** `RunStatus` is `'success' | 'error' | 'retry'`. `errorType` is `ErrorType | null`, set only on non-success runs.
+
+**Rationale:** Type safety prevents accidentally assigning an error type to a successful run. The triple state allows the insights engine to distinguish retries (transient) from errors (potentially persistent).
+
+---
+
+## PD-023: Fixed entity counts — 10 agents, 8 users, 4 teams
+
+**Decision:** 10 hardcoded agents and 8 hardcoded users across 4 teams (Platform, Data, Backend, Frontend), declared as `readonly` arrays.
+
+**Rationale:** Hardcoding ensures complete determinism and makes data review trivial. The distribution (e.g., 3 agents in Platform, 2 in others) provides interesting aggregation scenarios without being unbalanced. Matches a plausible small org structure.
