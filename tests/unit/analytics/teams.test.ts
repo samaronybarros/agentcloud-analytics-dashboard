@@ -6,6 +6,7 @@ import {
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
 import { users } from '@/lib/mock-data/users';
+import type { Run } from '@/lib/types';
 
 describe('computeTeamUsage', () => {
   const teamUsage = computeTeamUsage(runs, agents, users);
@@ -123,5 +124,20 @@ describe('computeTopUsers', () => {
 
   it('returns empty array for empty runs', () => {
     expect(computeTopUsers([], users)).toEqual([]);
+  });
+
+  it('handles cross-team user activity', () => {
+    // user-01 is Platform, but runs agent-02 which is Data team
+    const crossTeamRuns: Run[] = [
+      {
+        id: 'r1', agentId: 'agent-02', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 300,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 0.1, errorType: null,
+      },
+    ];
+    const result = computeTopUsers(crossTeamRuns, users);
+    expect(result).toHaveLength(1);
+    expect(result[0].userId).toBe('user-01');
+    expect(result[0].team).toBe('Platform'); // user's own team, not agent's
   });
 });

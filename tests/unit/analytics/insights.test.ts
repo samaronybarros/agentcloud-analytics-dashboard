@@ -1,7 +1,7 @@
 import { generateInsights } from '@/lib/analytics/insights';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
-import type { Insight } from '@/lib/types';
+import type { Insight, Run } from '@/lib/types';
 
 describe('generateInsights', () => {
   const insights = generateInsights(runs, agents);
@@ -73,5 +73,78 @@ describe('generateInsights', () => {
 
   it('returns empty array for empty runs', () => {
     expect(generateInsights([], agents)).toEqual([]);
+  });
+
+  it('returns only top-cost-driver when all agents are healthy', () => {
+    // All success, similar cost — should still have top-cost-driver but no warnings
+    const healthyRuns: Run[] = agents.flatMap((agent, i) =>
+      Array.from({ length: 10 }, (_, j) => ({
+        id: `healthy-${i}-${j}`,
+        agentId: agent.id,
+        userId: 'user-01',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 500,
+        tokensInput: 100,
+        tokensOutput: 100,
+        estimatedCost: 1.0,
+        errorType: null,
+      })),
+    );
+    const result = generateInsights(healthyRuns, agents);
+    // No high-cost-low-success or rising-failures
+    expect(result.filter((i) => i.type === 'high-cost-low-success')).toHaveLength(0);
+    expect(result.filter((i) => i.type === 'rising-failures')).toHaveLength(0);
+    // Should still identify top cost driver
+    expect(result.filter((i) => i.type === 'top-cost-driver')).toHaveLength(1);
+  });
+
+  it('flags an agent that is both expensive and unreliable', () => {
+    const mixedRuns: Run[] = [
+      // agent-01: expensive + all failures
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `mixed-01-${j}`,
+        agentId: 'agent-01',
+        userId: 'user-01',
+        status: 'error' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 5000,
+        tokensInput: 1000,
+        tokensOutput: 1000,
+        estimatedCost: 10.0,
+        errorType: 'timeout' as const,
+      })),
+      // agent-02: cheap + all success
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `mixed-02-${j}`,
+        agentId: 'agent-02',
+        userId: 'user-02',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 200,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 0.1,
+        errorType: null,
+      })),
+      // agent-03: cheap + all success (ensures median is below agent-01)
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `mixed-03-${j}`,
+        agentId: 'agent-03',
+        userId: 'user-03',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 250,
+        tokensInput: 60,
+        tokensOutput: 60,
+        estimatedCost: 0.2,
+        errorType: null,
+      })),
+    ];
+    const result = generateInsights(mixedRuns, agents);
+    const flagged = result.filter(
+      (i) => i.type === 'high-cost-low-success' && i.agentId === 'agent-01',
+    );
+    expect(flagged.length).toBeGreaterThanOrEqual(1);
   });
 });

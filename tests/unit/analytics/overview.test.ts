@@ -65,4 +65,48 @@ describe('computeOverviewKPIs', () => {
       expect(Number.isNaN(value)).toBe(false);
     }
   });
+
+  it('handles a single run correctly', () => {
+    const singleRun: Run = {
+      id: 'run-single',
+      agentId: 'agent-01',
+      userId: 'user-01',
+      status: 'success',
+      startedAt: '2026-03-01T10:00:00Z',
+      durationMs: 500,
+      tokensInput: 100,
+      tokensOutput: 200,
+      estimatedCost: 0.5,
+      errorType: null,
+    };
+    const result = computeOverviewKPIs([singleRun], agents, users);
+    expect(result.totalRuns).toBe(1);
+    expect(result.activeUsers).toBe(1);
+    expect(result.activeAgents).toBe(1);
+    expect(result.successRate).toBe(1);
+    expect(result.avgLatencyMs).toBe(500);
+    expect(result.p95LatencyMs).toBe(500);
+    expect(result.totalTokens).toBe(300);
+    expect(result.estimatedCost).toBe(0.5);
+  });
+
+  it('handles all-failure runs correctly', () => {
+    const failRuns: Run[] = [
+      {
+        id: 'run-f1', agentId: 'agent-01', userId: 'user-01',
+        status: 'error', startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 1000, tokensInput: 50, tokensOutput: 10,
+        estimatedCost: 0.1, errorType: 'timeout',
+      },
+      {
+        id: 'run-f2', agentId: 'agent-02', userId: 'user-02',
+        status: 'error', startedAt: '2026-03-01T11:00:00Z',
+        durationMs: 2000, tokensInput: 60, tokensOutput: 20,
+        estimatedCost: 0.2, errorType: 'rate-limit',
+      },
+    ];
+    const result = computeOverviewKPIs(failRuns, agents, users);
+    expect(result.successRate).toBe(0);
+    expect(result.totalRuns).toBe(2);
+  });
 });
