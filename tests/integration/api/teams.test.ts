@@ -55,6 +55,24 @@ describe('GET /api/analytics/teams', () => {
     expect(entry).toHaveProperty('totalCost');
   });
 
+  it('all numeric fields are finite (not NaN or Infinity)', async () => {
+    const data = await (await GET()).json();
+    for (const entry of data.teamUsage) {
+      expect(Number.isFinite(entry.totalRuns)).toBe(true);
+      expect(Number.isFinite(entry.activeAgents)).toBe(true);
+      expect(Number.isFinite(entry.activeUsers)).toBe(true);
+      expect(Number.isFinite(entry.totalCost)).toBe(true);
+    }
+    for (const entry of data.costByModel) {
+      expect(Number.isFinite(entry.totalCost)).toBe(true);
+      expect(Number.isFinite(entry.percentage)).toBe(true);
+    }
+    for (const entry of data.topUsers) {
+      expect(Number.isFinite(entry.totalRuns)).toBe(true);
+      expect(Number.isFinite(entry.totalCost)).toBe(true);
+    }
+  });
+
   it('returns deterministic values across calls', async () => {
     const first = await (await GET()).json();
     const second = await (await GET()).json();

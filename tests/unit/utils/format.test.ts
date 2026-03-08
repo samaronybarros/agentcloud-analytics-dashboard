@@ -20,6 +20,19 @@ describe('formatNumber', () => {
   });
 });
 
+describe('formatNumber (edge cases)', () => {
+  it('handles NaN gracefully', () => {
+    const result = formatNumber(NaN);
+    expect(result).not.toContain('NaN');
+    expect(result).toBe('0');
+  });
+
+  it('handles Infinity gracefully', () => {
+    const result = formatNumber(Infinity);
+    expect(result).not.toContain('Infinity');
+  });
+});
+
 describe('formatCost', () => {
   it('formats with dollar sign and two decimals', () => {
     expect(formatCost(10)).toBe('$10.00');
@@ -38,6 +51,19 @@ describe('formatCost', () => {
   it('formats small costs', () => {
     expect(formatCost(0.01)).toBe('$0.01');
     expect(formatCost(0.1)).toBe('$0.10');
+  });
+});
+
+describe('formatCost (edge cases)', () => {
+  it('handles NaN gracefully', () => {
+    const result = formatCost(NaN);
+    expect(result).not.toContain('NaN');
+    expect(result).toBe('$0.00');
+  });
+
+  it('handles Infinity gracefully', () => {
+    const result = formatCost(Infinity);
+    expect(result).not.toContain('Infinity');
   });
 });
 
@@ -61,6 +87,19 @@ describe('formatPercent', () => {
   });
 });
 
+describe('formatPercent (edge cases)', () => {
+  it('handles NaN gracefully', () => {
+    const result = formatPercent(NaN);
+    expect(result).not.toContain('NaN');
+    expect(result).toBe('0.0%');
+  });
+
+  it('handles Infinity gracefully', () => {
+    const result = formatPercent(Infinity);
+    expect(result).not.toContain('Infinity');
+  });
+});
+
 describe('formatLatency', () => {
   it('formats milliseconds with ms suffix', () => {
     expect(formatLatency(500)).toBe('500ms');
@@ -78,5 +117,18 @@ describe('formatLatency', () => {
 
   it('formats large latencies', () => {
     expect(formatLatency(12000)).toBe('12,000ms');
+  });
+});
+
+describe('formatLatency (edge cases)', () => {
+  it('handles NaN gracefully', () => {
+    const result = formatLatency(NaN);
+    expect(result).not.toContain('NaN');
+    expect(result).toBe('0ms');
+  });
+
+  it('handles Infinity gracefully', () => {
+    const result = formatLatency(Infinity);
+    expect(result).not.toContain('Infinity');
   });
 });

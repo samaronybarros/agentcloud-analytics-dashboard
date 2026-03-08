@@ -45,6 +45,20 @@ describe('GET /api/analytics/agents', () => {
     }
   });
 
+  it('all numeric fields are finite (not NaN or Infinity)', async () => {
+    const data = await (await GET()).json();
+    for (const entry of data.leaderboard) {
+      expect(Number.isFinite(entry.totalRuns)).toBe(true);
+      expect(Number.isFinite(entry.successRate)).toBe(true);
+      expect(Number.isFinite(entry.avgLatencyMs)).toBe(true);
+      expect(Number.isFinite(entry.totalCost)).toBe(true);
+    }
+    for (const entry of data.failureTaxonomy) {
+      expect(Number.isFinite(entry.count)).toBe(true);
+      expect(Number.isFinite(entry.percentage)).toBe(true);
+    }
+  });
+
   it('returns deterministic values across calls', async () => {
     const first = await (await GET()).json();
     const second = await (await GET()).json();

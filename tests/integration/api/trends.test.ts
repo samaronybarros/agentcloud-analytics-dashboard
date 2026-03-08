@@ -61,6 +61,23 @@ describe('GET /api/analytics/trends', () => {
     expect(runsDates[runsDates.length - 1]).toBe(costDates[costDates.length - 1]);
   });
 
+  it('all numeric fields are finite (not NaN or Infinity)', async () => {
+    const data = await (await GET()).json();
+    for (const entry of data.runsTrend) {
+      expect(Number.isFinite(entry.total)).toBe(true);
+      expect(Number.isFinite(entry.success)).toBe(true);
+      expect(Number.isFinite(entry.error)).toBe(true);
+      expect(Number.isFinite(entry.retry)).toBe(true);
+    }
+    for (const entry of data.latencyTrend) {
+      expect(Number.isFinite(entry.p50)).toBe(true);
+      expect(Number.isFinite(entry.p95)).toBe(true);
+    }
+    for (const entry of data.costTrend) {
+      expect(Number.isFinite(entry.cost)).toBe(true);
+    }
+  });
+
   it('returns deterministic values across calls', async () => {
     const first = await (await GET()).json();
     const second = await (await GET()).json();
