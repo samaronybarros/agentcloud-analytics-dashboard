@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import type { DailyCostTrend } from '@/lib/analytics/trends';
+import type { DailyLatencyTrend } from '@/lib/types';
 
 jest.mock('recharts', () => {
   const React = require('react');
@@ -9,8 +9,8 @@ jest.mock('recharts', () => {
       React.createElement('div', { 'data-testid': name }, children);
   return {
     ResponsiveContainer: mock('responsive-container'),
-    AreaChart: mock('area-chart'),
-    Area: mock('area'),
+    LineChart: mock('line-chart'),
+    Line: mock('line'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
     CartesianGrid: mock('cartesian-grid'),
@@ -18,37 +18,37 @@ jest.mock('recharts', () => {
   };
 });
 
-import { CostTrendChart } from '@/components/charts/cost-trend-chart';
+import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
 
-const mockData: DailyCostTrend[] = [
-  { date: '2026-02-01', cost: 45.2 },
-  { date: '2026-02-02', cost: 52.8 },
+const mockData: DailyLatencyTrend[] = [
+  { date: '2026-02-01', p50: 1200, p95: 4500 },
+  { date: '2026-02-02', p50: 1100, p95: 4200 },
 ];
 
-describe('CostTrendChart', () => {
+describe('LatencyTrendChart', () => {
   it('renders without crashing', () => {
-    render(<CostTrendChart data={mockData} />);
+    render(<LatencyTrendChart data={mockData} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
-  it('renders an AreaChart', () => {
-    render(<CostTrendChart data={mockData} />);
-    expect(screen.getByTestId('area-chart')).toBeInTheDocument();
+  it('renders a LineChart (not AreaChart)', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    expect(screen.getByTestId('line-chart')).toBeInTheDocument();
   });
 
-  it('renders one Area element for cost', () => {
-    render(<CostTrendChart data={mockData} />);
-    const areas = screen.getAllByTestId('area');
-    expect(areas).toHaveLength(1);
+  it('renders two Line elements for p50 and p95', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    const lines = screen.getAllByTestId('line');
+    expect(lines).toHaveLength(2);
   });
 
   it('renders with empty data', () => {
-    render(<CostTrendChart data={[]} />);
+    render(<LatencyTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
   it('renders axes and grid', () => {
-    render(<CostTrendChart data={mockData} />);
+    render(<LatencyTrendChart data={mockData} />);
     expect(screen.getByTestId('x-axis')).toBeInTheDocument();
     expect(screen.getByTestId('y-axis')).toBeInTheDocument();
     expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();

@@ -1,12 +1,25 @@
+import { teamsRepository } from './teams.repository';
 import type {
   Agent,
   CostByModelEntry,
   ModelId,
   Run,
+  TeamsResponse,
   TeamUsageEntry,
   TopUserEntry,
   User,
 } from '@/lib/types';
+
+export function getTeamAnalytics(from?: string, to?: string): TeamsResponse {
+  const runs = teamsRepository.getFilteredRuns(from, to);
+  const agents = teamsRepository.getAgents();
+  const users = teamsRepository.getUsers();
+  return {
+    teamUsage: computeTeamUsage(runs, agents, users),
+    costByModel: computeCostByModel(runs, agents),
+    topUsers: computeTopUsers(runs, users),
+  };
+}
 
 export function computeTeamUsage(
   runs: readonly Run[],

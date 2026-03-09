@@ -13,57 +13,76 @@
 
 ## Architecture
 
+The backend follows a DDD-inspired structure where each API context is a self-contained vertical slice with repository, service, and controller layers. No cross-context dependencies.
+
 ```
-app/                    # Next.js App Router
-  api/                  # Thin API routes — call lib/analytics, return shaped JSON
-  dashboard/            # Page composition — thin, delegates to components
-    page.tsx            # Overview
-    agents/page.tsx     # Agent analytics
-    teams/page.tsx      # Team analytics
-    optimization/page.tsx # Insights & optimization
+app/
+  api/
+    _mock-data/             # Deterministic seed data (shared across contexts)
+      seed.ts               # Seeded PRNG (mulberry32)
+      agents.ts             # Agent entities
+      runs.ts               # Run entities (500 runs, 30 days)
+      users.ts              # User entities
+      index.ts              # Barrel export
+    analytics/
+      overview/             # Each context follows the same layered pattern:
+        overview.repository.ts  # Data access — wraps mock data, swappable for DB
+        overview.service.ts     # Business logic — KPI aggregation
+        overview.controller.ts  # Request parsing → service → response
+        route.ts                # Thin — delegates to controller via withErrorHandler
+      agents/               # Agent leaderboard + failure taxonomy
+      teams/                # Team usage + cost by model + top users
+      trends/               # Daily runs, latency, cost time series
+      insights/             # Insight generation (thresholds, severity)
+    __tests__/              # Backend tests (11 suites)
+      unit/analytics/       # Service logic unit tests (5 suites, 64 tests)
+      unit/api/             # API utility tests (1 suite)
+      integration/api/      # Route response shape validation (5 suites, 32 tests)
+  dashboard/                # Page composition — thin, delegates to components
+    page.tsx                # Overview
+    agents/page.tsx         # Agent analytics
+    teams/page.tsx          # Team analytics
+    optimization/page.tsx   # Insights & optimization
 
-components/             # Reusable presentational UI
-  charts/               # Chart wrappers (Recharts)
-  dashboard/            # Shared dashboard UI (KPI cards, section headers)
-  tables/               # Data tables
-  insights/             # Insight cards
+components/                 # Reusable presentational UI
+  charts/                   # Chart wrappers (Recharts)
+  dashboard/                # Shared dashboard UI (KPI cards, section headers)
+  tables/                   # Data tables
+  insights/                 # Insight cards
 
-lib/                    # Business logic — no React dependencies
-  analytics/            # Metric calculations, aggregations, insight generation
-    overview.ts         # KPI aggregation
-    agents.ts           # Agent-level metrics
-    teams.ts            # Team-level metrics
-    insights.ts         # Insight generation
-  mock-data/            # Deterministic seed data
-    agents.ts           # Agent entities
-    runs.ts             # Run entities
-    users.ts            # User entities
-  utils/                # Shared helpers (formatting, math)
+lib/                        # Shared frontend concerns — no business logic
+  hooks/                    # React Query hooks
+  utils/                    # Formatting, date filtering, API handler
+  types.ts                  # Shared domain and API response types
 
-tests/                  # Tests organized by concern
-  unit/                 # Analytics logic, utilities
-  integration/          # API routes, component + data
-  e2e/                  # Full page rendering
+__tests__/                  # Frontend tests (27 suites)
+  unit/                     # Components, pages, hooks, utils
+  e2e/                      # Full page rendering (planned)
 ```
 
 ## Data Flow
 
 ```
-Mock Data (lib/mock-data)
-  → Analytics Logic (lib/analytics)
-    → API Routes (app/api)
-      → React Query hooks
-        → Components (components/)
-          → Pages (app/dashboard/)
+Mock Data (app/api/_mock-data)
+  → Repositories (app/api/analytics/*/repository)
+    → Services (app/api/analytics/*/service)
+      → Controllers (app/api/analytics/*/controller)
+        → API Routes (app/api/analytics/*/route)
+          → React Query hooks (lib/hooks)
+            → Components (components/)
+              → Pages (app/dashboard/)
 ```
 
 ## Key Decisions
 
-1. **Business logic in `lib/analytics`** — never in components or pages. Charts render prepared data.
-2. **API routes are thin** — they call analytics functions and shape responses. No business logic.
-3. **Mock data is deterministic** — seeded, no `Math.random()`. Same output every run.
-4. **TDD** — tests written before implementation for all analytics logic.
-5. **No unnecessary abstractions** — no state management library, no custom design system, no ORM.
+1. **DDD-inspired backend** — each API context (overview, agents, teams, trends, insights) owns its full vertical slice. No shared analytics module.
+2. **Business logic in services** — never in components, pages, or route files. Charts render prepared data.
+3. **Repository pattern** — data access isolated behind per-context repositories. Currently wraps mock data; designed to swap for database queries without changing services.
+4. **No cross-context dependencies** — teams doesn't import from agents, trends doesn't know about insights. Each context can evolve independently.
+5. **API routes are thin** — delegate to controllers via `withErrorHandler`. No business logic.
+6. **Mock data is deterministic** — seeded, no `Math.random()`. Same output every run.
+7. **TDD** — tests written before implementation for all analytics logic.
+8. **No unnecessary abstractions** — no state management library, no custom design system, no ORM.
 
 ## TypeScript Conventions
 

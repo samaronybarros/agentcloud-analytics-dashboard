@@ -13,32 +13,51 @@ This project uses **Test-Driven Development (TDD)**. Tests are written before im
 
 ## Test Organization
 
+Tests are split between backend and frontend, co-located with the code they test.
+
+### Backend tests (`app/api/__tests__/`)
+
 ```
-tests/
+app/api/__tests__/
+  unit/
+    analytics/              # Service logic (5 suites, 64 tests)
+      overview.test.ts
+      agents.test.ts
+      teams.test.ts
+      insights.test.ts
+      trends.test.ts
+    api/                    # API utility (1 suite)
+      api-handler.test.ts
+  integration/
+    api/                    # Route response shape validation (5 suites, 32 tests)
+      overview.test.ts
+      agents.test.ts
+      teams.test.ts
+      insights.test.ts
+      trends.test.ts
+```
+
+### Frontend tests (`__tests__/`)
+
+```
+__tests__/
   setup.ts                    # @testing-library/jest-dom setup
-  unit/                       # Pure logic and component rendering
-    analytics/                # Metric calculations (5 suites, 64 tests)
-      overview.test.ts
-      agents.test.ts
-      teams.test.ts
-      insights.test.ts
-      trends.test.ts
-    utils/                    # Utility functions (1 suite, 16 tests)
+  unit/
+    utils/                    # Utility functions (4 suites)
       format.test.ts
+      date-filter.test.ts
+      build-url.test.ts
+      parse-date-params.test.ts
+    hooks/                    # React Query hooks (1 suite)
+      use-date-range.test.tsx
     components/               # Component rendering with mocked data
-      charts/                 # Chart components (5 suites, ~30 tests)
-      dashboard/              # KPI card, section, sidebar nav (3 suites, ~18 tests)
-      tables/                 # Data tables (3 suites, ~27 tests)
-      insights/               # Insight cards (1 suite, 10 tests)
-      layout/                 # Dashboard layout (1 suite, 21 tests)
-      pages/                  # Page-level rendering (4 suites, 26 tests)
-  integration/                # API response shape validation
-    api/                      # Route handler tests (5 suites, 32 tests)
-      overview.test.ts
-      agents.test.ts
-      teams.test.ts
-      insights.test.ts
-      trends.test.ts
+      charts/                 # Chart components (5 suites)
+      dashboard/              # KPI card, section, sidebar nav, etc. (8 suites)
+      tables/                 # Data tables (3 suites)
+      insights/               # Insight cards (1 suite)
+      layout/                 # Dashboard layout (1 suite)
+      pages/                  # Page-level rendering (4 suites)
+  e2e/                        # Full page rendering (planned)
 ```
 
 ## Coverage Summary
@@ -46,12 +65,12 @@ tests/
 | Category | Suites | Tests |
 |----------|--------|-------|
 | Analytics logic | 5 | 64 |
-| Components | 12 | 76 |
+| Components (charts, tables, insights, dashboard) | 12 | 76 |
 | Pages | 4 | 26 |
 | Layout & nav | 2 | 25 |
-| Utilities | 1 | 16 |
+| Hooks & utilities | 8 | 48 |
 | API integration | 5 | 32 |
-| **Total** | **28** | **242** |
+| **Total** | **38** | **329** |
 
 ## Priority Coverage
 

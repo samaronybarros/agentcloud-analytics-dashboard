@@ -1,7 +1,7 @@
-import { computeOverviewKPIs } from '@/lib/analytics/overview';
-import { agents } from '@/lib/mock-data/agents';
-import { runs } from '@/lib/mock-data/runs';
-import { users } from '@/lib/mock-data/users';
+import { computeOverviewKPIs } from '@/app/api/analytics/overview/overview.service';
+import { agents } from '@/app/api/_mock-data/agents';
+import { runs } from '@/app/api/_mock-data/runs';
+import { users } from '@/app/api/_mock-data/users';
 import type { Run } from '@/lib/types';
 
 describe('computeOverviewKPIs', () => {

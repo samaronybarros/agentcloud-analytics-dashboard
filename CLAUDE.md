@@ -137,12 +137,14 @@ General rules:
 
 - UI components -> presentation
 - hooks -> UI behavior and data coordination
-- analytics/lib -> data transformations and metric aggregation
-- API routes -> orchestration / response composition
+- repositories -> data access (mock data now, database later)
+- services -> business logic, metric aggregation, data transformations
+- controllers -> request parsing, service orchestration, response shaping
+- API routes -> thin delegation to controllers via withErrorHandler
 - mock data modules -> deterministic seed data
 - utilities -> reusable shared helpers
 
-Do not place business logic inside chart components or page files when it can live in reusable analytics modules.
+Do not place business logic inside chart components, page files, or route files. Business logic belongs in service modules.
 
 ---
 
@@ -331,6 +333,14 @@ This project should remain simple and production-minded.
 ```text
 app/
   api/
+    _mock-data/           # deterministic seed data
+    analytics/
+      overview/           # repository, service, controller, route per context
+      agents/
+      teams/
+      trends/
+      insights/
+    __tests__/            # backend tests (unit + integration)
   dashboard/
 components/
   charts/
@@ -338,24 +348,26 @@ components/
   tables/
   insights/
 lib/
-  analytics/
-  mock-data/
+  hooks/
   utils/
-tests/
-  unit/
-  integration/
-  e2e/
+  types.ts
+__tests__/                # frontend tests (unit + e2e)
 docs/
 ```
 
 ### Responsibility boundaries
 
+- `app/api/analytics/*/repository` -> data access (mock data, later database)
+- `app/api/analytics/*/service` -> business logic, calculations, aggregations, insights
+- `app/api/analytics/*/controller` -> request parsing, service orchestration
+- `app/api/analytics/*/route` -> thin HTTP handler delegation
+- `app/api/_mock-data/...` -> deterministic mocked entities and datasets
 - `app/dashboard/...` -> page composition
 - `components/...` -> reusable UI
-- `lib/analytics/...` -> calculations, aggregations, insights
-- `lib/mock-data/...` -> deterministic mocked entities and datasets
-- `app/api/...` -> API surface returning shaped analytics data
-- `tests/...` -> coverage by concern
+- `lib/hooks/...` -> React Query data fetching
+- `lib/utils/...` -> shared helpers (formatting, date filtering)
+- `app/api/__tests__/...` -> backend test coverage
+- `__tests__/...` -> frontend test coverage
 
 ---
 
@@ -444,18 +456,22 @@ Clarity beats cleverness.
 
 Keep metric logic centralized and testable.
 
-Prefer placing calculations in dedicated modules such as:
+Business logic lives in per-context service modules:
 
-- `lib/analytics/overview.ts`
-- `lib/analytics/agents.ts`
-- `lib/analytics/teams.ts`
-- `lib/analytics/insights.ts`
+- `app/api/analytics/overview/overview.service.ts`
+- `app/api/analytics/agents/agents.service.ts`
+- `app/api/analytics/teams/teams.service.ts`
+- `app/api/analytics/trends/trends.service.ts`
+- `app/api/analytics/insights/insights.service.ts`
+
+Each context is a self-contained vertical slice (repository → service → controller → route) with no cross-context dependencies.
 
 Avoid calculating business metrics directly inside:
 
 - page components
 - chart components
 - table components
+- route files or controllers
 
 Charts should render prepared data, not invent business rules.
 
@@ -481,18 +497,31 @@ Every visible metric should have a reason to exist.
 
 ## 12. API Rules
 
-API routes should remain thin.
+Each API context follows a layered architecture: repository → service → controller → route.
 
-They may:
+**Route files** should remain thin — delegate to controller via `withErrorHandler`.
 
-- select mock data
-- call aggregation logic
-- shape responses for the UI
+**Controllers** may:
+
+- parse request parameters
+- call service functions
+- return shaped response objects
+
+**Services** contain business logic:
+
+- metric aggregation
+- insight generation
+- data transformations
+
+**Repositories** handle data access:
+
+- currently wrap mock data from `app/api/_mock-data`
+- designed to be swapped for database queries without changing services
 
 They should not:
 
-- contain large amounts of business logic
-- duplicate aggregation code already present in `lib/analytics`
+- have cross-context dependencies (e.g., teams must not import from agents)
+- contain business logic in route files or controllers
 - hardcode inconsistent values that diverge from shared mock data
 
 Keep API outputs deterministic and easy to test.

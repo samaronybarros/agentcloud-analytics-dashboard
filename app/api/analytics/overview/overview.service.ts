@@ -1,4 +1,12 @@
+import { overviewRepository } from './overview.repository';
 import type { Agent, OverviewKPIs, Run, User } from '@/lib/types';
+
+export function getOverviewKPIs(from?: string, to?: string): OverviewKPIs {
+  const runs = overviewRepository.getFilteredRuns(from, to);
+  const agents = overviewRepository.getAgents();
+  const users = overviewRepository.getUsers();
+  return computeOverviewKPIs(runs, agents, users);
+}
 
 export function computeOverviewKPIs(
   runs: readonly Run[],

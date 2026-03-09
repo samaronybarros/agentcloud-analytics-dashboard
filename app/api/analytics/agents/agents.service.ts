@@ -1,4 +1,14 @@
-import type { Agent, AgentLeaderboardEntry, FailureTaxonomyEntry, Run } from '@/lib/types';
+import { agentsRepository } from './agents.repository';
+import type { Agent, AgentLeaderboardEntry, AgentsResponse, FailureTaxonomyEntry, Run } from '@/lib/types';
+
+export function getAgentAnalytics(from?: string, to?: string): AgentsResponse {
+  const runs = agentsRepository.getFilteredRuns(from, to);
+  const agents = agentsRepository.getAgents();
+  return {
+    leaderboard: computeAgentLeaderboard(runs, agents),
+    failureTaxonomy: computeFailureTaxonomy(runs),
+  };
+}
 
 export function computeAgentLeaderboard(
   runs: readonly Run[],
@@ -8,7 +18,6 @@ export function computeAgentLeaderboard(
 
   const agentMap = new Map(agents.map((agent) => [agent.id, agent]));
 
-  // Group runs by agent
   const grouped = new Map<string, Run[]>();
   for (const run of runs) {
     const existing = grouped.get(run.agentId);

@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { GET } from '@/app/api/analytics/trends/route';
-import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
+import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/types';
 
 const req = (params = '') => new Request(`http://localhost/api/analytics/trends${params}`);
 

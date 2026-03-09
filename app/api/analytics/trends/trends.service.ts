@@ -1,22 +1,13 @@
-import type { Run } from '@/lib/types';
+import { trendsRepository } from './trends.repository';
+import type { DailyCostTrend, DailyLatencyTrend, DailyRunsTrend, Run, TrendsResponse } from '@/lib/types';
 
-export interface DailyRunsTrend {
-  date: string; // YYYY-MM-DD
-  total: number;
-  success: number;
-  error: number;
-  retry: number;
-}
-
-export interface DailyLatencyTrend {
-  date: string;
-  p50: number;
-  p95: number;
-}
-
-export interface DailyCostTrend {
-  date: string;
-  cost: number;
+export function getTrends(from?: string, to?: string): TrendsResponse {
+  const runs = trendsRepository.getFilteredRuns(from, to);
+  return {
+    runsTrend: computeRunsTrend(runs),
+    latencyTrend: computeLatencyTrend(runs),
+    costTrend: computeCostTrend(runs),
+  };
 }
 
 function groupRunsByDate(runs: readonly Run[]): Map<string, Run[]> {

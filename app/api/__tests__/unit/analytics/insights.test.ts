@@ -1,6 +1,6 @@
-import { generateInsights } from '@/lib/analytics/insights';
-import { agents } from '@/lib/mock-data/agents';
-import { runs } from '@/lib/mock-data/runs';
+import { generateInsights } from '@/app/api/analytics/insights/insights.service';
+import { agents } from '@/app/api/_mock-data/agents';
+import { runs } from '@/app/api/_mock-data/runs';
 import type { Run } from '@/lib/types';
 
 describe('generateInsights', () => {

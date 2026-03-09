@@ -1,16 +1,16 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import type { DailyLatencyTrend } from '@/lib/analytics/trends';
+import type { DailyRunsTrend } from '@/lib/types';
 
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>
-    ({ children }: { children?: React.ReactNode }) =>
+    ({ children, ...props }: { children?: React.ReactNode }) =>
       React.createElement('div', { 'data-testid': name }, children);
   return {
     ResponsiveContainer: mock('responsive-container'),
-    LineChart: mock('line-chart'),
-    Line: mock('line'),
+    AreaChart: mock('area-chart'),
+    Area: mock('area'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
     CartesianGrid: mock('cartesian-grid'),
@@ -18,37 +18,37 @@ jest.mock('recharts', () => {
   };
 });
 
-import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
+import { RunsTrendChart } from '@/components/charts/runs-trend-chart';
 
-const mockData: DailyLatencyTrend[] = [
-  { date: '2026-02-01', p50: 1200, p95: 4500 },
-  { date: '2026-02-02', p50: 1100, p95: 4200 },
+const mockData: DailyRunsTrend[] = [
+  { date: '2026-02-01', total: 20, success: 15, error: 3, retry: 2 },
+  { date: '2026-02-02', total: 25, success: 20, error: 2, retry: 3 },
 ];
 
-describe('LatencyTrendChart', () => {
+describe('RunsTrendChart', () => {
   it('renders without crashing', () => {
-    render(<LatencyTrendChart data={mockData} />);
+    render(<RunsTrendChart data={mockData} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
-  it('renders a LineChart (not AreaChart)', () => {
-    render(<LatencyTrendChart data={mockData} />);
-    expect(screen.getByTestId('line-chart')).toBeInTheDocument();
+  it('renders an AreaChart', () => {
+    render(<RunsTrendChart data={mockData} />);
+    expect(screen.getByTestId('area-chart')).toBeInTheDocument();
   });
 
-  it('renders two Line elements for p50 and p95', () => {
-    render(<LatencyTrendChart data={mockData} />);
-    const lines = screen.getAllByTestId('line');
-    expect(lines).toHaveLength(2);
+  it('renders three Area elements for success, retry, and error', () => {
+    render(<RunsTrendChart data={mockData} />);
+    const areas = screen.getAllByTestId('area');
+    expect(areas).toHaveLength(3);
   });
 
   it('renders with empty data', () => {
-    render(<LatencyTrendChart data={[]} />);
+    render(<RunsTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
   it('renders axes and grid', () => {
-    render(<LatencyTrendChart data={mockData} />);
+    render(<RunsTrendChart data={mockData} />);
     expect(screen.getByTestId('x-axis')).toBeInTheDocument();
     expect(screen.getByTestId('y-axis')).toBeInTheDocument();
     expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();

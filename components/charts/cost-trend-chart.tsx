@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import type { DailyCostTrend } from '@/lib/analytics/trends';
+import type { DailyCostTrend } from '@/lib/types';
 
 export function CostTrendChart({ data }: { data: DailyCostTrend[] }) {
   return (

@@ -1,11 +1,11 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import type { DailyRunsTrend } from '@/lib/analytics/trends';
+import type { DailyCostTrend } from '@/lib/types';
 
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>
-    ({ children, ...props }: { children?: React.ReactNode }) =>
+    ({ children }: { children?: React.ReactNode }) =>
       React.createElement('div', { 'data-testid': name }, children);
   return {
     ResponsiveContainer: mock('responsive-container'),
@@ -18,37 +18,37 @@ jest.mock('recharts', () => {
   };
 });
 
-import { RunsTrendChart } from '@/components/charts/runs-trend-chart';
+import { CostTrendChart } from '@/components/charts/cost-trend-chart';
 
-const mockData: DailyRunsTrend[] = [
-  { date: '2026-02-01', total: 20, success: 15, error: 3, retry: 2 },
-  { date: '2026-02-02', total: 25, success: 20, error: 2, retry: 3 },
+const mockData: DailyCostTrend[] = [
+  { date: '2026-02-01', cost: 45.2 },
+  { date: '2026-02-02', cost: 52.8 },
 ];
 
-describe('RunsTrendChart', () => {
+describe('CostTrendChart', () => {
   it('renders without crashing', () => {
-    render(<RunsTrendChart data={mockData} />);
+    render(<CostTrendChart data={mockData} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
   it('renders an AreaChart', () => {
-    render(<RunsTrendChart data={mockData} />);
+    render(<CostTrendChart data={mockData} />);
     expect(screen.getByTestId('area-chart')).toBeInTheDocument();
   });
 
-  it('renders three Area elements for success, retry, and error', () => {
-    render(<RunsTrendChart data={mockData} />);
+  it('renders one Area element for cost', () => {
+    render(<CostTrendChart data={mockData} />);
     const areas = screen.getAllByTestId('area');
-    expect(areas).toHaveLength(3);
+    expect(areas).toHaveLength(1);
   });
 
   it('renders with empty data', () => {
-    render(<RunsTrendChart data={[]} />);
+    render(<CostTrendChart data={[]} />);
     expect(screen.getByTestId('responsive-container')).toBeInTheDocument();
   });
 
   it('renders axes and grid', () => {
-    render(<RunsTrendChart data={mockData} />);
+    render(<CostTrendChart data={mockData} />);
     expect(screen.getByTestId('x-axis')).toBeInTheDocument();
     expect(screen.getByTestId('y-axis')).toBeInTheDocument();
     expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
