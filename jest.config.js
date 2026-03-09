@@ -10,11 +10,11 @@ const config = {
     '^.+\\.tsx?$': ['ts-jest', { tsconfig: 'tsconfig.jest.json' }],
   },
   testMatch: [
-    '<rootDir>/tests/**/*.test.ts',
-    '<rootDir>/tests/**/*.test.tsx',
+    '<rootDir>/__tests__/**/*.test.ts',
+    '<rootDir>/__tests__/**/*.test.tsx',
     '<rootDir>/app/api/__tests__/**/*.test.ts',
   ],
-  setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
+  setupFilesAfterEnv: ['<rootDir>/__tests__/setup.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json'],
   coverageThreshold: {
     global: {
