@@ -601,6 +601,18 @@ Important docs include:
 
 When changing behavior, update docs if needed.
 
+### Mandatory doc updates after significant changes
+
+After any significant change (adding/removing tests, new features, architectural changes, coverage improvements), you **must** update all affected docs before considering the work complete. Specifically:
+
+- `README.md` — test counts, suite counts, badge numbers, available scripts table, project structure
+- `docs/testing-spec.md` — coverage summary table, test organization tree, mocking strategies
+- `docs/technical-spec.md` — architecture tree with suite/test counts
+- `docs/roadmap.md` — status line counts, completed/planned items
+- `docs/ai-workflow.md` — add a new phase entry describing human-led decisions and AI-assisted work
+
+Do not leave stale numbers in documentation. If a doc references test counts, suite counts, or coverage percentages, verify they match the current state.
+
 The repo should help interviewers understand:
 
 - what was built
