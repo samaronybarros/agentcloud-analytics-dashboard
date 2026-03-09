@@ -160,4 +160,62 @@ describe('computeTopUsers', () => {
     expect(result[0].userId).toBe('user-01');
     expect(result[0].team).toBe('Platform'); // user's own team, not agent's
   });
+
+  it('falls back to userId and Unknown team when user is not in the user list', () => {
+    const unknownUserRuns: Run[] = [
+      {
+        id: 'uu-1', agentId: 'agent-01', userId: 'unknown-user-99', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 300,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 0.5, errorType: null,
+      },
+    ];
+    const result = computeTopUsers(unknownUserRuns, users);
+    expect(result).toHaveLength(1);
+    expect(result[0].userName).toBe('unknown-user-99');
+    expect(result[0].team).toBe('Unknown');
+  });
+});
+
+describe('computeTeamUsage — orphaned runs', () => {
+  it('skips runs whose agentId is not in the agents list', () => {
+    const orphanedRuns: Run[] = [
+      {
+        id: 'orphan-1', agentId: 'nonexistent-agent', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 500,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 1.0, errorType: null,
+      },
+      {
+        id: 'valid-1', agentId: 'agent-01', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 500,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 2.0, errorType: null,
+      },
+    ];
+    const result = computeTeamUsage(orphanedRuns, agents, users);
+    // Only the valid run's team should appear
+    expect(result).toHaveLength(1);
+    expect(result[0].totalRuns).toBe(1);
+    expect(result[0].totalCost).toBeCloseTo(2.0, 2);
+  });
+});
+
+describe('computeCostByModel — orphaned runs', () => {
+  it('skips runs whose agentId is not in the agents list', () => {
+    const orphanedRuns: Run[] = [
+      {
+        id: 'orphan-1', agentId: 'nonexistent-agent', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 500,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 1.0, errorType: null,
+      },
+      {
+        id: 'valid-1', agentId: 'agent-01', userId: 'user-01', status: 'success',
+        startedAt: '2026-03-01T10:00:00Z', durationMs: 500,
+        tokensInput: 100, tokensOutput: 50, estimatedCost: 2.0, errorType: null,
+      },
+    ];
+    const result = computeCostByModel(orphanedRuns, agents);
+    // Only the valid run's model should appear
+    expect(result).toHaveLength(1);
+    expect(result[0].totalCost).toBeCloseTo(2.0, 2);
+    expect(result[0].percentage).toBeCloseTo(1.0, 4);
+  });
 });

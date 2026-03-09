@@ -252,4 +252,139 @@ describe('generateInsights', () => {
     );
     expect(flagged.length).toBeGreaterThanOrEqual(1);
   });
+
+  it('falls back to agentId in title when agent is not in the agents list', () => {
+    const unknownAgentRuns: Run[] = [
+      // unknown-agent: expensive + all failures (triggers top-cost-driver + high-cost-low-success)
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `unknown-01-${j}`,
+        agentId: 'unknown-agent-99',
+        userId: 'user-01',
+        status: 'error' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 8000,
+        tokensInput: 1000,
+        tokensOutput: 1000,
+        estimatedCost: 10.0,
+        errorType: 'timeout' as const,
+      })),
+      // agent-01: cheap + all success
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `unknown-02-${j}`,
+        agentId: 'agent-01',
+        userId: 'user-02',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 200,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 0.1,
+        errorType: null,
+      })),
+      // agent-02: cheap + all success
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `unknown-03-${j}`,
+        agentId: 'agent-02',
+        userId: 'user-03',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 300,
+        tokensInput: 60,
+        tokensOutput: 60,
+        estimatedCost: 0.2,
+        errorType: null,
+      })),
+    ];
+    const result = generateInsights(unknownAgentRuns, agents);
+
+    // top-cost-driver should fall back to agentId in title
+    const costDriver = result.find((insight) => insight.type === 'top-cost-driver');
+    expect(costDriver).toBeDefined();
+    expect(costDriver!.title).toContain('unknown-agent-99');
+
+    // high-cost-low-success should also fall back to agentId
+    const highCostLowSuccess = result.find(
+      (insight) => insight.type === 'high-cost-low-success' && insight.agentId === 'unknown-agent-99',
+    );
+    expect(highCostLowSuccess).toBeDefined();
+    expect(highCostLowSuccess!.title).toContain('unknown-agent-99');
+
+  });
+
+  it('falls back to agentId for degraded-latency when agent is not in agents list', () => {
+    // Need 4+ agents so that p75 threshold excludes the slowest one
+    const degradedRuns: Run[] = [
+      // unknown-agent: very slow (triggers degraded-latency)
+      ...Array.from({ length: 10 }, (_, j) => ({
+        id: `deg-unknown-${j}`,
+        agentId: 'unknown-agent-slow',
+        userId: 'user-01',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 10000,
+        tokensInput: 100,
+        tokensOutput: 100,
+        estimatedCost: 1.0,
+        errorType: null,
+      })),
+      // 3 fast agents to push p75 below the unknown agent
+      ...['agent-01', 'agent-02', 'agent-03'].flatMap((agentId) =>
+        Array.from({ length: 10 }, (_, j) => ({
+          id: `deg-${agentId}-${j}`,
+          agentId,
+          userId: 'user-02',
+          status: 'success' as const,
+          startedAt: '2026-03-01T10:00:00Z',
+          durationMs: 200,
+          tokensInput: 50,
+          tokensOutput: 50,
+          estimatedCost: 1.0,
+          errorType: null,
+        })),
+      ),
+    ];
+    const result = generateInsights(degradedRuns, agents);
+    const degraded = result.find(
+      (insight) => insight.type === 'degraded-latency' && insight.agentId === 'unknown-agent-slow',
+    );
+    expect(degraded).toBeDefined();
+    expect(degraded!.title).toContain('unknown-agent-slow');
+  });
+
+  it('falls back to agentId for rising-failures when agent is not in agents list', () => {
+    const unknownFailingRuns: Run[] = [
+      // unknown-agent: low cost + all failures (triggers rising-failures, not high-cost-low-success)
+      ...Array.from({ length: 10 }, (_, j) => ({
+        id: `rf-unknown-${j}`,
+        agentId: 'unknown-agent-42',
+        userId: 'user-01',
+        status: 'error' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 500,
+        tokensInput: 50,
+        tokensOutput: 50,
+        estimatedCost: 0.1,
+        errorType: 'timeout' as const,
+      })),
+      // agent-01: expensive + all success (keeps median cost high so unknown stays below)
+      ...Array.from({ length: 20 }, (_, j) => ({
+        id: `rf-known-${j}`,
+        agentId: 'agent-01',
+        userId: 'user-02',
+        status: 'success' as const,
+        startedAt: '2026-03-01T10:00:00Z',
+        durationMs: 300,
+        tokensInput: 100,
+        tokensOutput: 100,
+        estimatedCost: 5.0,
+        errorType: null,
+      })),
+    ];
+    const result = generateInsights(unknownFailingRuns, agents);
+    const risingFailure = result.find(
+      (insight) => insight.type === 'rising-failures' && insight.agentId === 'unknown-agent-42',
+    );
+    expect(risingFailure).toBeDefined();
+    expect(risingFailure!.title).toContain('unknown-agent-42');
+  });
 });
