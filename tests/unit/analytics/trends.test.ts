@@ -2,7 +2,7 @@ import {
   computeRunsTrend,
   computeLatencyTrend,
   computeCostTrend,
-} from '@/lib/analytics/trends';
+} from '@/app/api/analytics/trends/trends.service';
 import { runs } from '@/lib/mock-data/runs';
 import type { Run } from '@/lib/types';
 

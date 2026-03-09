@@ -1,4 +1,13 @@
-import type { Agent, Insight, Run } from '@/lib/types';
+import { insightsRepository } from './insights.repository';
+import type { Agent, Insight, InsightsResponse, Run } from '@/lib/types';
+
+export function getInsights(from?: string, to?: string): InsightsResponse {
+  const runs = insightsRepository.getFilteredRuns(from, to);
+  const agents = insightsRepository.getAgents();
+  return {
+    insights: generateInsights(runs, agents),
+  };
+}
 
 export function generateInsights(
   runs: readonly Run[],

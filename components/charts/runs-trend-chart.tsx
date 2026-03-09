@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import type { DailyRunsTrend } from '@/lib/analytics/trends';
+import type { DailyRunsTrend } from '@/lib/types';
 
 export function RunsTrendChart({ data }: { data: DailyRunsTrend[] }) {
   return (

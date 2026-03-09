@@ -2,7 +2,7 @@ import {
   computeTeamUsage,
   computeCostByModel,
   computeTopUsers,
-} from '@/lib/analytics/teams';
+} from '@/app/api/analytics/teams/teams.service';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
 import { users } from '@/lib/mock-data/users';

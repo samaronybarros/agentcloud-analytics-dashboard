@@ -1,4 +1,4 @@
-import { computeOverviewKPIs } from '@/lib/analytics/overview';
+import { computeOverviewKPIs } from '@/app/api/analytics/overview/overview.service';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
 import { users } from '@/lib/mock-data/users';

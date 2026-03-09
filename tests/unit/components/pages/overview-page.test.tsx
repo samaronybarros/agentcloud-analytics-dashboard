@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import type { OverviewKPIs } from '@/lib/types';
-import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
+import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/types';
 
 const mockKPIs: OverviewKPIs = {
   totalRuns: 500,

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import type { DailyCostTrend } from '@/lib/analytics/trends';
+import type { DailyCostTrend } from '@/lib/types';
 
 jest.mock('recharts', () => {
   const React = require('react');

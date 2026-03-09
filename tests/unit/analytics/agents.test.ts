@@ -1,4 +1,4 @@
-import { computeAgentLeaderboard, computeFailureTaxonomy } from '@/lib/analytics/agents';
+import { computeAgentLeaderboard, computeFailureTaxonomy } from '@/app/api/analytics/agents/agents.service';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
 import type { Run } from '@/lib/types';

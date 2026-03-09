@@ -9,7 +9,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import type { DailyLatencyTrend } from '@/lib/analytics/trends';
+import type { DailyLatencyTrend } from '@/lib/types';
 
 export function LatencyTrendChart({ data }: { data: DailyLatencyTrend[] }) {
   return (

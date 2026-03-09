@@ -131,12 +131,31 @@ export interface Insight {
 }
 
 // ---------------------------------------------------------------------------
-// API response types — shared contract between routes and hooks
+// Trend types — daily aggregation shapes used by charts and API responses
 // ---------------------------------------------------------------------------
 
-import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/analytics/trends';
+export interface DailyRunsTrend {
+  date: string; // YYYY-MM-DD
+  total: number;
+  success: number;
+  error: number;
+  retry: number;
+}
 
-export type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend };
+export interface DailyLatencyTrend {
+  date: string;
+  p50: number;
+  p95: number;
+}
+
+export interface DailyCostTrend {
+  date: string;
+  cost: number;
+}
+
+// ---------------------------------------------------------------------------
+// API response types — shared contract between routes and hooks
+// ---------------------------------------------------------------------------
 
 export type OverviewResponse = OverviewKPIs;
 

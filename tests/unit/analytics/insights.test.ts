@@ -1,4 +1,4 @@
-import { generateInsights } from '@/lib/analytics/insights';
+import { generateInsights } from '@/app/api/analytics/insights/insights.service';
 import { agents } from '@/lib/mock-data/agents';
 import { runs } from '@/lib/mock-data/runs';
 import type { Run } from '@/lib/types';
