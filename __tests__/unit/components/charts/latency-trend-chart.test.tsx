@@ -2,11 +2,15 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import type { DailyLatencyTrend } from '@/lib/types';
 
+const capturedProps: Record<string, Record<string, unknown>> = {};
+
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>
-    ({ children }: { children?: React.ReactNode }) =>
-      React.createElement('div', { 'data-testid': name }, children);
+    ({ children, ...props }: { children?: React.ReactNode }) => {
+      capturedProps[name] = props;
+      return React.createElement('div', { 'data-testid': name }, children);
+    };
   return {
     ResponsiveContainer: mock('responsive-container'),
     LineChart: mock('line-chart'),
@@ -52,5 +56,20 @@ describe('LatencyTrendChart', () => {
     expect(screen.getByTestId('x-axis')).toBeInTheDocument();
     expect(screen.getByTestId('y-axis')).toBeInTheDocument();
     expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
+  });
+
+  it('XAxis tickFormatter strips the year prefix', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    const tickFormatter = capturedProps['x-axis'].tickFormatter as (date: string) => string;
+    expect(tickFormatter('2026-02-01')).toBe('02-01');
+    expect(tickFormatter('2026-12-25')).toBe('12-25');
+  });
+
+  it('Tooltip formatter appends ms with locale formatting', () => {
+    render(<LatencyTrendChart data={mockData} />);
+    const formatter = capturedProps['tooltip'].formatter as (value: number) => string;
+    expect(formatter(1200)).toBe('1,200ms');
+    expect(formatter(4500)).toBe('4,500ms');
+    expect(formatter(0)).toBe('0ms');
   });
 });
