@@ -34,10 +34,10 @@ app/
       teams/                # Team usage + cost by model + top users
       trends/               # Daily runs, latency, cost time series
       insights/             # Insight generation (thresholds, severity)
-    __tests__/              # Backend tests (11 suites)
-      unit/analytics/       # Service logic unit tests (5 suites, 64 tests)
-      unit/api/             # API utility tests (1 suite)
-      integration/api/      # Route response shape validation (5 suites, 32 tests)
+    __tests__/              # Backend tests (11 suites, 128 tests)
+      unit/analytics/       # Service logic unit tests (5 suites, 77 tests)
+      unit/api/             # API utility tests (1 suite, 11 tests)
+      integration/api/      # Route response shape validation (5 suites, 40 tests)
   dashboard/                # Page composition — thin, delegates to components
     page.tsx                # Overview
     agents/page.tsx         # Agent analytics
@@ -55,9 +55,9 @@ lib/                        # Shared frontend concerns — no business logic
   utils/                    # Formatting, date filtering, API handler
   types.ts                  # Shared domain and API response types
 
-__tests__/                  # Frontend tests (27 suites)
-  unit/                     # Components, pages, hooks, utils
-  e2e/                      # Full page rendering (planned)
+__tests__/                  # Frontend tests (33 suites, 267 tests)
+  unit/                     # Components, pages, hooks, utils (28 suites)
+  e2e/                      # Full page rendering with fetch-level mocking (5 suites, 33 tests)
 ```
 
 ## Data Flow
