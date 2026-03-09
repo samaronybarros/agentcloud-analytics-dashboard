@@ -2,11 +2,15 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import type { CostByModelEntry } from '@/lib/types';
 
+const capturedProps: Record<string, Record<string, unknown>> = {};
+
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>
-    ({ children }: { children?: React.ReactNode }) =>
-      React.createElement('div', { 'data-testid': name }, children);
+    ({ children, ...props }: { children?: React.ReactNode }) => {
+      capturedProps[name] = props;
+      return React.createElement('div', { 'data-testid': name }, children);
+    };
   return {
     ResponsiveContainer: mock('responsive-container'),
     PieChart: mock('pie-chart'),
@@ -60,5 +64,13 @@ describe('CostByModelChart', () => {
     render(<CostByModelChart data={[mockData[0]]} />);
     const cells = screen.getAllByTestId('cell');
     expect(cells).toHaveLength(1);
+  });
+
+  it('Tooltip formatter formats cost to two decimal places', () => {
+    render(<CostByModelChart data={mockData} />);
+    const formatter = capturedProps['tooltip'].formatter as (value: number) => string;
+    expect(formatter(200)).toBe('$200.00');
+    expect(formatter(0.5)).toBe('$0.50');
+    expect(formatter(130)).toBe('$130.00');
   });
 });

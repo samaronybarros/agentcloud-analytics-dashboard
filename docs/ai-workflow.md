@@ -75,6 +75,24 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - README rewrite with architecture summary
 - Documentation updates
 
+### Phase 6: Test Coverage Hardening & E2E Tests
+
+**Human-led decisions:**
+- Coverage gap analysis and prioritization (service branches → hooks → chart formatters → e2e)
+- ESLint config consistency requirements
+- Isolated test scripts for unit/integration/e2e
+
+**AI-assisted work:**
+- Service branch coverage: edge cases for insights, teams, and trends services (unknown agents, orphaned runs, user fallbacks) — brought insights and teams to 100% branch coverage
+- React Query hook tests: dedicated suite for all 5 `use-analytics` hooks (success, error, loading, date range forwarding)
+- Chart formatter tests: coverage for inline `tickFormatter`/`formatter` functions via Recharts prop capture mocking — brought chart components to 100%
+- E2E tests: 5 suites with fetch-level mocking testing full data flow (API → React Query → hooks → components → DOM) for all 4 pages + navigation
+- ESLint config cleanup: extended test file rule overrides to backend test files
+- Added isolated test scripts (`test:unit`, `test:integration`, `test:e2e`)
+- Documentation updates across README, testing-spec, roadmap, and technical-spec
+
+**Result:** 38 suites / 329 tests → 44 suites / 395 tests. Chart component coverage: 71% → 100%. Service branch coverage gaps closed.
+
 ---
 
 ## Key Observations

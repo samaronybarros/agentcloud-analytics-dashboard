@@ -3,7 +3,7 @@ import nextConfig from 'eslint-config-next';
 const config = [
   ...nextConfig,
   {
-    files: ['__tests__/**/*.ts', '__tests__/**/*.tsx'],
+    files: ['__tests__/**/*.ts', '__tests__/**/*.tsx', 'app/api/__tests__/**/*.ts'],
     rules: {
       'react/display-name': 'off',
     },

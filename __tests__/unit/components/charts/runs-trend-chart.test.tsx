@@ -2,11 +2,15 @@ import React from 'react';
 import { render, screen } from '@testing-library/react';
 import type { DailyRunsTrend } from '@/lib/types';
 
+const capturedProps: Record<string, Record<string, unknown>> = {};
+
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>
-    ({ children, ...props }: { children?: React.ReactNode }) =>
-      React.createElement('div', { 'data-testid': name }, children);
+    ({ children, ...props }: { children?: React.ReactNode }) => {
+      capturedProps[name] = props;
+      return React.createElement('div', { 'data-testid': name }, children);
+    };
   return {
     ResponsiveContainer: mock('responsive-container'),
     AreaChart: mock('area-chart'),
@@ -52,5 +56,12 @@ describe('RunsTrendChart', () => {
     expect(screen.getByTestId('x-axis')).toBeInTheDocument();
     expect(screen.getByTestId('y-axis')).toBeInTheDocument();
     expect(screen.getByTestId('cartesian-grid')).toBeInTheDocument();
+  });
+
+  it('XAxis tickFormatter strips the year prefix', () => {
+    render(<RunsTrendChart data={mockData} />);
+    const tickFormatter = capturedProps['x-axis'].tickFormatter as (date: string) => string;
+    expect(tickFormatter('2026-02-01')).toBe('02-01');
+    expect(tickFormatter('2026-12-25')).toBe('12-25');
   });
 });

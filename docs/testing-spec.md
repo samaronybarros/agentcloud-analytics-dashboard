@@ -20,7 +20,7 @@ Tests are split between backend and frontend, co-located with the code they test
 ```
 app/api/__tests__/
   unit/
-    analytics/              # Service logic (5 suites, 64 tests)
+    analytics/              # Service logic (5 suites, 77 tests)
       overview.test.ts
       agents.test.ts
       teams.test.ts
@@ -48,8 +48,9 @@ __tests__/
       date-filter.test.ts
       build-url.test.ts
       parse-date-params.test.ts
-    hooks/                    # React Query hooks (1 suite)
+    hooks/                    # React Query hooks (2 suites)
       use-date-range.test.tsx
+      use-analytics.test.tsx
     components/               # Component rendering with mocked data
       charts/                 # Chart components (5 suites)
       dashboard/              # KPI card, section, sidebar nav, etc. (8 suites)
@@ -57,20 +58,28 @@ __tests__/
       insights/               # Insight cards (1 suite)
       layout/                 # Dashboard layout (1 suite)
       pages/                  # Page-level rendering (4 suites)
-  e2e/                        # Full page rendering (planned)
+  e2e/                        # Full page rendering with fetch-level mocking (5 suites)
+    helpers.tsx
+    overview.e2e.test.tsx
+    agents.e2e.test.tsx
+    teams.e2e.test.tsx
+    optimization.e2e.test.tsx
+    navigation.e2e.test.tsx
 ```
 
 ## Coverage Summary
 
 | Category | Suites | Tests |
 |----------|--------|-------|
-| Analytics logic | 5 | 64 |
-| Components (charts, tables, insights, dashboard) | 12 | 76 |
+| Analytics logic | 5 | 77 |
+| Components (charts, tables, insights, dashboard) | 12 | 83 |
 | Pages | 4 | 26 |
 | Layout & nav | 2 | 25 |
-| Hooks & utilities | 8 | 48 |
+| Hooks & utilities | 9 | 66 |
 | API integration | 5 | 32 |
-| **Total** | **38** | **329** |
+| E2E (fetch-level) | 5 | 33 |
+| API utility | 1 | 11 |
+| **Total** | **44** | **395** |
 
 ## Priority Coverage
 
@@ -88,9 +97,10 @@ __tests__/
 - Component rendering with loading/error/empty states
 
 ### Lower Priority (implemented)
-- Chart component rendering (axes, data series, empty states)
+- Chart component rendering (axes, data series, empty states, formatter functions)
 - Active nav highlighting across routes
 - Table formatting (color-coded success rates, currency, percentages)
+- E2E page rendering with fetch-level mocking (all 4 pages + navigation)
 
 ## Test Conventions
 
@@ -129,10 +139,43 @@ jest.mock('next/navigation', () => ({
 }));
 ```
 
+### Recharts prop capture (chart formatter tests)
+Chart tests capture props passed to mocked Recharts components to exercise inline formatters:
+```tsx
+const capturedProps: Record<string, Record<string, unknown>> = {};
+jest.mock('recharts', () => {
+  const React = require('react');
+  const mock = (name: string) =>
+    ({ children, ...props }: { children?: React.ReactNode }) => {
+      capturedProps[name] = props;
+      return React.createElement('div', { 'data-testid': name }, children);
+    };
+  return { ... };
+});
+// Then in tests:
+const tickFormatter = capturedProps['x-axis'].tickFormatter as (d: string) => string;
+expect(tickFormatter('2026-02-01')).toBe('02-01');
+```
+
+### Fetch-level mocking (E2E tests)
+E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider`, testing the full data flow:
+```tsx
+const fetchMock = jest.fn();
+global.fetch = fetchMock;
+fetchMock.mockImplementation((url: string) => {
+  if (url.includes('/api/analytics/overview')) return Promise.resolve(jsonResponse(data));
+  ...
+});
+render(<OverviewPage />, { wrapper: createE2EWrapper() });
+```
+
 ## Running Tests
 
 ```bash
-npm test              # Run all tests once
-npm run test:watch    # Watch mode for TDD
-npm run test:coverage # Generate coverage report
+npm test                 # Run all tests once
+npm run test:unit        # Unit tests only (frontend + backend)
+npm run test:integration # API integration tests only
+npm run test:e2e         # E2E page tests only
+npm run test:watch       # Watch mode for TDD
+npm run test:coverage    # Generate coverage report
 ```

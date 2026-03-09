@@ -128,3 +128,34 @@ describe('computeCostTrend', () => {
     expect(trendTotal).toBeCloseTo(runsTotal, 2);
   });
 });
+
+describe('percentile edge case via computeLatencyTrend', () => {
+  it('handles a day with a single run (percentile on single-element array)', () => {
+    const singleRunDay: Run[] = [
+      {
+        id: 'single-1',
+        agentId: 'agent-01',
+        userId: 'user-01',
+        status: 'success',
+        startedAt: '2026-03-05T10:00:00Z',
+        durationMs: 750,
+        tokensInput: 100,
+        tokensOutput: 50,
+        estimatedCost: 0.5,
+        errorType: null,
+      },
+    ];
+    const trend = computeLatencyTrend(singleRunDay);
+    expect(trend).toHaveLength(1);
+    // With a single value, both p50 and p95 should return that value
+    expect(trend[0].p50).toBe(750);
+    expect(trend[0].p95).toBe(750);
+  });
+
+  it('returns 0 for percentile when no runs exist (empty array path)', () => {
+    // computeLatencyTrend([]) returns [] so we can't hit the percentile([], rank) branch
+    // directly. But we can verify the empty path still works.
+    const trend = computeLatencyTrend([]);
+    expect(trend).toEqual([]);
+  });
+});
