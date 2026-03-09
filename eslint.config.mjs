@@ -3,13 +3,13 @@ import nextConfig from 'eslint-config-next';
 const config = [
   ...nextConfig,
   {
-    files: ['tests/**/*.ts', 'tests/**/*.tsx'],
+    files: ['__tests__/**/*.ts', '__tests__/**/*.tsx'],
     rules: {
       'react/display-name': 'off',
     },
   },
   {
-    ignores: ['.next/', 'node_modules/', 'jest.config.js'],
+    ignores: ['.next/', 'node_modules/', 'jest.config.js', 'coverage/'],
   },
 ];
 
