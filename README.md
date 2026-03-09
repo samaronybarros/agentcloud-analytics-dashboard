@@ -62,12 +62,14 @@ All pages support date range filtering (7d / 14d / 30d / all) and include loadin
 ## Architecture
 
 ```
-Mock Data (lib/mock-data)
-  → Analytics Logic (lib/analytics)
-    → API Routes (app/api/analytics)
-      → React Query Hooks (lib/hooks)
-        → Components (components/)
-          → Pages (app/dashboard/)
+Mock Data (app/api/_mock-data)
+  → Repositories (app/api/analytics/*/repository)
+    → Services (app/api/analytics/*/service)
+      → Controllers (app/api/analytics/*/controller)
+        → API Routes (app/api/analytics/*/route)
+          → React Query Hooks (lib/hooks)
+            → Components (components/)
+              → Pages (app/dashboard/)
 ```
 
 ### Stack
@@ -85,31 +87,43 @@ Mock Data (lib/mock-data)
 
 ```
 app/
-  api/analytics/        # 5 API routes (overview, agents, teams, insights, trends)
-  dashboard/            # 4 pages + layout with active nav highlighting
+  api/
+    _mock-data/           # Deterministic entities (agents, runs, users, seeded PRNG)
+    analytics/
+      overview/           # repository → service → controller → route (same for each context)
+      agents/
+      teams/
+      trends/
+      insights/
+    __tests__/            # Backend tests (11 suites — analytics unit + API integration)
+      unit/analytics/
+      unit/api/
+      integration/api/
+  dashboard/              # 4 pages + layout with active nav highlighting
 components/
-  charts/               # 5 chart components (Recharts wrappers)
-  dashboard/            # KPI card, section header, sidebar nav, date picker
-  tables/               # 3 table components
-  insights/             # Severity-styled insight cards
+  charts/                 # 5 chart components (Recharts wrappers)
+  dashboard/              # KPI card, section header, sidebar nav, date picker
+  tables/                 # 3 table components
+  insights/               # Severity-styled insight cards
 lib/
-  analytics/            # Pure metric logic (overview, agents, teams, insights, trends)
-  mock-data/            # Deterministic entities (agents, runs, users, seeded PRNG)
-  hooks/                # React Query hooks
-  utils/                # Formatting, date filtering, API handler
-tests/
-  unit/                 # 33 suites — analytics, components, pages, hooks, utils
-  integration/          # 5 suites — API route response shape validation
-docs/                   # Product specs, decisions, workflow docs
+  hooks/                  # React Query hooks
+  utils/                  # Formatting, date filtering, API handler
+  types.ts                # Shared domain and API response types
+__tests__/                # Frontend tests (27 suites — components, pages, hooks, utils)
+  unit/
+  e2e/
+docs/                     # Product specs, decisions, workflow docs
 ```
 
 ### Key Design Decisions
 
-1. **Business logic in `lib/analytics/`** — never in components or pages. Charts render prepared data.
-2. **API routes are thin** — call analytics functions, shape responses. No business logic.
-3. **Deterministic mock data** — seeded PRNG (seed=42), same output every run. 10 agents, 8 users, 500 runs across 30 days.
-4. **TDD workflow** — tests written before implementation for all analytics logic and components.
-5. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
+1. **DDD-inspired backend** — each API context (overview, agents, teams, trends, insights) is a self-contained vertical slice with its own repository, service, and controller. No cross-context dependencies.
+2. **Business logic in services** — never in components, pages, or route files. Charts render prepared data.
+3. **Repository pattern** — data access is isolated behind repositories, making it straightforward to swap mock data for a real database.
+4. **API routes are thin** — delegate to controllers, which orchestrate services. No business logic in route files.
+5. **Deterministic mock data** — seeded PRNG (seed=42), same output every run. 10 agents, 8 users, 500 runs across 30 days.
+6. **TDD workflow** — tests written before implementation for all analytics logic and components.
+7. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
 
 See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (23 documented decisions).
 

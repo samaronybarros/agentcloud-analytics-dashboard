@@ -8,8 +8,8 @@ Current status: **Core dashboard feature-complete** (38 test suites, 329 tests p
 
 - [x] Project foundation (Next.js 15, TypeScript strict, Tailwind v4, Recharts, React Query)
 - [x] Deterministic mock data (10 agents, 8 users, 500 runs, seeded PRNG)
-- [x] Analytics logic layer (`lib/analytics/` — overview, agents, teams, trends, insights)
-- [x] 5 thin API routes (`app/api/analytics/`)
+- [x] Analytics logic layer (overview, agents, teams, trends, insights)
+- [x] 5 API contexts with repository → service → controller → route layers
 - [x] Overview page — 8 KPI cards + 3 trend charts
 - [x] Agents page — leaderboard table + failure taxonomy chart
 - [x] Teams page — team usage table, cost by model chart, top users table
@@ -23,9 +23,7 @@ Current status: **Core dashboard feature-complete** (38 test suites, 329 tests p
 
 ---
 
-## In Progress
-
-- [ ] Backend refactor (`refactor/backend` branch) — restructure backend with Domain-Driven Design to decouple business logic from data sources, making it straightforward to swap mock data for a real database
+- [x] Backend refactor — DDD-inspired architecture with per-context repository/service/controller layers, mock data co-located at `app/api/_mock-data/`, backend tests at `app/api/__tests__/`
 
 ---
 
@@ -44,7 +42,7 @@ Current status: **Core dashboard feature-complete** (38 test suites, 329 tests p
 - [ ] Review filters — add team-based filtering across pages (agents, trends, overview)
 - [ ] Review graphics and dashboard — add additional views to improve decision-making (e.g., cost vs reliability scatter, usage heatmap, team comparison board)
 - [ ] Add troubleshooting page/section — help users diagnose agent failures, surface error patterns and remediation steps
-- [ ] E2E tests (currently empty `tests/e2e/` directory)
+- [ ] E2E tests (currently empty `__tests__/e2e/` directory)
 - [ ] Increase chart component test coverage (currently ~50-75% line coverage)
 - [ ] Accessibility audit — keyboard navigation, ARIA labels, color contrast
 - [ ] Responsive layout — mobile/tablet breakpoints for sidebar + grid
