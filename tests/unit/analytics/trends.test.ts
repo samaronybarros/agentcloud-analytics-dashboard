@@ -3,7 +3,7 @@ import {
   computeLatencyTrend,
   computeCostTrend,
 } from '@/app/api/analytics/trends/trends.service';
-import { runs } from '@/lib/mock-data/runs';
+import { runs } from '@/app/api/_mock-data/runs';
 import type { Run } from '@/lib/types';
 
 const twoDateRuns: Run[] = [

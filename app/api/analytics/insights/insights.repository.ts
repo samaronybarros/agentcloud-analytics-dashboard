@@ -1,4 +1,4 @@
-import { agents, runs } from '@/lib/mock-data';
+import { agents, runs } from '@/app/api/_mock-data';
 import { filterRunsByDateRange } from '@/lib/utils/date-filter';
 import type { Agent, Run } from '@/lib/types';
 

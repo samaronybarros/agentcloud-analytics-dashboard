@@ -3,9 +3,9 @@ import {
   computeCostByModel,
   computeTopUsers,
 } from '@/app/api/analytics/teams/teams.service';
-import { agents } from '@/lib/mock-data/agents';
-import { runs } from '@/lib/mock-data/runs';
-import { users } from '@/lib/mock-data/users';
+import { agents } from '@/app/api/_mock-data/agents';
+import { runs } from '@/app/api/_mock-data/runs';
+import { users } from '@/app/api/_mock-data/users';
 import type { Run } from '@/lib/types';
 
 describe('computeTeamUsage', () => {
