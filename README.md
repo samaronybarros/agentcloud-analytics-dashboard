@@ -53,6 +53,9 @@ All pages support date range filtering (7d / 14d / 30d / all) and include loadin
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
 | `npm test`              | Run all tests (44 suites, 395 tests)       |
+| `npm run test:unit`     | Run unit tests only (34 suites)            |
+| `npm run test:integration` | Run API integration tests only (5 suites) |
+| `npm run test:e2e`      | Run E2E page tests only (5 suites)         |
 | `npm run test:watch`    | Run tests in watch mode (TDD)              |
 | `npm run test:coverage` | Generate coverage report                   |
 | `npm run lint`          | Run ESLint                                 |

@@ -172,7 +172,10 @@ render(<OverviewPage />, { wrapper: createE2EWrapper() });
 ## Running Tests
 
 ```bash
-npm test              # Run all tests once
-npm run test:watch    # Watch mode for TDD
-npm run test:coverage # Generate coverage report
+npm test                 # Run all tests once
+npm run test:unit        # Unit tests only (frontend + backend)
+npm run test:integration # API integration tests only
+npm run test:e2e         # E2E page tests only
+npm run test:watch       # Watch mode for TDD
+npm run test:coverage    # Generate coverage report
 ```
