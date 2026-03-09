@@ -1,6 +1,6 @@
 # Roadmap
 
-Current status: **Core dashboard feature-complete** (38 test suites, 329 tests passing, production build green).
+Current status: **Core dashboard feature-complete** (44 test suites, 395 tests passing, production build green).
 
 ---
 
@@ -24,6 +24,11 @@ Current status: **Core dashboard feature-complete** (38 test suites, 329 tests p
 ---
 
 - [x] Backend refactor — DDD-inspired architecture with per-context repository/service/controller layers, mock data co-located at `app/api/_mock-data/`, backend tests at `app/api/__tests__/`
+- [x] Service branch coverage — edge cases for insights, teams, and trends services (unknown agents, orphaned runs, user fallbacks)
+- [x] React Query hook tests — dedicated test suite for all 5 `use-analytics` hooks (success, error, loading, date range forwarding)
+- [x] Chart formatter tests — coverage for inline `tickFormatter`/`formatter` functions via prop capture mocks
+- [x] E2E tests — 5 suites covering all 4 pages + navigation with fetch-level mocking (full data flow)
+- [x] ESLint config cleanup — extended test file rule overrides to cover backend test files
 
 ---
 
@@ -42,8 +47,8 @@ Current status: **Core dashboard feature-complete** (38 test suites, 329 tests p
 - [ ] Review filters — add team-based filtering across pages (agents, trends, overview)
 - [ ] Review graphics and dashboard — add additional views to improve decision-making (e.g., cost vs reliability scatter, usage heatmap, team comparison board)
 - [ ] Add troubleshooting page/section — help users diagnose agent failures, surface error patterns and remediation steps
-- [ ] E2E tests (currently empty `__tests__/e2e/` directory)
-- [ ] Increase chart component test coverage (currently ~50-75% line coverage)
+- [x] ~~E2E tests~~ (5 suites, 33 tests — fetch-level mocking for all pages + navigation)
+- [x] ~~Increase chart component test coverage~~ (now 100% statements/functions/branches)
 - [ ] Accessibility audit — keyboard navigation, ARIA labels, color contrast
 - [ ] Responsive layout — mobile/tablet breakpoints for sidebar + grid
 - [ ] Runs trend chart on Overview page (component exists but not wired to Overview)

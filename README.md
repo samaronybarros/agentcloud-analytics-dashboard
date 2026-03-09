@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-329%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-395%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -52,7 +52,7 @@ All pages support date range filtering (7d / 14d / 30d / all) and include loadin
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (38 suites, 329 tests)       |
+| `npm test`              | Run all tests (44 suites, 395 tests)       |
 | `npm run test:watch`    | Run tests in watch mode (TDD)              |
 | `npm run test:coverage` | Generate coverage report                   |
 | `npm run lint`          | Run ESLint                                 |
@@ -95,7 +95,7 @@ app/
       teams/
       trends/
       insights/
-    __tests__/            # Backend tests (11 suites — analytics unit + API integration)
+    __tests__/            # Backend tests (11 suites — analytics unit + API integration + API utility)
       unit/analytics/
       unit/api/
       integration/api/
@@ -109,9 +109,9 @@ lib/
   hooks/                  # React Query hooks
   utils/                  # Formatting, date filtering, API handler
   types.ts                # Shared domain and API response types
-__tests__/                # Frontend tests (27 suites — components, pages, hooks, utils)
+__tests__/                # Frontend tests (33 suites — components, pages, hooks, utils, e2e)
   unit/
-  e2e/
+  e2e/                    # 5 suites — fetch-level page integration tests
 docs/                     # Product specs, decisions, workflow docs
 ```
 
@@ -133,15 +133,17 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 
 | Category                                         | Suites | Tests   |
 | ------------------------------------------------ | ------ | ------- |
-| Analytics logic                                  | 5      | 64      |
-| Components (charts, tables, insights, dashboard) | 12     | 76      |
+| Analytics logic                                  | 5      | 77      |
+| Components (charts, tables, insights, dashboard) | 12     | 83      |
 | Pages                                            | 4      | 26      |
 | Layout & nav                                     | 2      | 25      |
-| Hooks & utilities                                | 8      | 48      |
+| Hooks & utilities                                | 9      | 66      |
 | API integration                                  | 5      | 32      |
-| **Total**                                        | **38** | **329** |
+| E2E (fetch-level)                                | 5      | 33      |
+| API utility                                      | 1      | 11      |
+| **Total**                                        | **44** | **395** |
 
-Tests are deterministic, fast (~2s), and isolated. No network, no database.
+Tests are deterministic, fast (~3s), and isolated. No network, no database.
 
 ```bash
 npm test               # run once
