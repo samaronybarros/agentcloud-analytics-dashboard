@@ -17,8 +17,10 @@ jest.mock('recharts', () => {
     ResponsiveContainer: mock('responsive-container'),
     AreaChart: mock('area-chart'),
     LineChart: mock('line-chart'),
+    BarChart: mock('bar-chart'),
     Area: mock('area'),
     Line: mock('line'),
+    Bar: mock('bar'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
     CartesianGrid: mock('cartesian-grid'),
@@ -52,6 +54,10 @@ const trendsData: TrendsResponse = {
     { date: '2026-03-01', cost: 100 },
     { date: '2026-03-02', cost: 120 },
   ],
+  runsByDayOfWeek: [
+    { day: 'Mon', runs: 25 }, { day: 'Tue', runs: 20 }, { day: 'Wed', runs: 0 },
+    { day: 'Thu', runs: 0 }, { day: 'Fri', runs: 0 }, { day: 'Sat', runs: 0 }, { day: 'Sun', runs: 0 },
+  ],
 };
 
 const fetchMock = setupFetchMock();
@@ -80,7 +86,7 @@ describe('Overview page (e2e)', () => {
     expect(screen.getByText('Active Agents')).toBeInTheDocument();
   });
 
-  it('renders all three trend chart sections', async () => {
+  it('renders all four trend chart sections', async () => {
     mockSuccessfulFetches();
     render(<OverviewPage />, { wrapper: createE2EWrapper() });
 
@@ -88,6 +94,7 @@ describe('Overview page (e2e)', () => {
       expect(screen.getByRole('heading', { name: 'Runs Over Time' })).toBeInTheDocument();
     });
 
+    expect(screen.getByRole('heading', { name: 'Runs by Day of Week' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Latency Trend (p50 / p95)' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cost Trend' })).toBeInTheDocument();
   });
@@ -97,7 +104,7 @@ describe('Overview page (e2e)', () => {
     render(<OverviewPage />, { wrapper: createE2EWrapper() });
 
     expect(screen.getAllByTestId('kpi-skeleton').length).toBe(8);
-    expect(screen.getAllByTestId('chart-skeleton').length).toBe(3);
+    expect(screen.getAllByTestId('chart-skeleton').length).toBe(4);
   });
 
   it('shows error state when the API fails', async () => {
@@ -114,7 +121,7 @@ describe('Overview page (e2e)', () => {
       totalRuns: 0, activeUsers: 0, activeAgents: 0, successRate: 0,
       avgLatencyMs: 0, p95LatencyMs: 0, totalTokens: 0, estimatedCost: 0,
     };
-    const emptyTrends: TrendsResponse = { runsTrend: [], latencyTrend: [], costTrend: [] };
+    const emptyTrends: TrendsResponse = { runsTrend: [], latencyTrend: [], costTrend: [], runsByDayOfWeek: [] };
     fetchMock.mockImplementation((url: string) => {
       if (url.includes('/api/analytics/overview')) return Promise.resolve(jsonResponse(emptyOverview));
       if (url.includes('/api/analytics/trends')) return Promise.resolve(jsonResponse(emptyTrends));

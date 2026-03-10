@@ -6,6 +6,7 @@ import { Section } from '@/components/dashboard/section';
 import { TeamUsageTable } from '@/components/tables/team-usage-table';
 import { TopUsersTable } from '@/components/tables/top-users-table';
 import { CostByModelChart } from '@/components/charts/cost-by-model-chart';
+import { TeamComparisonChart } from '@/components/charts/team-comparison-chart';
 import { TableSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
@@ -15,6 +16,7 @@ function TeamsSkeleton() {
   return (
     <>
       <Section title="Usage by Team"><TableSkeleton rows={4} /></Section>
+      <Section title="Team Comparison"><ChartSkeleton /></Section>
       <Section title="Cost by Model"><ChartSkeleton /></Section>
       <Section title="Top Users"><TableSkeleton rows={4} /></Section>
     </>
@@ -35,6 +37,15 @@ function TeamsContent({
       <Section title="Usage by Team">
         <div className="rounded-lg border border-gray-200 bg-white">
           <TeamUsageTable data={teamUsage} />
+        </div>
+      </Section>
+
+      <Section title="Team Comparison">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="mb-2 text-xs text-gray-500">
+            Side-by-side comparison of success rate, run volume, and cost across teams.
+          </p>
+          <TeamComparisonChart data={teamUsage} />
         </div>
       </Section>
 

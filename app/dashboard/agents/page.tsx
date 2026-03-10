@@ -5,6 +5,7 @@ import { useDateRange } from '@/lib/hooks/use-date-range';
 import { Section } from '@/components/dashboard/section';
 import { AgentLeaderboard } from '@/components/tables/agent-leaderboard';
 import { FailureTaxonomyChart } from '@/components/charts/failure-taxonomy-chart';
+import { CostReliabilityScatter } from '@/components/charts/cost-reliability-scatter';
 import { TableSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
@@ -14,6 +15,7 @@ function AgentsSkeleton() {
   return (
     <>
       <Section title="Agent Leaderboard"><TableSkeleton rows={5} /></Section>
+      <Section title="Cost vs Reliability"><ChartSkeleton /></Section>
       <Section title="Failure Taxonomy"><ChartSkeleton /></Section>
     </>
   );
@@ -31,6 +33,15 @@ function AgentsContent({
       <Section title="Agent Leaderboard">
         <div className="rounded-lg border border-gray-200 bg-white">
           <AgentLeaderboard data={leaderboard} />
+        </div>
+      </Section>
+
+      <Section title="Cost vs Reliability">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="mb-2 text-xs text-gray-500">
+            Bubble size = run volume. Red dashed line = 70% success threshold.
+          </p>
+          <CostReliabilityScatter data={leaderboard} />
         </div>
       </Section>
 

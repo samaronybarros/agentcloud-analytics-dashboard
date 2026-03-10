@@ -32,7 +32,14 @@ export function computeTeamUsage(
 
   const teamData = new Map<
     string,
-    { runs: number; agents: Set<string>; users: Set<string>; cost: number }
+    {
+      runs: number;
+      successCount: number;
+      totalDuration: number;
+      agents: Set<string>;
+      users: Set<string>;
+      cost: number;
+    }
   >();
 
   for (const run of runs) {
@@ -42,11 +49,13 @@ export function computeTeamUsage(
     const team = agent.team;
     let data = teamData.get(team);
     if (!data) {
-      data = { runs: 0, agents: new Set(), users: new Set(), cost: 0 };
+      data = { runs: 0, successCount: 0, totalDuration: 0, agents: new Set(), users: new Set(), cost: 0 };
       teamData.set(team, data);
     }
 
     data.runs++;
+    if (run.status === 'success') data.successCount++;
+    data.totalDuration += run.durationMs;
     data.agents.add(run.agentId);
     data.users.add(run.userId);
     data.cost += run.estimatedCost;
@@ -60,6 +69,8 @@ export function computeTeamUsage(
       activeAgents: data.agents.size,
       activeUsers: data.users.size,
       totalCost: data.cost,
+      successRate: data.runs === 0 ? 0 : data.successCount / data.runs,
+      avgLatencyMs: data.runs === 0 ? 0 : data.totalDuration / data.runs,
     });
   }
 

@@ -4,8 +4,8 @@ import { TeamUsageTable } from '@/components/tables/team-usage-table';
 import type { TeamUsageEntry } from '@/lib/types';
 
 const mockData: TeamUsageEntry[] = [
-  { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 3, totalCost: 180.5 },
-  { team: 'Data', totalRuns: 150, activeAgents: 2, activeUsers: 2, totalCost: 220.0 },
+  { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 3, totalCost: 180.5, successRate: 0.85, avgLatencyMs: 2400 },
+  { team: 'Data', totalRuns: 150, activeAgents: 2, activeUsers: 2, totalCost: 220.0, successRate: 0.72, avgLatencyMs: 3600 },
 ];
 
 describe('TeamUsageTable', () => {
@@ -15,6 +15,8 @@ describe('TeamUsageTable', () => {
     expect(screen.getByText('Runs')).toBeInTheDocument();
     expect(screen.getByText('Active Agents')).toBeInTheDocument();
     expect(screen.getByText('Active Users')).toBeInTheDocument();
+    expect(screen.getByText('Success')).toBeInTheDocument();
+    expect(screen.getByText('Avg Latency')).toBeInTheDocument();
     expect(screen.getByText('Cost')).toBeInTheDocument();
   });
 
@@ -28,6 +30,18 @@ describe('TeamUsageTable', () => {
     render(<TeamUsageTable data={mockData} />);
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.getByText('3')).toBeInTheDocument();
+  });
+
+  it('displays success rate as percentage', () => {
+    render(<TeamUsageTable data={mockData} />);
+    expect(screen.getByText('85.0%')).toBeInTheDocument();
+    expect(screen.getByText('72.0%')).toBeInTheDocument();
+  });
+
+  it('displays average latency formatted', () => {
+    render(<TeamUsageTable data={mockData} />);
+    expect(screen.getByText('2,400ms')).toBeInTheDocument();
+    expect(screen.getByText('3,600ms')).toBeInTheDocument();
   });
 
   it('formats cost with dollar sign', () => {
@@ -51,7 +65,7 @@ describe('TeamUsageTable', () => {
 
   it('renders team with zero cost', () => {
     const zeroCost: TeamUsageEntry[] = [
-      { team: 'NewTeam', totalRuns: 5, activeAgents: 1, activeUsers: 1, totalCost: 0 },
+      { team: 'NewTeam', totalRuns: 5, activeAgents: 1, activeUsers: 1, totalCost: 0, successRate: 1, avgLatencyMs: 100 },
     ];
     render(<TeamUsageTable data={zeroCost} />);
     expect(screen.getByText('$0.00')).toBeInTheDocument();
@@ -60,7 +74,7 @@ describe('TeamUsageTable', () => {
 
   it('renders team with single agent and user', () => {
     const minimal: TeamUsageEntry[] = [
-      { team: 'Solo', totalRuns: 1, activeAgents: 1, activeUsers: 1, totalCost: 0.01 },
+      { team: 'Solo', totalRuns: 1, activeAgents: 1, activeUsers: 1, totalCost: 0.01, successRate: 1, avgLatencyMs: 50 },
     ];
     render(<TeamUsageTable data={minimal} />);
     expect(screen.getByText('Solo')).toBeInTheDocument();

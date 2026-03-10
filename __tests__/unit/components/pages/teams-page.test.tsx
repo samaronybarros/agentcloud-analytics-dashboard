@@ -14,6 +14,11 @@ jest.mock('recharts', () => {
     Cell: mock('cell'),
     Tooltip: mock('tooltip'),
     Legend: mock('legend'),
+    BarChart: mock('bar-chart'),
+    Bar: mock('bar'),
+    XAxis: mock('x-axis'),
+    YAxis: mock('y-axis'),
+    CartesianGrid: mock('cartesian-grid'),
   };
 });
 
@@ -32,7 +37,7 @@ const mockUseTeamAnalytics = useTeamAnalytics as jest.Mock;
 
 const mockData = {
   teamUsage: [
-    { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 3, totalCost: 180.5 },
+    { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 3, totalCost: 180.5, successRate: 0.85, avgLatencyMs: 2400 },
   ] as TeamUsageEntry[],
   costByModel: [
     { model: 'claude-sonnet-4-20250514' as const, totalCost: 200.0, percentage: 1.0 },
@@ -57,6 +62,11 @@ describe('TeamsPage', () => {
     expect(screen.getByRole('heading', { name: 'Usage by Team' })).toBeInTheDocument();
     // "Platform" appears in both team table and user table, so use getAllByText
     expect(screen.getAllByText('Platform').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('renders Team Comparison section', () => {
+    render(<TeamsPage />);
+    expect(screen.getByRole('heading', { name: 'Team Comparison' })).toBeInTheDocument();
   });
 
   it('renders Cost by Model section', () => {
@@ -85,7 +95,7 @@ describe('TeamsPage', () => {
     render(<TeamsPage />);
     expect(screen.getByRole('heading', { name: 'Teams' })).toBeInTheDocument();
     expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
+    expect(screen.getAllByTestId('chart-skeleton')).toHaveLength(2);
   });
 
   it('shows error state when query fails', () => {

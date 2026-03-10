@@ -34,15 +34,21 @@ app/
       teams/                # Team usage + cost by model + top users
       trends/               # Daily runs, latency, cost time series
       insights/             # Insight generation (thresholds, severity)
-    __tests__/              # Backend tests (11 suites, 128 tests)
-      unit/analytics/       # Service logic unit tests (5 suites, 77 tests)
-      unit/api/             # API utility tests (1 suite, 11 tests)
-      integration/api/      # Route response shape validation (5 suites, 40 tests)
+      models/               # Model performance comparison
+      alerts/               # Alert generation and threshold monitoring
+      troubleshooting/      # Error diagnosis and failure patterns
+    __tests__/              # Backend tests (17 suites, 177 tests)
+      unit/analytics/       # Service logic unit tests (8 suites, 111 tests)
+      unit/api/             # API utility tests (1 suite, 6 tests)
+      integration/api/      # Route response shape validation (8 suites, 60 tests)
   dashboard/                # Page composition — thin, delegates to components
     page.tsx                # Overview
     agents/page.tsx         # Agent analytics
     teams/page.tsx          # Team analytics
     optimization/page.tsx   # Insights & optimization
+    models/page.tsx         # Model performance
+    alerts/page.tsx         # Alerts & threshold breaches
+    troubleshooting/page.tsx # Error diagnosis
 
 components/                 # Reusable presentational UI
   charts/                   # Chart wrappers (Recharts)
@@ -55,9 +61,9 @@ lib/                        # Shared frontend concerns — no business logic
   utils/                    # Formatting, date filtering, API handler
   types.ts                  # Shared domain and API response types
 
-__tests__/                  # Frontend tests (33 suites, 267 tests)
-  unit/                     # Components, pages, hooks, utils (28 suites)
-  e2e/                      # Full page rendering with fetch-level mocking (5 suites, 33 tests)
+__tests__/                  # Frontend tests (46 suites, 375 tests)
+  unit/                     # Components, pages, hooks, utils (38 suites)
+  e2e/                      # Full page rendering with fetch-level mocking (8 suites, 51 tests)
 ```
 
 ## Data Flow
@@ -75,7 +81,7 @@ Mock Data (app/api/_mock-data)
 
 ## Key Decisions
 
-1. **DDD-inspired backend** — each API context (overview, agents, teams, trends, insights) owns its full vertical slice. No shared analytics module.
+1. **DDD-inspired backend** — each API context (overview, agents, teams, trends, insights, models, alerts, troubleshooting) owns its full vertical slice. No shared analytics module.
 2. **Business logic in services** — never in components, pages, or route files. Charts render prepared data.
 3. **Repository pattern** — data access isolated behind per-context repositories. Currently wraps mock data; designed to swap for database queries without changing services.
 4. **No cross-context dependencies** — teams doesn't import from agents, trends doesn't know about insights. Each context can evolve independently.

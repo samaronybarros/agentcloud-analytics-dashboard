@@ -11,10 +11,15 @@ jest.mock('recharts', () => {
     ResponsiveContainer: mock('responsive-container'),
     BarChart: mock('bar-chart'),
     Bar: mock('bar'),
+    ScatterChart: mock('scatter-chart'),
+    Scatter: mock('scatter'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
+    ZAxis: mock('z-axis'),
     CartesianGrid: mock('cartesian-grid'),
     Tooltip: mock('tooltip'),
+    Cell: mock('cell'),
+    ReferenceLine: mock('reference-line'),
   };
 });
 
@@ -79,7 +84,12 @@ describe('AgentsPage', () => {
     render(<AgentsPage />);
     expect(screen.getByRole('heading', { name: 'Agents' })).toBeInTheDocument();
     expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
+    expect(screen.getAllByTestId('chart-skeleton')).toHaveLength(2);
+  });
+
+  it('renders Cost vs Reliability section', () => {
+    render(<AgentsPage />);
+    expect(screen.getByRole('heading', { name: 'Cost vs Reliability' })).toBeInTheDocument();
   });
 
   it('shows error state when query fails', () => {

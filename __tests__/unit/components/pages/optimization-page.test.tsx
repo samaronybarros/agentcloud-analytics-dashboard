@@ -82,7 +82,14 @@ describe('OptimizationPage', () => {
     expect(screen.queryByRole('heading', { name: 'Warnings' })).not.toBeInTheDocument();
   });
 
-  it('shows loading state with skeletons', () => {
+  it('wraps each severity group in a card container matching other pages', () => {
+    const { container } = render(<OptimizationPage />);
+    const cardWrappers = container.querySelectorAll('.rounded-lg.border.border-gray-200.bg-white.p-4');
+    // 3 severity groups: Critical, Warnings, Information
+    expect(cardWrappers.length).toBe(3);
+  });
+
+  it('shows loading state with section-based skeletons', () => {
     mockUseInsights.mockReturnValue({ data: undefined, isLoading: true });
     render(<OptimizationPage />);
     expect(screen.getByRole('heading', { name: 'Optimization' })).toBeInTheDocument();

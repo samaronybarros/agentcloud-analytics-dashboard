@@ -16,10 +16,15 @@ jest.mock('recharts', () => {
     ResponsiveContainer: mock('responsive-container'),
     BarChart: mock('bar-chart'),
     Bar: mock('bar'),
+    ScatterChart: mock('scatter-chart'),
+    Scatter: mock('scatter'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
+    ZAxis: mock('z-axis'),
     CartesianGrid: mock('cartesian-grid'),
     Tooltip: mock('tooltip'),
+    Cell: mock('cell'),
+    ReferenceLine: mock('reference-line'),
   };
 });
 
@@ -85,7 +90,7 @@ describe('Agents page (e2e)', () => {
     });
   });
 
-  it('renders both the leaderboard and chart sections', async () => {
+  it('renders all three content sections', async () => {
     mockSuccessfulFetch();
     render(<AgentsPage />, { wrapper: createE2EWrapper() });
 
@@ -93,6 +98,7 @@ describe('Agents page (e2e)', () => {
       expect(screen.getByRole('heading', { name: 'Agent Leaderboard' })).toBeInTheDocument();
     });
 
+    expect(screen.getByRole('heading', { name: 'Cost vs Reliability' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Failure Taxonomy' })).toBeInTheDocument();
   });
 
@@ -101,7 +107,7 @@ describe('Agents page (e2e)', () => {
     render(<AgentsPage />, { wrapper: createE2EWrapper() });
 
     expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThan(0);
-    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
+    expect(screen.getAllByTestId('chart-skeleton')).toHaveLength(2);
   });
 
   it('shows error state when the API fails', async () => {

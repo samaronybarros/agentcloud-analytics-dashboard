@@ -103,6 +103,8 @@ export interface TeamUsageEntry {
   activeAgents: number;
   activeUsers: number;
   totalCost: number;
+  successRate: number; // 0–1
+  avgLatencyMs: number;
 }
 
 export interface CostByModelEntry {
@@ -153,6 +155,64 @@ export interface DailyCostTrend {
   cost: number;
 }
 
+export interface DayOfWeekEntry {
+  day: string; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+  runs: number;
+}
+
+// ---------------------------------------------------------------------------
+// Model analytics types
+// ---------------------------------------------------------------------------
+
+export interface ModelPerformanceEntry {
+  model: ModelId;
+  totalRuns: number;
+  successRate: number; // 0–1
+  avgLatencyMs: number;
+  totalCost: number;
+  costPerThousandTokens: number;
+  totalTokens: number;
+}
+
+// ---------------------------------------------------------------------------
+// Alert types
+// ---------------------------------------------------------------------------
+
+export type AlertStatus = 'breached' | 'ok';
+export type AlertMetric = 'success-rate' | 'cost' | 'latency' | 'error-spike';
+
+export interface Alert {
+  id: string;
+  metric: AlertMetric;
+  status: AlertStatus;
+  title: string;
+  description: string;
+  currentValue: number;
+  threshold: number;
+  agentId?: string;
+  team?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Troubleshooting types
+// ---------------------------------------------------------------------------
+
+export interface ErrorTimelineEntry {
+  date: string; // YYYY-MM-DD
+  errors: number;
+  retries: number;
+}
+
+export interface AgentErrorBreakdown {
+  agentId: string;
+  agentName: string;
+  team: string;
+  totalErrors: number;
+  errorsByType: Record<string, number>;
+  topErrorType: string;
+  remediation: string;
+}
+
 // ---------------------------------------------------------------------------
 // API response types — shared contract between routes and hooks
 // ---------------------------------------------------------------------------
@@ -174,10 +234,27 @@ export interface TrendsResponse {
   runsTrend: DailyRunsTrend[];
   latencyTrend: DailyLatencyTrend[];
   costTrend: DailyCostTrend[];
+  runsByDayOfWeek: DayOfWeekEntry[];
 }
 
 export interface InsightsResponse {
   insights: Insight[];
+}
+
+export interface ModelsResponse {
+  models: ModelPerformanceEntry[];
+}
+
+export interface AlertsResponse {
+  alerts: Alert[];
+  breachedCount: number;
+}
+
+export interface TroubleshootingResponse {
+  errorTimeline: ErrorTimelineEntry[];
+  agentErrors: AgentErrorBreakdown[];
+  totalErrors: number;
+  totalRetries: number;
 }
 
 // ---------------------------------------------------------------------------

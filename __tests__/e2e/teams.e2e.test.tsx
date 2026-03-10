@@ -19,6 +19,11 @@ jest.mock('recharts', () => {
     Cell: mock('cell'),
     Tooltip: mock('tooltip'),
     Legend: mock('legend'),
+    BarChart: mock('bar-chart'),
+    Bar: mock('bar'),
+    XAxis: mock('x-axis'),
+    YAxis: mock('y-axis'),
+    CartesianGrid: mock('cartesian-grid'),
   };
 });
 
@@ -26,8 +31,8 @@ import TeamsPage from '@/app/dashboard/teams/page';
 
 const teamsData: TeamsResponse = {
   teamUsage: [
-    { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 5, totalCost: 450.0 },
-    { team: 'Data', totalRuns: 150, activeAgents: 3, activeUsers: 3, totalCost: 320.0 },
+    { team: 'Platform', totalRuns: 200, activeAgents: 4, activeUsers: 5, totalCost: 450.0, successRate: 0.88, avgLatencyMs: 2100 },
+    { team: 'Data', totalRuns: 150, activeAgents: 3, activeUsers: 3, totalCost: 320.0, successRate: 0.76, avgLatencyMs: 3400 },
   ],
   costByModel: [
     { model: 'claude-sonnet-4-20250514', totalCost: 400, percentage: 0.52 },
@@ -61,7 +66,7 @@ describe('Teams page (e2e)', () => {
     expect(screen.getAllByText('Data').length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders all three sections', async () => {
+  it('renders all four sections', async () => {
     mockSuccessfulFetch();
     render(<TeamsPage />, { wrapper: createE2EWrapper() });
 
@@ -69,6 +74,7 @@ describe('Teams page (e2e)', () => {
       expect(screen.getByRole('heading', { name: 'Usage by Team' })).toBeInTheDocument();
     });
 
+    expect(screen.getByRole('heading', { name: 'Team Comparison' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cost by Model' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Top Users' })).toBeInTheDocument();
   });
@@ -101,7 +107,7 @@ describe('Teams page (e2e)', () => {
     render(<TeamsPage />, { wrapper: createE2EWrapper() });
 
     expect(screen.getAllByTestId('table-row-skeleton').length).toBeGreaterThan(0);
-    expect(screen.getByTestId('chart-skeleton')).toBeInTheDocument();
+    expect(screen.getAllByTestId('chart-skeleton')).toHaveLength(2);
   });
 
   it('shows error state when the API fails', async () => {

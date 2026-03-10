@@ -7,6 +7,9 @@ import type {
   TeamsResponse,
   TrendsResponse,
   InsightsResponse,
+  ModelsResponse,
+  AlertsResponse,
+  TroubleshootingResponse,
 } from '@/lib/types';
 
 export type { DateRange } from '@/lib/types';
@@ -49,5 +52,26 @@ export function useInsights(range?: DateRange) {
   return useQuery({
     queryKey: ['analytics', 'insights', range],
     queryFn: () => fetchJson<InsightsResponse>(buildUrl('/api/analytics/insights', range)),
+  });
+}
+
+export function useModelAnalytics(range?: DateRange) {
+  return useQuery({
+    queryKey: ['analytics', 'models', range],
+    queryFn: () => fetchJson<ModelsResponse>(buildUrl('/api/analytics/models', range)),
+  });
+}
+
+export function useAlerts(range?: DateRange) {
+  return useQuery({
+    queryKey: ['analytics', 'alerts', range],
+    queryFn: () => fetchJson<AlertsResponse>(buildUrl('/api/analytics/alerts', range)),
+  });
+}
+
+export function useTroubleshooting(range?: DateRange) {
+  return useQuery({
+    queryKey: ['analytics', 'troubleshooting', range],
+    queryFn: () => fetchJson<TroubleshootingResponse>(buildUrl('/api/analytics/troubleshooting', range)),
   });
 }

@@ -6,7 +6,7 @@ This document records how AI was used in building the dashboard, what was human-
 
 ## Workflow Summary
 
-The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 5 phases with clear checkpoints.
+The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 7 phases with clear checkpoints.
 
 ## Phase Log
 
@@ -106,6 +106,50 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 4. **Bugs came from environment, not logic** — The main issues (Recharts circular require, jsdom missing Web APIs, hydration mismatches from browser extensions) were environment/tooling problems, not business logic errors.
 
 5. **Human oversight caught real issues** — The human caught the `suppressHydrationWarning` anti-pattern and directed the proper fix (extracting a client component boundary instead of hiding the warning).
+
+---
+
+### Phase 6: Review Graphics & Dashboard
+
+**Human-led decisions:**
+- Selected which new views to add: cost vs reliability scatter, runs by day of week, team comparison chart
+- Decided where each view belongs (Agents, Overview, Teams pages respectively)
+- Chose to augment `TeamUsageEntry` with `successRate` and `avgLatencyMs` rather than creating a separate type
+
+**AI-assisted work:**
+- TDD implementation: 34 new tests written before components (10 scatter, 7 team comparison, 6 runs-by-day, 11 backend/integration)
+- 3 new chart components: `CostReliabilityScatter`, `TeamComparisonChart`, `RunsByDayChart`
+- Backend augmentation: `computeRunsByDayOfWeek` in trends service, `successRate`/`avgLatencyMs` in teams service
+- Updated `TeamUsageTable` with 2 new columns (success rate, avg latency)
+- Updated all affected test mocks across 12 existing test files
+- Documentation updates: README, roadmap, testing-spec, technical-spec
+
+**Result:** 47 suites, 429 tests passing. Three new decision-making views added to the dashboard.
+
+---
+
+### Phase 7: New Dashboard Pages — Models, Alerts, Troubleshooting
+
+**Human-led decisions:**
+- Selected three new pages to add: Models (model performance comparison), Alerts (threshold breaches and anomalies), Troubleshooting (error diagnosis and failure patterns)
+- Each page requires a full backend vertical slice (repository, service, controller, route)
+- Sidebar navigation expanded from 4 to 7 items (Overview, Agents, Teams, Models, Optimization, Alerts, Troubleshooting)
+- New domain types: ModelPerformanceEntry, Alert, AlertStatus, AlertMetric, ErrorTimelineEntry, AgentErrorBreakdown, and corresponding API response types
+
+**AI-assisted work:**
+- Three new full vertical slices: models, alerts, troubleshooting — each with repository, service, controller, and route
+- Three new dashboard pages: `app/dashboard/models/page.tsx`, `app/dashboard/alerts/page.tsx`, `app/dashboard/troubleshooting/page.tsx`
+- New components: model-performance-table, alert-card, error-timeline-chart, agent-error-table
+- New chart components: cost-reliability-scatter, team-comparison-chart, runs-by-day-chart
+- New hooks: useModelAnalytics, useAlerts, useTroubleshooting
+- Dynamic team color assignment replacing hardcoded TEAM_COLORS
+- Consistent card wrappers across all pages
+- Hook tests for new hooks, navigation tests updated for 7 items
+- E2E tests for all three new pages
+- Backend unit and integration tests for all three new contexts
+- Documentation updates across README, roadmap, testing-spec, technical-spec
+
+**Result:** 47 suites / 429 tests → 63 suites / 552 tests. Three new full-stack dashboard pages with complete test coverage. Sidebar navigation expanded to 7 items.
 
 ---
 

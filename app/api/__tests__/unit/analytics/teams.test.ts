@@ -54,6 +54,30 @@ describe('computeTeamUsage', () => {
     }
   });
 
+  it('computes correct success rate per team', () => {
+    for (const entry of teamUsage) {
+      const teamAgentIds = agents
+        .filter((a) => a.team === entry.team)
+        .map((a) => a.id);
+      const teamRuns = runs.filter((r) => teamAgentIds.includes(r.agentId));
+      const successCount = teamRuns.filter((r) => r.status === 'success').length;
+      const expectedRate = teamRuns.length === 0 ? 0 : successCount / teamRuns.length;
+      expect(entry.successRate).toBeCloseTo(expectedRate, 4);
+    }
+  });
+
+  it('computes correct average latency per team', () => {
+    for (const entry of teamUsage) {
+      const teamAgentIds = agents
+        .filter((a) => a.team === entry.team)
+        .map((a) => a.id);
+      const teamRuns = runs.filter((r) => teamAgentIds.includes(r.agentId));
+      const totalDuration = teamRuns.reduce((sum, r) => sum + r.durationMs, 0);
+      const expectedLatency = teamRuns.length === 0 ? 0 : totalDuration / teamRuns.length;
+      expect(entry.avgLatencyMs).toBeCloseTo(expectedLatency, 2);
+    }
+  });
+
   it('returns empty array for empty runs', () => {
     expect(computeTeamUsage([], agents, users)).toEqual([]);
   });

@@ -7,11 +7,12 @@ import { Section } from '@/components/dashboard/section';
 import { RunsTrendChart } from '@/components/charts/runs-trend-chart';
 import { LatencyTrendChart } from '@/components/charts/latency-trend-chart';
 import { CostTrendChart } from '@/components/charts/cost-trend-chart';
+import { RunsByDayChart } from '@/components/charts/runs-by-day-chart';
 import { KPICardSkeleton, ChartSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
 import { formatNumber, formatCost, formatPercent, formatLatency } from '@/lib/utils/format';
-import type { OverviewKPIs, DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/types';
+import type { OverviewKPIs, DailyRunsTrend, DailyLatencyTrend, DailyCostTrend, DayOfWeekEntry } from '@/lib/types';
 
 function OverviewSkeleton() {
   return (
@@ -22,6 +23,7 @@ function OverviewSkeleton() {
         ))}
       </div>
       <Section title="Runs Over Time"><ChartSkeleton /></Section>
+      <Section title="Runs by Day of Week"><ChartSkeleton /></Section>
       <Section title="Latency Trend (p50 / p95)"><ChartSkeleton /></Section>
       <Section title="Cost Trend"><ChartSkeleton /></Section>
     </>
@@ -33,7 +35,7 @@ function OverviewContent({
   trends,
 }: {
   kpis: OverviewKPIs;
-  trends: { runsTrend: DailyRunsTrend[]; latencyTrend: DailyLatencyTrend[]; costTrend: DailyCostTrend[] };
+  trends: { runsTrend: DailyRunsTrend[]; latencyTrend: DailyLatencyTrend[]; costTrend: DailyCostTrend[]; runsByDayOfWeek: DayOfWeekEntry[] };
 }) {
   return (
     <>
@@ -53,15 +55,27 @@ function OverviewContent({
       </div>
 
       <Section title="Runs Over Time">
-        <RunsTrendChart data={trends.runsTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <RunsTrendChart data={trends.runsTrend} />
+        </div>
+      </Section>
+
+      <Section title="Runs by Day of Week">
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <RunsByDayChart data={trends.runsByDayOfWeek} />
+        </div>
       </Section>
 
       <Section title="Latency Trend (p50 / p95)">
-        <LatencyTrendChart data={trends.latencyTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <LatencyTrendChart data={trends.latencyTrend} />
+        </div>
       </Section>
 
       <Section title="Cost Trend">
-        <CostTrendChart data={trends.costTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <CostTrendChart data={trends.costTrend} />
+        </div>
       </Section>
     </>
   );
