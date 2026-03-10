@@ -11,9 +11,12 @@ import type { Insight } from '@/lib/types';
 
 function OptimizationSkeleton() {
   return (
-    <div className="mt-8 space-y-4">
-      {Array.from({ length: 4 }, (_, i) => (
-        <Skeleton key={i} className="h-20 w-full" />
+    <div className="mt-8 space-y-6">
+      {Array.from({ length: 3 }, (_, i) => (
+        <div key={i} className="rounded-lg border border-gray-200 bg-white p-4 space-y-3">
+          <Skeleton className="h-5 w-24" />
+          <Skeleton className="h-20 w-full" />
+        </div>
       ))}
     </div>
   );
@@ -34,30 +37,36 @@ function OptimizationContent({ insights }: { insights: Insight[] }) {
     <>
       {critical.length > 0 && (
         <Section title="Critical">
-          <div className="space-y-3">
-            {critical.map((insight) => (
-              <InsightCard key={insight.id} insight={insight} />
-            ))}
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="space-y-3">
+              {critical.map((insight) => (
+                <InsightCard key={insight.id} insight={insight} />
+              ))}
+            </div>
           </div>
         </Section>
       )}
 
       {warnings.length > 0 && (
         <Section title="Warnings">
-          <div className="space-y-3">
-            {warnings.map((insight) => (
-              <InsightCard key={insight.id} insight={insight} />
-            ))}
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="space-y-3">
+              {warnings.map((insight) => (
+                <InsightCard key={insight.id} insight={insight} />
+              ))}
+            </div>
           </div>
         </Section>
       )}
 
       {info.length > 0 && (
         <Section title="Information">
-          <div className="space-y-3">
-            {info.map((insight) => (
-              <InsightCard key={insight.id} insight={insight} />
-            ))}
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <div className="space-y-3">
+              {info.map((insight) => (
+                <InsightCard key={insight.id} insight={insight} />
+              ))}
+            </div>
           </div>
         </Section>
       )}
