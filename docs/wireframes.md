@@ -2,6 +2,8 @@
 
 Low-fidelity ASCII wireframes representing the layout intent for each dashboard page.
 
+> **Note:** These wireframes reflect the original design intent. The "Viewing as" dropdown was later replaced with URL-based role selection (`?role=admin`) — see PD-026. Sidebar labels use abbreviated names for space; the implementation uses full labels (e.g., "Troubleshooting", "Optimization").
+
 ---
 
 ## Common Layout

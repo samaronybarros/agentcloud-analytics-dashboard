@@ -66,8 +66,8 @@ lib/                        # Shared frontend concerns — no business logic
   role-auth.ts              # Server-side role-based access control
   response-redaction.ts     # Field-level redaction per role
 
-__tests__/                  # Frontend tests (49 suites)
-  unit/                     # Components, pages, hooks, utils (38 suites)
+__tests__/                  # Frontend tests (48 suites)
+  unit/                     # Components, pages, hooks, utils (40 suites)
   e2e/                      # Full page rendering with fetch-level mocking (8 suites, 51 tests)
 ```
 

@@ -14,13 +14,13 @@ This document honestly describes what this dashboard does not do, why each limit
 
 ---
 
-## Client-Side Role Switching
+## URL-Based Role Switching (Not Authenticated)
 
-**What:** Users can switch between Admin, Engineering Manager, and Viewer roles via a dropdown in the header. This controls which pages and data are visible, but it is enforced entirely in the browser. There is no server-side validation.
+**What:** Users switch between Org Admin, Eng Manager, and Platform Engineer roles via the `?role=` URL parameter (e.g., `?role=admin`). The server enforces page-level gating and field-level redaction based on this parameter, but the role is not authenticated — anyone can set `?role=admin`. The default role is `engineer` (least-privileged).
 
-**Why:** Authentication and authorization were out of scope. The role system demonstrates product thinking about persona-based views without building a full auth stack.
+**Why:** Authentication was out of scope. The URL-based role system demonstrates product thinking about persona-based views with server-side enforcement, without building a full auth stack.
 
-**Fix:** Add an authentication provider (NextAuth.js or similar), store roles in a database, and enforce role checks in API route middleware. The current role-based UI logic can remain but should read from a server-validated session instead of local state.
+**Fix:** Add an authentication provider (NextAuth.js or similar), store roles in a database, and replace the `?role=` parameter with a JWT/session claim in `parseRole()`. The existing server-side authorization middleware (`withRoleAccess`, field-level redaction) and client-side visibility config would remain unchanged.
 
 ---
 
@@ -54,23 +54,23 @@ This document honestly describes what this dashboard does not do, why each limit
 
 ---
 
-## No CI/CD Pipeline
+## No Deployment Pipeline
 
-**What:** There are no GitHub Actions, no automated test runs on push, no deployment pipeline. Tests must be run manually with `npm test`.
+**What:** A GitHub Actions CI pipeline runs `npm run lint`, `npm test`, and `npm run build` on every push and pull request. However, there is no automated deployment pipeline — the project is not deployed to any hosting environment.
 
-**Why:** The project is a local demo without a deployment target. CI/CD would add infrastructure complexity without changing the product.
+**Why:** The project is a local demo without a deployment target. The CI pipeline ensures code quality gates, but deployment adds infrastructure complexity without changing the product.
 
-**Fix:** Add a GitHub Actions workflow that runs `npm run lint` and `npm test` on every pull request. Add a deploy step targeting Vercel or a similar platform.
+**Fix:** Add a deploy step to the existing GitHub Actions workflow targeting Vercel or a similar platform.
 
 ---
 
-## Fetch-Level E2E Tests (Not Browser E2E)
+## Limited Browser E2E Coverage
 
-**What:** The E2E test suites render full pages with React Testing Library and mock `fetch` responses. They do not use Playwright or Cypress to drive a real browser. This means they do not test actual network requests, browser rendering, or user interactions like clicking and scrolling.
+**What:** The project has two E2E layers: fetch-level tests (8 suites, 51 tests using React Testing Library with mocked `fetch`) and Playwright browser tests (3 spec files with 21 tests covering smoke, role-switching, and API error scenarios). The Playwright tests cover critical paths but do not yet include visual regression, cross-browser, or comprehensive user interaction testing.
 
-**Why:** Fetch-level E2E tests run fast (~seconds), require no browser binary, and cover the full React component tree. They provide high value per test-second. True browser E2E was planned but not yet implemented.
+**Why:** Fetch-level E2E tests run fast (~seconds) and cover the full React component tree. Playwright smoke tests verify real browser behavior for the most important flows. Comprehensive browser E2E coverage was deprioritized relative to analytics logic and test coverage.
 
-**Fix:** Add Playwright with a small suite of critical-path tests: load dashboard, switch date range, navigate between pages, verify chart renders. Keep the existing fetch-level tests as a fast feedback layer.
+**Fix:** Expand the Playwright suite with visual regression tests, cross-browser testing (Firefox, Safari), and more granular interaction tests (chart hover, table sorting, responsive breakpoints).
 
 ---
 

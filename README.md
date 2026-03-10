@@ -199,7 +199,7 @@ The dataset supports meaningful aggregation for adoption, reliability, performan
 ### Process & Workflow
 | Document                                                       | Description                                     |
 | -------------------------------------------------------------- | ----------------------------------------------- |
-| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (10 phases) |
+| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (11 phases) |
 | [`docs/development-workflow.md`](docs/development-workflow.md) | Phase-based workflow with mermaid diagram       |
 
 ### Research & Design

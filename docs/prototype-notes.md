@@ -64,7 +64,7 @@
 ### Iteration 4: Role-Based Views (Phase 8)
 
 **Added (human-led design):**
-- "Viewing as" dropdown in page header
+- "Viewing as" role selector in page header (later replaced with URL-based `?role=` param — see PD-026)
 - Conditional rendering of pages, sections, table columns, and KPIs per role
 - "Restricted access" state when a role cannot view a page
 

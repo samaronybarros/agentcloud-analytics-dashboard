@@ -33,7 +33,7 @@ The backend uses vertical slices (repository → service → controller → rout
 The dashboard is structured around four core questions (adoption, reliability, performance, cost) rather than being a generic metrics viewer. Each page maps to a specific organizational concern.
 
 ### 5. Full TDD Coverage
-66 test suites with 599 tests, written before implementation. This level of test coverage is uncommon in demo/interview projects and demonstrates production-mindedness.
+70 test suites with 694 tests, written before implementation. This level of test coverage is uncommon in demo/interview projects and demonstrates production-mindedness.
 
 ---
 
