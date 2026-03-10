@@ -58,34 +58,38 @@ __tests__/
       use-date-range.test.tsx
       use-analytics.test.tsx
     components/               # Component rendering with mocked data
-      charts/                 # Chart components (8 suites)
+      charts/                 # Chart components (9 suites)
       dashboard/              # KPI card, section, sidebar nav, etc. (8 suites)
-      tables/                 # Data tables (3 suites)
+      tables/                 # Data tables (5 suites)
       insights/               # Insight cards (1 suite)
+      alerts/                 # Alert card (1 suite)
       layout/                 # Dashboard layout (1 suite)
-      pages/                  # Page-level rendering (4 suites)
-  e2e/                        # Full page rendering with fetch-level mocking (5 suites)
+      pages/                  # Page-level rendering (7 suites)
+  e2e/                        # Full page rendering with fetch-level mocking (8 suites)
     helpers.tsx
     overview.e2e.test.tsx
     agents.e2e.test.tsx
     teams.e2e.test.tsx
     optimization.e2e.test.tsx
     navigation.e2e.test.tsx
+    models.e2e.test.tsx
+    alerts.e2e.test.tsx
+    troubleshooting.e2e.test.tsx
 ```
 
 ## Coverage Summary
 
 | Category | Suites | Tests |
 |----------|--------|-------|
-| Analytics logic | 5 | 81 |
-| Components (charts, tables, insights, dashboard) | 15 | 106 |
-| Pages | 4 | 30 |
-| Layout & nav | 2 | 25 |
-| Hooks & utilities | 9 | 66 |
-| API integration | 5 | 35 |
-| E2E (fetch-level) | 5 | 33 |
-| API utility | 1 | 11 |
-| **Total** | **47** | **429** |
+| Analytics logic | 8 | 111 |
+| Components (charts, tables, insights, alerts, dashboard) | 23 | 163 |
+| Pages | 7 | 52 |
+| Layout & nav | 2 | 28 |
+| Hooks & utilities | 6 | 81 |
+| API integration | 8 | 60 |
+| E2E (fetch-level) | 8 | 51 |
+| API utility | 1 | 6 |
+| **Total** | **63** | **552** |
 
 ## Priority Coverage
 
@@ -106,7 +110,7 @@ __tests__/
 - Chart component rendering (axes, data series, empty states, formatter functions)
 - Active nav highlighting across routes
 - Table formatting (color-coded success rates, currency, percentages)
-- E2E page rendering with fetch-level mocking (all 4 pages + navigation)
+- E2E page rendering with fetch-level mocking (all 7 pages + navigation)
 
 ## Test Conventions
 
