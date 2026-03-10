@@ -101,11 +101,6 @@ describe('SidebarNav — role-based filtering', () => {
   });
 
   it('hides Teams link for engineer role', () => {
-    // We need to set role to engineer. We'll use a custom wrapper that sets initial role.
-    // Since RoleProvider defaults to admin, we test via the mock approach.
-    const { RoleProvider: RP, useRole } = jest.requireActual('@/lib/hooks/use-role');
-
-    // Instead, we'll test via the useRole hook mock
     jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
       role: 'engineer',
       setRole: jest.fn(),
