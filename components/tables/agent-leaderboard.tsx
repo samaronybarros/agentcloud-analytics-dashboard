@@ -2,7 +2,12 @@
 
 import type { AgentLeaderboardEntry } from '@/lib/types';
 
-export function AgentLeaderboard({ data }: { data: AgentLeaderboardEntry[] }) {
+interface AgentLeaderboardProps {
+  data: AgentLeaderboardEntry[];
+  showCostColumn?: boolean;
+}
+
+export function AgentLeaderboard({ data, showCostColumn = true }: AgentLeaderboardProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -13,7 +18,7 @@ export function AgentLeaderboard({ data }: { data: AgentLeaderboardEntry[] }) {
             <th className="px-3 py-3 text-right">Runs</th>
             <th className="px-3 py-3 text-right">Success</th>
             <th className="px-3 py-3 text-right">Avg Latency</th>
-            <th className="px-3 py-3 text-right">Cost</th>
+            {showCostColumn && <th className="px-3 py-3 text-right">Cost</th>}
           </tr>
         </thead>
         <tbody>
@@ -38,7 +43,9 @@ export function AgentLeaderboard({ data }: { data: AgentLeaderboardEntry[] }) {
               <td className="px-3 py-3 text-right">
                 {Math.round(entry.avgLatencyMs).toLocaleString('en-US')}ms
               </td>
-              <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
+              {showCostColumn && (
+                <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
+              )}
             </tr>
           ))}
         </tbody>

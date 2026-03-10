@@ -2,7 +2,17 @@
 
 import type { ModelPerformanceEntry } from '@/lib/types';
 
-export function ModelPerformanceTable({ data }: { data: ModelPerformanceEntry[] }) {
+interface ModelPerformanceTableProps {
+  data: ModelPerformanceEntry[];
+  showCostColumn?: boolean;
+  showCostPerTokenColumn?: boolean;
+}
+
+export function ModelPerformanceTable({
+  data,
+  showCostColumn = true,
+  showCostPerTokenColumn = true,
+}: ModelPerformanceTableProps) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
@@ -12,8 +22,8 @@ export function ModelPerformanceTable({ data }: { data: ModelPerformanceEntry[] 
             <th className="px-3 py-3 text-right">Runs</th>
             <th className="px-3 py-3 text-right">Success</th>
             <th className="px-3 py-3 text-right">Avg Latency</th>
-            <th className="px-3 py-3 text-right">Cost</th>
-            <th className="px-3 py-3 text-right">Cost/1K Tokens</th>
+            {showCostColumn && <th className="px-3 py-3 text-right">Cost</th>}
+            {showCostPerTokenColumn && <th className="px-3 py-3 text-right">Cost/1K Tokens</th>}
             <th className="px-3 py-3 text-right">Tokens</th>
           </tr>
         </thead>
@@ -38,8 +48,12 @@ export function ModelPerformanceTable({ data }: { data: ModelPerformanceEntry[] 
               <td className="px-3 py-3 text-right">
                 {Math.round(entry.avgLatencyMs).toLocaleString('en-US')}ms
               </td>
-              <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
-              <td className="px-3 py-3 text-right">${entry.costPerThousandTokens.toFixed(4)}</td>
+              {showCostColumn && (
+                <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
+              )}
+              {showCostPerTokenColumn && (
+                <td className="px-3 py-3 text-right">${entry.costPerThousandTokens.toFixed(4)}</td>
+              )}
               <td className="px-3 py-3 text-right">{entry.totalTokens.toLocaleString()}</td>
             </tr>
           ))}

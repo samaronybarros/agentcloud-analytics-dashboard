@@ -11,6 +11,7 @@ jest.mock('next/navigation', () => ({
 }));
 
 import SidebarNav from '@/components/dashboard/sidebar-nav';
+import { RoleProvider } from '@/lib/hooks/use-role';
 import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
@@ -22,10 +23,14 @@ const routes = [
   { path: '/dashboard/optimization', label: 'Optimization' },
 ];
 
+function renderNav() {
+  return render(<RoleProvider><SidebarNav /></RoleProvider>);
+}
+
 describe('Navigation (e2e)', () => {
   it('renders all four navigation links', () => {
     mockUsePathname.mockReturnValue('/dashboard');
-    render(<SidebarNav />);
+    renderNav();
 
     for (const route of routes) {
       expect(screen.getByRole('link', { name: route.label })).toBeInTheDocument();
@@ -34,7 +39,7 @@ describe('Navigation (e2e)', () => {
 
   it('links point to the correct hrefs', () => {
     mockUsePathname.mockReturnValue('/dashboard');
-    render(<SidebarNav />);
+    renderNav();
 
     for (const route of routes) {
       const link = screen.getByRole('link', { name: route.label });
@@ -46,7 +51,7 @@ describe('Navigation (e2e)', () => {
     'highlights "$label" link when pathname is "$path"',
     ({ path, label }) => {
       mockUsePathname.mockReturnValue(path);
-      render(<SidebarNav />);
+      renderNav();
 
       const activeLink = screen.getByRole('link', { name: label });
       expect(activeLink.className).toContain('bg-');
@@ -63,7 +68,7 @@ describe('Navigation (e2e)', () => {
 
   it('renders the dashboard title', () => {
     mockUsePathname.mockReturnValue('/dashboard');
-    render(<SidebarNav />);
+    renderNav();
 
     expect(screen.getByText('AgentCloud')).toBeInTheDocument();
   });

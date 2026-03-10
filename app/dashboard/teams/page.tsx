@@ -2,6 +2,8 @@
 
 import { useTeamAnalytics } from '@/lib/hooks/use-analytics';
 import { useDateRange } from '@/lib/hooks/use-date-range';
+import { useRole } from '@/lib/hooks/use-role';
+import { canAccessPage, canSeeSection } from '@/lib/role-visibility';
 import { Section } from '@/components/dashboard/section';
 import { TeamUsageTable } from '@/components/tables/team-usage-table';
 import { TopUsersTable } from '@/components/tables/top-users-table';
@@ -12,13 +14,13 @@ import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
 import type { TeamUsageEntry, CostByModelEntry, TopUserEntry } from '@/lib/types';
 
-function TeamsSkeleton() {
+function TeamsSkeleton({ showCostByModel, showTopUsers }: { showCostByModel: boolean; showTopUsers: boolean }) {
   return (
     <>
       <Section title="Usage by Team"><TableSkeleton rows={4} /></Section>
       <Section title="Team Comparison"><ChartSkeleton /></Section>
-      <Section title="Cost by Model"><ChartSkeleton /></Section>
-      <Section title="Top Users"><TableSkeleton rows={4} /></Section>
+      {showCostByModel && <Section title="Cost by Model"><ChartSkeleton /></Section>}
+      {showTopUsers && <Section title="Top Users"><TableSkeleton rows={4} /></Section>}
     </>
   );
 }
@@ -27,10 +29,14 @@ function TeamsContent({
   teamUsage,
   costByModel,
   topUsers,
+  showCostByModel,
+  showTopUsers,
 }: {
   teamUsage: TeamUsageEntry[];
   costByModel: CostByModelEntry[];
   topUsers: TopUserEntry[];
+  showCostByModel: boolean;
+  showTopUsers: boolean;
 }) {
   return (
     <>
@@ -49,24 +55,46 @@ function TeamsContent({
         </div>
       </Section>
 
-      <Section title="Cost by Model">
-        <div className="rounded-lg border border-gray-200 bg-white p-4">
-          <CostByModelChart data={costByModel} />
-        </div>
-      </Section>
+      {showCostByModel && (
+        <Section title="Cost by Model">
+          <div className="rounded-lg border border-gray-200 bg-white p-4">
+            <CostByModelChart data={costByModel} />
+          </div>
+        </Section>
+      )}
 
-      <Section title="Top Users">
-        <div className="rounded-lg border border-gray-200 bg-white">
-          <TopUsersTable data={topUsers} />
-        </div>
-      </Section>
+      {showTopUsers && (
+        <Section title="Top Users">
+          <div className="rounded-lg border border-gray-200 bg-white">
+            <TopUsersTable data={topUsers} />
+          </div>
+        </Section>
+      )}
     </>
+  );
+}
+
+function RestrictedAccess() {
+  return (
+    <div className="mt-8 rounded-lg border border-gray-200 bg-white p-8 text-center">
+      <p className="text-sm text-gray-500">
+        Team-level analytics are available to Org Admins and Engineering Managers.
+      </p>
+      <p className="mt-1 text-xs text-gray-400">
+        Switch your role using the selector above to access this page.
+      </p>
+    </div>
   );
 }
 
 export default function TeamsPage() {
   const { range } = useDateRange();
+  const { role } = useRole();
   const { data, isLoading, isError, error } = useTeamAnalytics(range);
+
+  const hasAccess = canAccessPage(role, 'teams');
+  const showCostByModel = canSeeSection(role, 'cost-by-model');
+  const showTopUsers = canSeeSection(role, 'top-users');
 
   return (
     <div>
@@ -75,8 +103,10 @@ export default function TeamsPage() {
         Team-level adoption, cost distribution, and top contributors.
       </p>
 
-      {isLoading ? (
-        <TeamsSkeleton />
+      {!hasAccess ? (
+        <RestrictedAccess />
+      ) : isLoading ? (
+        <TeamsSkeleton showCostByModel={showCostByModel} showTopUsers={showTopUsers} />
       ) : isError ? (
         <ErrorState detail={error instanceof Error ? error.message : undefined} />
       ) : !data ? (
@@ -88,6 +118,8 @@ export default function TeamsPage() {
           teamUsage={data.teamUsage}
           costByModel={data.costByModel}
           topUsers={data.topUsers}
+          showCostByModel={showCostByModel}
+          showTopUsers={showTopUsers}
         />
       )}
     </div>

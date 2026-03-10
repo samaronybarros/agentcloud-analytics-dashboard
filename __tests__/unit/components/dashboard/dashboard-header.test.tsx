@@ -5,12 +5,21 @@ jest.mock('@/components/dashboard/date-range-picker', () => ({
   DateRangePicker: () => <div data-testid="date-range-picker" />,
 }));
 
+jest.mock('@/components/dashboard/role-selector', () => ({
+  RoleSelector: () => <div data-testid="role-selector" />,
+}));
+
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 
 describe('DashboardHeader', () => {
   it('renders the date range picker', () => {
     render(<DashboardHeader />);
     expect(screen.getByTestId('date-range-picker')).toBeInTheDocument();
+  });
+
+  it('renders the role selector', () => {
+    render(<DashboardHeader />);
+    expect(screen.getByTestId('role-selector')).toBeInTheDocument();
   });
 
   it('renders a container element', () => {

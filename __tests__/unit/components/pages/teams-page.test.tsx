@@ -30,6 +30,10 @@ jest.mock('@/lib/hooks/use-date-range', () => ({
   useDateRange: () => ({ range: {}, preset: 'all', setPreset: jest.fn() }),
 }));
 
+jest.mock('@/lib/hooks/use-role', () => ({
+  useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+}));
+
 import TeamsPage from '@/app/dashboard/teams/page';
 import { useTeamAnalytics } from '@/lib/hooks/use-analytics';
 
