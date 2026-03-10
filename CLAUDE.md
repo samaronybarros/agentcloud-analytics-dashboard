@@ -340,6 +340,9 @@ app/
       teams/
       trends/
       insights/
+      models/
+      alerts/
+      troubleshooting/
     __tests__/            # backend tests (unit + integration)
   dashboard/
 components/
@@ -352,6 +355,7 @@ lib/
   utils/
   types.ts
 __tests__/                # frontend tests (unit + e2e)
+e2e/                      # Playwright browser E2E tests
 docs/
 ```
 
@@ -463,6 +467,9 @@ Business logic lives in per-context service modules:
 - `app/api/analytics/teams/teams.service.ts`
 - `app/api/analytics/trends/trends.service.ts`
 - `app/api/analytics/insights/insights.service.ts`
+- `app/api/analytics/models/models.service.ts`
+- `app/api/analytics/alerts/alerts.service.ts`
+- `app/api/analytics/troubleshooting/troubleshooting.service.ts`
 
 Each context is a self-contained vertical slice (repository → service → controller → route) with no cross-context dependencies.
 
@@ -499,7 +506,7 @@ Every visible metric should have a reason to exist.
 
 Each API context follows a layered architecture: repository → service → controller → route.
 
-**Route files** should remain thin — delegate to controller via `withErrorHandler`.
+**Route files** should remain thin — delegate to controller via `withErrorHandler(withRoleAccess(page, handler))`.
 
 **Controllers** may:
 
@@ -525,6 +532,33 @@ They should not:
 - hardcode inconsistent values that diverge from shared mock data
 
 Keep API outputs deterministic and easy to test.
+
+---
+
+## 12b. Role-Based Access
+
+The dashboard supports three roles: `admin`, `manager`, `engineer`. Role is determined from the `?role=` URL parameter on both client and server.
+
+### Client-side
+
+- `useRole()` hook reads from `useSearchParams()` — no context provider needed
+- `role-visibility.ts` defines which pages and sections each role can see
+- Pages and components conditionally render based on `canAccessPage()` and `canSeeSection()`
+- Default role is `engineer` (least-privileged)
+
+### Server-side
+
+- `parseRole(request)` in `lib/utils/role-auth.ts` reads `?role=` or `X-User-Role` header, defaults to `engineer`
+- `withRoleAccess(page, handler)` enforces page-level gating — throws `ForbiddenError` (403) if the role cannot access the page
+- Controllers accept role and pass it to redaction functions in `lib/utils/response-redaction.ts`
+- Field-level redaction removes cost-sensitive fields based on role (e.g., `estimatedCost`, `totalCost`, `costByModel`)
+
+### Key rules
+
+- `role-visibility.ts` is the single source of truth — both client rendering and server redaction reference it
+- Cost data is the primary sensitivity boundary (see `docs/authz-spec.md`)
+- Never add a new role check inline — extend the visibility config instead
+- When adding a new API context, wire it through `withRoleAccess` and add a redaction function
 
 ---
 
