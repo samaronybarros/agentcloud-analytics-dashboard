@@ -214,7 +214,7 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - TDD test suites: api-handler tests (logging, rate limiting, request IDs), api-logger tests, rate-limiter tests, role-auth unit tests, response-redaction unit tests, authz integration tests
 - Documentation updates across 7 files
 
-**Result:** 66 suites / 599 tests -> 71 suites / 697 tests. Rate limiting, structured logging, server-side authz, responsive layout, Playwright E2E, and CI pipeline shipped.
+**Result:** 66 suites / 599 tests -> 70 suites / 694 tests. Rate limiting, structured logging, server-side authz, responsive layout, Playwright E2E, and CI pipeline shipped.
 
 ---
 

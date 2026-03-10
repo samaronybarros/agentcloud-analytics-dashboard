@@ -31,7 +31,7 @@ This document tracks what is production-ready, what is partial, and what remains
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Unit tests (services, utils) | Done | 71 suites, 697 tests, all deterministic |
+| Unit tests (services, utils) | Done | 70 suites, 694 tests, all deterministic |
 | API integration tests | Done | Controller and route-level tests for all 8 API contexts |
 | Fetch-level E2E tests | Done | Full page render tests with mocked fetch responses |
 | Browser E2E (Playwright/Cypress) | Done | Playwright config + smoke tests |
