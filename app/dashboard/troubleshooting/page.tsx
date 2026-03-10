@@ -32,7 +32,7 @@ function TroubleshootingContent({
 }) {
   return (
     <>
-      <div className="mt-4 grid grid-cols-2 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="rounded-lg border border-gray-200 bg-white px-4 py-5">
           <p className="text-sm text-gray-500">Total Errors</p>
           <p className="mt-1 text-2xl font-semibold" data-testid="total-errors">{totalErrors}</p>

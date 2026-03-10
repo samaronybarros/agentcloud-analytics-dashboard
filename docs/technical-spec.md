@@ -37,10 +37,12 @@ app/
       models/               # Model performance comparison
       alerts/               # Alert generation and threshold monitoring
       troubleshooting/      # Error diagnosis and failure patterns
-    __tests__/              # Backend tests (17 suites, 177 tests)
+    __tests__/              # Backend tests (22 suites)
       unit/analytics/       # Service logic unit tests (8 suites, 111 tests)
-      unit/api/             # API utility tests (1 suite, 6 tests)
+      unit/api/             # API utility + middleware tests (3 suites — handler, logger, rate limiter)
+      unit/authz/           # Authorization unit tests (2 suites — role-auth, response-redaction)
       integration/api/      # Route response shape validation (8 suites, 60 tests)
+      integration/authz/    # Authorization integration tests (1 suite)
   dashboard/                # Page composition — thin, delegates to components
     page.tsx                # Overview
     agents/page.tsx         # Agent analytics
@@ -58,12 +60,14 @@ components/                 # Reusable presentational UI
 
 lib/                        # Shared frontend concerns — no business logic
   hooks/                    # React Query hooks + role context (useRole)
-  utils/                    # Formatting, date filtering, API handler
+  utils/                    # Formatting, date filtering, API handler, api-logger, rate-limiter
   types.ts                  # Shared domain and API response types
   role-visibility.ts        # Role-based page/section visibility config
+  role-auth.ts              # Server-side role-based access control
+  response-redaction.ts     # Field-level redaction per role
 
-__tests__/                  # Frontend tests (49 suites, 422 tests)
-  unit/                     # Components, pages, hooks, utils (38 suites)
+__tests__/                  # Frontend tests (48 suites)
+  unit/                     # Components, pages, hooks, utils (40 suites)
   e2e/                      # Full page rendering with fetch-level mocking (8 suites, 51 tests)
 ```
 

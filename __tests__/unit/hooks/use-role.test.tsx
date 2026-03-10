@@ -1,74 +1,56 @@
 import React from 'react';
-import { render, screen, act } from '@testing-library/react';
-import { RoleProvider, useRole } from '@/lib/hooks/use-role';
+import { render, screen } from '@testing-library/react';
+
+let mockSearchParams = new URLSearchParams();
+
+jest.mock('next/navigation', () => ({
+  useSearchParams: () => mockSearchParams,
+}));
+
+import { useRole } from '@/lib/hooks/use-role';
 
 function TestConsumer() {
-  const { role, setRole } = useRole();
-  return (
-    <div>
-      <span data-testid="role">{role}</span>
-      <button onClick={() => setRole('admin')}>set-admin</button>
-      <button onClick={() => setRole('manager')}>set-manager</button>
-      <button onClick={() => setRole('engineer')}>set-engineer</button>
-    </div>
-  );
+  const { role } = useRole();
+  return <span data-testid="role">{role}</span>;
 }
 
 describe('useRole', () => {
-  it('throws when used outside RoleProvider', () => {
-    const spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    expect(() => render(<TestConsumer />)).toThrow(
-      'useRole must be used within a RoleProvider',
-    );
-    spy.mockRestore();
+  beforeEach(() => {
+    mockSearchParams = new URLSearchParams();
   });
 
-  it('defaults to admin role', () => {
-    render(
-      <RoleProvider>
-        <TestConsumer />
-      </RoleProvider>,
-    );
+  it('defaults to engineer when no role param is present', () => {
+    render(<TestConsumer />);
+    expect(screen.getByTestId('role').textContent).toBe('engineer');
+  });
+
+  it('reads admin role from URL search params', () => {
+    mockSearchParams = new URLSearchParams('role=admin');
+    render(<TestConsumer />);
     expect(screen.getByTestId('role').textContent).toBe('admin');
   });
 
-  it('switches to manager role', () => {
-    render(
-      <RoleProvider>
-        <TestConsumer />
-      </RoleProvider>,
-    );
-    act(() => {
-      screen.getByText('set-manager').click();
-    });
+  it('reads manager role from URL search params', () => {
+    mockSearchParams = new URLSearchParams('role=manager');
+    render(<TestConsumer />);
     expect(screen.getByTestId('role').textContent).toBe('manager');
   });
 
-  it('switches to engineer role', () => {
-    render(
-      <RoleProvider>
-        <TestConsumer />
-      </RoleProvider>,
-    );
-    act(() => {
-      screen.getByText('set-engineer').click();
-    });
+  it('reads engineer role from URL search params', () => {
+    mockSearchParams = new URLSearchParams('role=engineer');
+    render(<TestConsumer />);
     expect(screen.getByTestId('role').textContent).toBe('engineer');
   });
 
-  it('switches back to admin from another role', () => {
-    render(
-      <RoleProvider>
-        <TestConsumer />
-      </RoleProvider>,
-    );
-    act(() => {
-      screen.getByText('set-engineer').click();
-    });
+  it('defaults to engineer for invalid role values', () => {
+    mockSearchParams = new URLSearchParams('role=superadmin');
+    render(<TestConsumer />);
     expect(screen.getByTestId('role').textContent).toBe('engineer');
-    act(() => {
-      screen.getByText('set-admin').click();
-    });
-    expect(screen.getByTestId('role').textContent).toBe('admin');
+  });
+
+  it('defaults to engineer for empty role value', () => {
+    mockSearchParams = new URLSearchParams('role=');
+    render(<TestConsumer />);
+    expect(screen.getByTestId('role').textContent).toBe('engineer');
   });
 });

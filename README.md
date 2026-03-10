@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-599%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-694%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -55,7 +55,7 @@ All pages support date range filtering (7d / 14d / 30d / all), role-based views 
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (66 suites, 599 tests)       |
+| `npm test`              | Run all tests (70 suites, 694 tests)       |
 | `npm run test:unit`     | Run unit tests only (47 suites)            |
 | `npm run test:integration` | Run API integration tests only (8 suites) |
 | `npm run test:e2e`      | Run E2E page tests only (8 suites)         |
@@ -104,10 +104,12 @@ app/
       models/
       alerts/
       troubleshooting/
-    __tests__/            # Backend tests (17 suites — analytics unit + API integration + API utility)
+    __tests__/            # Backend tests (22 suites — analytics, API middleware, authz, integration)
       unit/analytics/
-      unit/api/
+      unit/api/           # Handler, logger, rate limiter
+      unit/authz/         # Role-auth, response-redaction
       integration/api/
+      integration/authz/
   dashboard/              # 7 pages + layout with role-based nav highlighting
 components/
   charts/                 # 9 chart components (Recharts wrappers)
@@ -135,8 +137,13 @@ docs/                     # Product specs, decisions, workflow docs
 6. **TDD workflow** — tests written before implementation for all analytics logic and components.
 7. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
 8. **Role-based views** — a "Viewing as" selector lets users switch between Org Admin, Eng Manager, and Platform Engineer personas. Each role sees different pages, KPIs, and table columns based on a declarative visibility config. Cost-sensitive data is restricted to leadership roles.
+9. **Server-side authorization** — `withRoleAccess` enforces page-level gating and field-level redaction on all API routes.
+10. **Structured logging** — JSON logging with requestId, method, path, status, durationMs, and role on all API responses.
+11. **Rate limiting** — in-memory token bucket (100 req/60s) with Retry-After header on all API routes.
+12. **Responsive layout** — sidebar collapses to a hamburger menu on mobile viewports.
+13. **CI pipeline** — GitHub Actions for lint, test, and build gates.
 
-See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions).
+See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (26 documented decisions, PD-001 through PD-026).
 
 ---
 
@@ -151,8 +158,9 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 | Hooks, utilities & role visibility                        | 9      | 126     |
 | API integration                                           | 8      | 60      |
 | E2E (fetch-level)                                         | 8      | 51      |
-| API utility                                               | 1      | 6       |
-| **Total**                                                 | **66** | **599** |
+| API utility & middleware (handler, logger, rate limiter)   | 3      | —       |
+| Authorization (role-auth, redaction, integration)         | 3      | —       |
+| **Total**                                                 | **70** | **694** |
 
 Tests are deterministic, fast (~3s), and isolated. No network, no database.
 
@@ -178,16 +186,61 @@ The dataset supports meaningful aggregation for adoption, reliability, performan
 
 ## Documentation
 
+### Core Specs
 | Document                                                       | Description                                     |
 | -------------------------------------------------------------- | ----------------------------------------------- |
-| [`docs/requirements-spec.md`](docs/requirements-spec.md)       | Product requirements and user personas          |
-| [`docs/user-stories.md`](docs/user-stories.md)                 | 42 user stories mapped to personas and features |
+| [`docs/requirements-spec.md`](docs/requirements-spec.md)       | Product requirements, personas, and dashboard pages |
+| [`docs/user-stories.md`](docs/user-stories.md)                 | 44 user stories mapped to personas and features |
 | [`docs/technical-spec.md`](docs/technical-spec.md)             | Architecture, stack, data flow                  |
-| [`docs/testing-spec.md`](docs/testing-spec.md)                 | TDD approach and test organization              |
-| [`docs/product-decisions.md`](docs/product-decisions.md)       | 23 product decisions with rationale             |
+| [`docs/testing-spec.md`](docs/testing-spec.md)                 | TDD approach, test taxonomy, and risk coverage  |
+| [`docs/product-decisions.md`](docs/product-decisions.md)       | 26 product decisions with rationale             |
 | [`docs/roadmap.md`](docs/roadmap.md)                           | Completed, in-progress, and planned work        |
-| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led             |
+
+### Process & Workflow
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (11 phases) |
 | [`docs/development-workflow.md`](docs/development-workflow.md) | Phase-based workflow with mermaid diagram       |
+
+### Research & Design
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/research-scope.md`](docs/research-scope.md)             | Problem framing, personas, scope boundaries     |
+| [`docs/competitive-analysis.md`](docs/competitive-analysis.md) | Landscape positioning and alternatives          |
+| [`docs/metric-rationale.md`](docs/metric-rationale.md)         | Per-metric justification by persona and use case|
+| [`docs/wireframes.md`](docs/wireframes.md)                     | Low-fidelity ASCII wireframes for all 7 pages   |
+| [`docs/prototype-notes.md`](docs/prototype-notes.md)           | Design iterations and component patterns        |
+
+### Production & Security
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/authz-spec.md`](docs/authz-spec.md)                     | Authorization spec, threat model, migration plan|
+| [`docs/production-readiness.md`](docs/production-readiness.md) | Checklist with done/partial/planned status       |
+| [`docs/limitations.md`](docs/limitations.md)                   | Known limitations and honest scope boundaries   |
+
+### Traceability
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/assignment-traceability.md`](docs/assignment-traceability.md) | Requirement → implementation → test mapping |
+
+---
+
+## Evidence for Assignment Requirements
+
+For a complete mapping of every assignment requirement to its implementation, test, and documentation evidence, see [`docs/assignment-traceability.md`](docs/assignment-traceability.md).
+
+Quick summary:
+
+| Dimension | Status | Evidence |
+|-----------|--------|----------|
+| Adoption metrics | Full | Overview page, 8 KPIs, trend charts |
+| Reliability metrics | Full | Agents page, failure taxonomy, troubleshooting |
+| Performance metrics | Full | Latency KPIs, p50/p95 trends |
+| Cost / optimization | Full | Teams page, cost trends, insight cards |
+| DDD architecture | Full | 8 vertical slices, repository pattern |
+| TDD workflow | Full | 70 suites, 694 tests, tests-first |
+| Role-based views | Full | 3 personas, server-side authz with page gating + field redaction |
+| Documentation | Full | 17 docs covering specs, design, process, readiness |
 
 ---
 

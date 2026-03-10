@@ -1,8 +1,10 @@
 import { parseDateParams } from '@/lib/utils/date-filter';
 import { getAlerts } from './alerts.service';
-import type { AlertsResponse } from '@/lib/types';
+import { redactAlertsResponse } from '@/lib/utils/response-redaction';
+import type { UserRole } from '@/lib/types';
 
-export function handleAlertsRequest(request: Request): AlertsResponse {
+export function handleAlertsRequest(request: Request, role: UserRole): object {
   const { from, to } = parseDateParams(request);
-  return getAlerts(from, to);
+  const data = getAlerts(from, to);
+  return redactAlertsResponse(data, role);
 }

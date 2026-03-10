@@ -134,6 +134,11 @@ const mockInsights: InsightsResponse = {
 
 // ---------- Helpers ----------
 
+// Mock useRole — role is now read from URL search params, no provider needed
+jest.mock('@/lib/hooks/use-role', () => ({
+  useRole: () => ({ role: 'admin' }),
+}));
+
 function createWrapper() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -183,7 +188,7 @@ describe('useOverviewKPIs', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockOverview);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -194,7 +199,7 @@ describe('useOverviewKPIs', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/overview?from=2026-03-01&to=2026-03-07',
+      '/api/analytics/overview?from=2026-03-01&to=2026-03-07&role=admin',
     );
   });
 
@@ -217,7 +222,7 @@ describe('useTrends', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockTrends);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/trends');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/trends?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -228,7 +233,7 @@ describe('useTrends', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/trends?from=2026-02-15&to=2026-03-01',
+      '/api/analytics/trends?from=2026-02-15&to=2026-03-01&role=admin',
     );
   });
 
@@ -250,7 +255,7 @@ describe('useAgentAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockAgents);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/agents');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/agents?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -261,7 +266,7 @@ describe('useAgentAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/agents?from=2026-03-01&to=2026-03-09',
+      '/api/analytics/agents?from=2026-03-01&to=2026-03-09&role=admin',
     );
   });
 
@@ -283,7 +288,7 @@ describe('useTeamAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockTeams);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/teams');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/teams?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -294,7 +299,7 @@ describe('useTeamAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/teams?from=2026-02-01&to=2026-03-01',
+      '/api/analytics/teams?from=2026-02-01&to=2026-03-01&role=admin',
     );
   });
 
@@ -316,7 +321,7 @@ describe('useInsights', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockInsights);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/insights');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/insights?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -327,7 +332,7 @@ describe('useInsights', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/insights?from=2026-03-01&to=2026-03-09',
+      '/api/analytics/insights?from=2026-03-01&to=2026-03-09&role=admin',
     );
   });
 
@@ -349,7 +354,7 @@ describe('useModelAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockModels);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/models');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/models?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -360,7 +365,7 @@ describe('useModelAnalytics', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/models?from=2026-03-01&to=2026-03-09',
+      '/api/analytics/models?from=2026-03-01&to=2026-03-09&role=admin',
     );
   });
 
@@ -382,7 +387,7 @@ describe('useAlerts', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockAlerts);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/alerts');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/alerts?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -393,7 +398,7 @@ describe('useAlerts', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/alerts?from=2026-03-01&to=2026-03-09',
+      '/api/analytics/alerts?from=2026-03-01&to=2026-03-09&role=admin',
     );
   });
 
@@ -415,7 +420,7 @@ describe('useTroubleshooting', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(result.current.data).toEqual(mockTroubleshooting);
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/troubleshooting');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/troubleshooting?role=admin');
   });
 
   it('includes date range parameters in the URL', async () => {
@@ -426,7 +431,7 @@ describe('useTroubleshooting', () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
     expect(fetchMock).toHaveBeenCalledWith(
-      '/api/analytics/troubleshooting?from=2026-03-01&to=2026-03-09',
+      '/api/analytics/troubleshooting?from=2026-03-01&to=2026-03-09&role=admin',
     );
   });
 
@@ -447,7 +452,7 @@ describe('fetchJson (via hooks)', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview?role=admin');
   });
 
   it('passes no query string when range is empty object', async () => {
@@ -456,7 +461,7 @@ describe('fetchJson (via hooks)', () => {
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
 
-    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview');
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/overview?role=admin');
   });
 
   it('starts in loading state before fetch resolves', () => {

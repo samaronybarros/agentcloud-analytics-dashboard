@@ -29,8 +29,13 @@ app/api/__tests__/
       models.test.ts
       alerts.test.ts
       troubleshooting.test.ts
-    api/                    # API utility (1 suite)
-      api-handler.test.ts
+    api/                    # API utility + middleware (3 suites)
+      api-handler.test.ts   # Error handling, logging, rate limiting, request IDs
+      api-logger.test.ts    # Structured JSON logging
+      rate-limiter.test.ts  # Token bucket rate limiting
+    authz/                  # Authorization (2 suites)
+      role-auth.test.ts     # Role-based access control unit tests
+      response-redaction.test.ts  # Field-level redaction unit tests
   integration/
     api/                    # Route response shape validation (8 suites, 60 tests)
       overview.test.ts
@@ -41,6 +46,8 @@ app/api/__tests__/
       models.test.ts
       alerts.test.ts
       troubleshooting.test.ts
+    authz/                  # Authorization integration tests
+      authz.test.ts         # End-to-end role gating + redaction across endpoints
 ```
 
 ### Frontend tests (`__tests__/`)
@@ -62,7 +69,7 @@ __tests__/
       role-visibility.test.ts
     components/               # Component rendering with mocked data
       charts/                 # Chart components (9 suites)
-      dashboard/              # KPI card, section, sidebar nav, role selector, etc. (9 suites)
+      dashboard/              # KPI card, section, sidebar nav, etc. (9 suites)
       tables/                 # Data tables (5 suites)
       insights/               # Insight cards (1 suite)
       alerts/                 # Alert card (1 suite)
@@ -91,8 +98,9 @@ __tests__/
 | Hooks, utilities & role visibility | 9 | 126 |
 | API integration | 8 | 60 |
 | E2E (fetch-level) | 8 | 51 |
-| API utility | 1 | 6 |
-| **Total** | **66** | **599** |
+| API utility & middleware (handler, logger, rate limiter) | 3 | — |
+| Authorization (role-auth, response-redaction, integration) | 3 | — |
+| **Total** | **70** | **694** |
 
 ## Priority Coverage
 
@@ -171,7 +179,7 @@ expect(tickFormatter('2026-02-01')).toBe('02-01');
 ```
 
 ### Fetch-level mocking (E2E tests)
-E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider + RoleProvider`, testing the full data flow:
+E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider`, mocking `useRole` directly to control the active role during tests:
 ```tsx
 const fetchMock = jest.fn();
 global.fetch = fetchMock;
@@ -182,13 +190,57 @@ fetchMock.mockImplementation((url: string) => {
 render(<OverviewPage />, { wrapper: createE2EWrapper() });
 ```
 
+## Test Taxonomy Clarification
+
+| Label in This Project | What It Actually Tests | Environment | Real Network? | Real Browser? |
+|---|---|---|---|---|
+| **Unit tests** | Individual functions, services, utilities, component rendering | jsdom / Node | No | No |
+| **API integration tests** | Full route handler → controller → service → repository chain | Node (`@jest-environment node`) | No | No |
+| **E2E (fetch-level)** | Full page rendering with mocked `global.fetch`, real React Query + providers | jsdom | No (fetch mocked) | No (jsdom) |
+| **True browser E2E** | Real browser, real server, real network | Playwright/Cypress | Yes | Yes |
+
+**Important**: The "E2E" tests in this project are **fetch-level integration tests**, not true browser E2E tests. They mock `global.fetch` and render pages in jsdom with real React Query clients. They exercise the full frontend data flow (fetch → hook → component → DOM) but do not test:
+- Real HTTP requests to the Next.js server
+- Browser rendering, layout, or CSS
+- Client-side navigation between pages
+- JavaScript hydration behavior
+
+True browser E2E tests are implemented via **Playwright** (config + smoke tests).
+
+## Risk Coverage
+
+### Covered Risks
+
+| Risk | Coverage | Test Type |
+|------|----------|-----------|
+| Incorrect metric aggregation | High | Unit tests (8 service suites, 111 tests) |
+| API response shape regression | High | Integration tests (8 suites, 60 tests) |
+| Component rendering with various states | High | Unit tests (24 component suites) |
+| Date range filtering logic | High | Unit + integration tests |
+| Role visibility configuration | High | Unit tests (role-visibility suite) |
+| Hook error/loading state handling | Medium | Unit tests (use-analytics suite) |
+| Page-level data flow | Medium | Fetch-level E2E (8 suites) |
+
+### Uncovered Risks
+
+| Risk | Why Uncovered | Impact | Mitigation |
+|------|--------------|--------|------------|
+| Browser rendering / CSS layout | No real browser tests | Layout bugs visible only in browser | Manual testing, planned Playwright suite |
+| Client-side routing transitions | jsdom doesn't support Next.js navigation | Broken nav in production | Manual testing |
+| Hydration mismatches | jsdom doesn't hydrate server HTML | Runtime errors in browser | Addressed architecturally (PD-006) |
+| API under concurrent load | No load testing | Performance degradation | Planned — not critical for demo |
+| Accessibility compliance | No automated a11y testing | WCAG violations | Planned — axe-core integration |
+| Server-side authorization | Covered — role-auth, redaction, and integration tests | — | — |
+| Cross-browser compatibility | Only jsdom tested | Browser-specific bugs | Manual testing in Chrome/Firefox/Safari |
+| Mobile/responsive layout | Responsive sidebar implemented; no visual regression tests | Layout bugs on edge-case viewports | Manual testing + planned Playwright visual tests |
+
 ## Running Tests
 
 ```bash
 npm test                 # Run all tests once
 npm run test:unit        # Unit tests only (frontend + backend)
 npm run test:integration # API integration tests only
-npm run test:e2e         # E2E page tests only
+npm run test:e2e         # E2E page tests only (fetch-level, not browser)
 npm run test:watch       # Watch mode for TDD
 npm run test:coverage    # Generate coverage report
 ```

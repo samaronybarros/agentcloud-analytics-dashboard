@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('next/link', () => {
@@ -15,17 +16,22 @@ jest.mock('next/link', () => {
 });
 
 import SidebarNav from '@/components/dashboard/sidebar-nav';
-import { RoleProvider } from '@/lib/hooks/use-role';
 import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
 
 function renderNav() {
-  return render(
-    <RoleProvider>
-      <SidebarNav />
-    </RoleProvider>,
-  );
+  return render(<SidebarNav />);
+}
+
+/**
+ * Helper: returns the desktop navigation element.
+ * The responsive sidebar renders two <nav> elements (mobile + desktop).
+ * In JSDOM both are present; the desktop nav is the last one.
+ */
+function getDesktopNav(): HTMLElement {
+  const navs = screen.getAllByRole('navigation');
+  return navs[navs.length - 1];
 }
 
 describe('SidebarNav', () => {
@@ -35,60 +41,61 @@ describe('SidebarNav', () => {
 
   it('renders the brand name', () => {
     renderNav();
-    expect(screen.getByText('AgentCloud')).toBeInTheDocument();
+    const brandElements = screen.getAllByText('AgentCloud');
+    expect(brandElements.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders all seven nav links for admin role (default)', () => {
+  it('renders six nav links for engineer role (default, Teams hidden)', () => {
     renderNav();
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');
-    expect(links).toHaveLength(7);
+    expect(links).toHaveLength(6);
+    expect(within(nav).queryByText('Teams')).not.toBeInTheDocument();
   });
 
   it('applies active styles to the current route', () => {
-    mockUsePathname.mockReturnValue('/dashboard/teams');
+    mockUsePathname.mockReturnValue('/dashboard/agents');
     renderNav();
-    const teamsLink = screen.getByText('Teams').closest('a')!;
-    expect(teamsLink.className).toContain('font-medium');
-    expect(teamsLink.className).toContain('text-gray-900');
+    const nav = getDesktopNav();
+    const agentsLink = within(nav).getByText('Agents').closest('a')!;
+    expect(agentsLink.className).toContain('font-medium');
+    expect(agentsLink.className).toContain('text-gray-900');
   });
 
   it('applies inactive styles to non-current routes', () => {
-    mockUsePathname.mockReturnValue('/dashboard/teams');
+    mockUsePathname.mockReturnValue('/dashboard/agents');
     renderNav();
-    const overviewLink = screen.getByText('Overview').closest('a')!;
-    const agentsLink = screen.getByText('Agents').closest('a')!;
-    const optimizationLink = screen.getByText('Optimization').closest('a')!;
+    const nav = getDesktopNav();
+    const overviewLink = within(nav).getByText('Overview').closest('a')!;
+    const modelsLink = within(nav).getByText('Models').closest('a')!;
+    const optimizationLink = within(nav).getByText('Optimization').closest('a')!;
     expect(overviewLink.className).toContain('text-gray-600');
-    expect(agentsLink.className).toContain('text-gray-600');
+    expect(modelsLink.className).toContain('text-gray-600');
     expect(optimizationLink.className).toContain('text-gray-600');
   });
 
   it('does not highlight Overview when on a sub-page', () => {
     mockUsePathname.mockReturnValue('/dashboard/agents');
     renderNav();
-    const overviewLink = screen.getByText('Overview').closest('a')!;
+    const nav = getDesktopNav();
+    const overviewLink = within(nav).getByText('Overview').closest('a')!;
     expect(overviewLink.className).toContain('text-gray-600');
     expect(overviewLink.className).not.toContain('font-medium');
   });
 
   it('uses Next.js Link for client-side navigation', () => {
     renderNav();
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const nextLinks = within(nav).getAllByTestId('next-link');
-    expect(nextLinks).toHaveLength(7);
+    expect(nextLinks).toHaveLength(6);
   });
 
   it('produces consistent className output for same pathname across renders', () => {
     mockUsePathname.mockReturnValue('/dashboard/optimization');
-    const { container: firstRender } = render(
-      <RoleProvider><SidebarNav /></RoleProvider>,
-    );
+    const { container: firstRender } = render(<SidebarNav />);
     const firstHTML = firstRender.innerHTML;
 
-    const { container: secondRender } = render(
-      <RoleProvider><SidebarNav /></RoleProvider>,
-    );
+    const { container: secondRender } = render(<SidebarNav />);
     const secondHTML = secondRender.innerHTML;
 
     expect(firstHTML).toBe(secondHTML);
@@ -100,22 +107,18 @@ describe('SidebarNav — role-based filtering', () => {
     mockUsePathname.mockReturnValue('/dashboard');
   });
 
-  it('hides Teams link for engineer role', () => {
+  it('shows all seven links for admin role', () => {
     jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
-      role: 'engineer',
-      setRole: jest.fn(),
+      role: 'admin',
+
     });
 
-    render(
-      <RoleProvider>
-        <SidebarNav />
-      </RoleProvider>,
-    );
+    render(<SidebarNav />);
 
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');
-    expect(links).toHaveLength(6);
-    expect(screen.queryByText('Teams')).not.toBeInTheDocument();
+    expect(links).toHaveLength(7);
+    expect(within(nav).getByText('Teams')).toBeInTheDocument();
 
     jest.restoreAllMocks();
   });
@@ -123,16 +126,12 @@ describe('SidebarNav — role-based filtering', () => {
   it('shows all links for manager role', () => {
     jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
       role: 'manager',
-      setRole: jest.fn(),
+
     });
 
-    render(
-      <RoleProvider>
-        <SidebarNav />
-      </RoleProvider>,
-    );
+    render(<SidebarNav />);
 
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');
     expect(links).toHaveLength(7);
 

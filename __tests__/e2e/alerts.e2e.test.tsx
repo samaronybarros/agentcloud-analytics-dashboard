@@ -7,6 +7,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import type { AlertsResponse } from '@/lib/types';
 import { createE2EWrapper, setupFetchMock, jsonResponse, errorResponse } from './helpers';
 
+jest.mock('@/lib/hooks/use-role', () => {
+  const actual = jest.requireActual('@/lib/hooks/use-role');
+  return {
+    ...actual,
+    useRole: () => ({ role: 'admin' }),
+  };
+});
+
 import AlertsPage from '@/app/dashboard/alerts/page';
 
 const alertsData: AlertsResponse = {

@@ -3,7 +3,13 @@
  */
 import { GET } from '@/app/api/analytics/models/route';
 
-const req = (params = '') => new Request(`http://localhost/api/analytics/models${params}`);
+const req = (params = '') => {
+  const separator = params.includes('?') ? '&' : '?';
+  const url = params
+    ? `http://localhost/api/analytics/models${params}${separator}role=admin`
+    : `http://localhost/api/analytics/models?role=admin`;
+  return new Request(url);
+};
 
 describe('GET /api/analytics/models', () => {
   it('returns a valid JSON response', async () => {

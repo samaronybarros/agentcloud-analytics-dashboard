@@ -4,7 +4,13 @@
 import { GET } from '@/app/api/analytics/trends/route';
 import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend, DayOfWeekEntry } from '@/lib/types';
 
-const req = (params = '') => new Request(`http://localhost/api/analytics/trends${params}`);
+const req = (params = '') => {
+  const separator = params.includes('?') ? '&' : '?';
+  const url = params
+    ? `http://localhost/api/analytics/trends${params}${separator}role=admin`
+    : `http://localhost/api/analytics/trends?role=admin`;
+  return new Request(url);
+};
 
 describe('GET /api/analytics/trends', () => {
   it('returns a valid JSON response', async () => {

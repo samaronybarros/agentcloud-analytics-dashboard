@@ -7,6 +7,10 @@ import { render, screen, waitFor } from '@testing-library/react';
 import type { TroubleshootingResponse } from '@/lib/types';
 import { createE2EWrapper, setupFetchMock, jsonResponse, errorResponse } from './helpers';
 
+jest.mock('@/lib/hooks/use-role', () => ({
+  useRole: () => ({ role: 'admin' }),
+}));
+
 jest.mock('recharts', () => {
   const React = require('react');
   const mock = (name: string) =>

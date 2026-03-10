@@ -24,25 +24,54 @@ AgentCloud Analytics Dashboard is a customer-facing analytics tool for organizat
 
 ### Overview
 - 8 KPI cards: total runs, active users, active agents, success rate, avg latency, p95 latency, token volume, estimated cost
-- Trend charts: runs over time, success/error/retry, latency (p50/p95), cost
+- Trend charts: runs over time, day-of-week distribution, latency (p50/p95), cost
 
 ### Agents
 - Agent leaderboard table (runs, success rate, avg latency, cost)
-- Top agents by usage
+- Cost vs reliability scatter plot
 - Failure taxonomy breakdown
 
 ### Teams
-- Usage by team breakdown
+- Team usage table (with success rate, avg latency)
+- Team comparison bar chart
 - Cost by model (donut chart)
 - Top users table
 
+### Models
+- Model performance table: success rate, latency, cost per token, throughput
+- Model comparison across key dimensions
+
 ### Optimization
 - Insight cards: high-cost/low-success agents, rising failure trends, top cost drivers, degraded latency agents
-- Optimization opportunity summaries
+- Severity-grouped (critical/warning/information)
+
+### Alerts
+- Alert cards with severity classification
+- Threshold breaches and anomaly detection
+- Critical events requiring immediate attention
+
+### Troubleshooting
+- Error timeline chart
+- Agent error breakdown table
+- Failure pattern analysis and remediation guidance
 
 ## Data Model
 
 All data is deterministically mocked. See `CLAUDE.md` Section 8 for entity schemas (Agent, Run, User).
+
+## Role-Based Views
+
+The dashboard supports three user personas with differentiated access:
+
+| Role | Pages Visible | Cost Data | Primary Focus |
+|------|--------------|-----------|---------------|
+| Org Admin | All 7 pages | Full access | Adoption, cost, org-wide visibility |
+| Engineering Manager | 6 pages (no Teams cost-by-model) | Partial | Team reliability, performance |
+| Platform Engineer | 5 pages (no Teams) | None | Agent optimization, failure diagnosis |
+
+Cost-sensitive data (estimated cost, cost trends, cost-by-model) is the primary sensitivity boundary between roles. See PD-024 and PD-025 for rationale.
+
+**Current implementation:** Client-side only (demo-grade). The API returns full data; the UI conditionally renders based on the active role. See `docs/authz-spec.md` for the server-side enforcement plan.
 
 ## Non-Functional Requirements
 

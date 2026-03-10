@@ -19,6 +19,7 @@ export function DateRangePicker() {
       </label>
       <select
         id="date-range"
+        aria-label="Select date range"
         value={preset}
         onChange={(e) => {
           const value = e.target.value;

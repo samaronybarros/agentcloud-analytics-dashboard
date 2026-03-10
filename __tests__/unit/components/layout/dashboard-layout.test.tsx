@@ -3,11 +3,20 @@ import { render, screen, within } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('@/lib/hooks/use-date-range', () => ({
   DateRangeProvider: ({ children }: { children: React.ReactNode }) => children,
 }));
+
+jest.mock('@/lib/hooks/use-role', () => {
+  const actual = jest.requireActual('@/lib/hooks/use-role');
+  return {
+    ...actual,
+    useRole: () => ({ role: 'admin' }),
+  };
+});
 
 jest.mock('@/components/dashboard/dashboard-header', () => ({
   DashboardHeader: () => null,
@@ -27,6 +36,16 @@ import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
 
+/**
+ * Helper: returns the desktop navigation element.
+ * The responsive sidebar renders two <nav> elements (mobile + desktop).
+ * In JSDOM both are present; the desktop nav is the last one.
+ */
+function getDesktopNav(): HTMLElement {
+  const navs = screen.getAllByRole('navigation');
+  return navs[navs.length - 1];
+}
+
 describe('DashboardLayout', () => {
   beforeEach(() => {
     mockUsePathname.mockReturnValue('/dashboard');
@@ -38,7 +57,8 @@ describe('DashboardLayout', () => {
         <p>Page content</p>
       </DashboardLayout>,
     );
-    expect(screen.getByText('AgentCloud')).toBeInTheDocument();
+    const brandElements = screen.getAllByText('AgentCloud');
+    expect(brandElements.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders brand as a heading', () => {
@@ -47,7 +67,8 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    expect(screen.getByRole('heading', { name: 'AgentCloud' })).toBeInTheDocument();
+    const headings = screen.getAllByRole('heading', { name: 'AgentCloud' });
+    expect(headings.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders all seven navigation links', () => {
@@ -56,13 +77,14 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    expect(screen.getByText('Overview')).toBeInTheDocument();
-    expect(screen.getByText('Agents')).toBeInTheDocument();
-    expect(screen.getByText('Teams')).toBeInTheDocument();
-    expect(screen.getByText('Models')).toBeInTheDocument();
-    expect(screen.getByText('Optimization')).toBeInTheDocument();
-    expect(screen.getByText('Alerts')).toBeInTheDocument();
-    expect(screen.getByText('Troubleshooting')).toBeInTheDocument();
+    const nav = getDesktopNav();
+    expect(within(nav).getByText('Overview')).toBeInTheDocument();
+    expect(within(nav).getByText('Agents')).toBeInTheDocument();
+    expect(within(nav).getByText('Teams')).toBeInTheDocument();
+    expect(within(nav).getByText('Models')).toBeInTheDocument();
+    expect(within(nav).getByText('Optimization')).toBeInTheDocument();
+    expect(within(nav).getByText('Alerts')).toBeInTheDocument();
+    expect(within(nav).getByText('Troubleshooting')).toBeInTheDocument();
   });
 
   it('renders exactly seven navigation links', () => {
@@ -71,7 +93,7 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');
     expect(links).toHaveLength(7);
   });
@@ -82,13 +104,14 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    expect(screen.getByText('Overview').closest('a')).toHaveAttribute('href', '/dashboard');
-    expect(screen.getByText('Agents').closest('a')).toHaveAttribute('href', '/dashboard/agents');
-    expect(screen.getByText('Teams').closest('a')).toHaveAttribute('href', '/dashboard/teams');
-    expect(screen.getByText('Models').closest('a')).toHaveAttribute('href', '/dashboard/models');
-    expect(screen.getByText('Optimization').closest('a')).toHaveAttribute('href', '/dashboard/optimization');
-    expect(screen.getByText('Alerts').closest('a')).toHaveAttribute('href', '/dashboard/alerts');
-    expect(screen.getByText('Troubleshooting').closest('a')).toHaveAttribute('href', '/dashboard/troubleshooting');
+    const nav = getDesktopNav();
+    expect(within(nav).getByText('Overview').closest('a')).toHaveAttribute('href', '/dashboard');
+    expect(within(nav).getByText('Agents').closest('a')).toHaveAttribute('href', '/dashboard/agents');
+    expect(within(nav).getByText('Teams').closest('a')).toHaveAttribute('href', '/dashboard/teams');
+    expect(within(nav).getByText('Models').closest('a')).toHaveAttribute('href', '/dashboard/models');
+    expect(within(nav).getByText('Optimization').closest('a')).toHaveAttribute('href', '/dashboard/optimization');
+    expect(within(nav).getByText('Alerts').closest('a')).toHaveAttribute('href', '/dashboard/alerts');
+    expect(within(nav).getByText('Troubleshooting').closest('a')).toHaveAttribute('href', '/dashboard/troubleshooting');
   });
 
   it('navigation links are inside the nav element', () => {
@@ -97,7 +120,7 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     expect(within(nav).getByText('Overview')).toBeInTheDocument();
     expect(within(nav).getByText('Agents')).toBeInTheDocument();
     expect(within(nav).getByText('Teams')).toBeInTheDocument();
@@ -143,7 +166,8 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    expect(screen.getByRole('navigation')).toBeInTheDocument();
+    const navs = screen.getAllByRole('navigation');
+    expect(navs.length).toBeGreaterThanOrEqual(1);
   });
 
   it('has a main element for content', () => {
@@ -161,7 +185,7 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const listItems = within(nav).getAllByRole('listitem');
     expect(listItems).toHaveLength(7);
   });
@@ -172,8 +196,9 @@ describe('DashboardLayout', () => {
         <p>Content</p>
       </DashboardLayout>,
     );
-    const nav = screen.getByRole('navigation');
+    const nav = getDesktopNav();
     const main = screen.getByRole('main');
+    // The desktop nav and main share the same flex container parent
     expect(nav.parentElement).toBe(main.parentElement);
   });
 
@@ -218,7 +243,8 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const overviewLink = screen.getByText('Overview').closest('a')!;
+      const nav = getDesktopNav();
+      const overviewLink = within(nav).getByText('Overview').closest('a')!;
       expect(overviewLink.className).toContain('text-gray-900');
       expect(overviewLink.className).toContain('font-medium');
     });
@@ -230,9 +256,10 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const agentsLink = screen.getByText('Agents').closest('a')!;
-      const teamsLink = screen.getByText('Teams').closest('a')!;
-      const optimizationLink = screen.getByText('Optimization').closest('a')!;
+      const nav = getDesktopNav();
+      const agentsLink = within(nav).getByText('Agents').closest('a')!;
+      const teamsLink = within(nav).getByText('Teams').closest('a')!;
+      const optimizationLink = within(nav).getByText('Optimization').closest('a')!;
       expect(agentsLink.className).toContain('text-gray-600');
       expect(teamsLink.className).toContain('text-gray-600');
       expect(optimizationLink.className).toContain('text-gray-600');
@@ -245,7 +272,8 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const agentsLink = screen.getByText('Agents').closest('a')!;
+      const nav = getDesktopNav();
+      const agentsLink = within(nav).getByText('Agents').closest('a')!;
       expect(agentsLink.className).toContain('text-gray-900');
       expect(agentsLink.className).toContain('font-medium');
     });
@@ -257,7 +285,8 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const teamsLink = screen.getByText('Teams').closest('a')!;
+      const nav = getDesktopNav();
+      const teamsLink = within(nav).getByText('Teams').closest('a')!;
       expect(teamsLink.className).toContain('text-gray-900');
       expect(teamsLink.className).toContain('font-medium');
     });
@@ -269,7 +298,8 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const optimizationLink = screen.getByText('Optimization').closest('a')!;
+      const nav = getDesktopNav();
+      const optimizationLink = within(nav).getByText('Optimization').closest('a')!;
       expect(optimizationLink.className).toContain('text-gray-900');
       expect(optimizationLink.className).toContain('font-medium');
     });
@@ -281,7 +311,7 @@ describe('DashboardLayout', () => {
           <p>Content</p>
         </DashboardLayout>,
       );
-      const nav = screen.getByRole('navigation');
+      const nav = getDesktopNav();
       const links = within(nav).getAllByRole('link');
       const activeLinks = links.filter((link) => link.className.includes('text-gray-900'));
       expect(activeLinks).toHaveLength(1);

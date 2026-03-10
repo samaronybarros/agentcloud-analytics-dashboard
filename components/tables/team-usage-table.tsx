@@ -6,6 +6,7 @@ export function TeamUsageTable({ data }: { data: TeamUsageEntry[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
+        <caption className="sr-only">Team usage showing runs, active agents, active users, success rate, latency, and cost per team</caption>
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
             <th className="px-3 py-3">Team</th>

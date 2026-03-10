@@ -4,7 +4,13 @@
 import { GET } from '@/app/api/analytics/overview/route';
 import type { OverviewKPIs } from '@/lib/types';
 
-const req = (params = '') => new Request(`http://localhost/api/analytics/overview${params}`);
+const req = (params = '') => {
+  const separator = params.includes('?') ? '&' : '?';
+  const url = params
+    ? `http://localhost/api/analytics/overview${params}${separator}role=admin`
+    : `http://localhost/api/analytics/overview?role=admin`;
+  return new Request(url);
+};
 
 describe('GET /api/analytics/overview', () => {
   it('returns a valid JSON response', async () => {
