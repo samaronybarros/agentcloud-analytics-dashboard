@@ -99,9 +99,9 @@
 
 ---
 
-## Planned — User Roles & Permissions
+## Implemented — User Roles & Permissions
 
-- [ ] **US-036:** As an Org Admin, I want role-based access (admin, manager, viewer) so that users only see data relevant to their scope.
+- [x] **US-036:** As an Org Admin, I want role-based views (admin, manager, engineer) so that users only see data relevant to their scope.
 - [ ] **US-037:** As an Engineering Manager, I want my dashboard to default to my team's data so that I see relevant information without manual filtering.
 
 ---

@@ -153,6 +153,28 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
+### Phase 8: Role-Based Dashboard Views
+
+**Human-led decisions:**
+- Decided to implement role-based views split by user persona (Org Admin, Eng Manager, Platform Engineer)
+- Defined cost data as the primary sensitivity boundary between roles
+- Chose client-side role switching over server-side enforcement for demo suitability
+- Reviewed and requested refactor of visibility config to nest sections under pages
+
+**AI-assisted work:**
+- TDD implementation: 47 new tests written before implementation (35 visibility config, 5 role context hook, 4 role selector component, 3 sidebar role-filtering)
+- New modules: `RoleProvider` context, `role-visibility.ts` declarative config, `RoleSelector` component
+- Page-centric visibility config: sections nested under parent pages with `'all'` shorthand, resolved to flat sets at module load
+- Updated all 7 dashboard pages with conditional rendering (cost KPIs, cost trends, cost columns, cost insights, cost alerts)
+- Added `showCostColumn` props to `AgentLeaderboard` and `ModelPerformanceTable`
+- "Restricted access" state for Teams page when viewed as engineer
+- Updated 14 existing test files to wrap with `RoleProvider` or mock `useRole`
+- Documentation updates: README, roadmap, testing-spec, technical-spec, product-decisions, user-stories, ai-workflow
+
+**Result:** 63 suites / 552 tests → 66 suites / 599 tests. Two new product decisions documented (PD-024, PD-025). User story US-036 implemented.
+
+---
+
 ## Decision Authority
 
 | Area | Led by |
