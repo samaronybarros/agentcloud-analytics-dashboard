@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('@/lib/hooks/use-date-range', () => ({
@@ -13,7 +14,7 @@ jest.mock('@/lib/hooks/use-role', () => {
   const actual = jest.requireActual('@/lib/hooks/use-role');
   return {
     ...actual,
-    useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+    useRole: () => ({ role: 'admin' }),
   };
 });
 

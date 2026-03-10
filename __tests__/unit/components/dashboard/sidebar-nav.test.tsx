@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('next/link', () => {
@@ -15,17 +16,12 @@ jest.mock('next/link', () => {
 });
 
 import SidebarNav from '@/components/dashboard/sidebar-nav';
-import { RoleProvider } from '@/lib/hooks/use-role';
 import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
 
 function renderNav() {
-  return render(
-    <RoleProvider>
-      <SidebarNav />
-    </RoleProvider>,
-  );
+  return render(<SidebarNav />);
 }
 
 /**
@@ -96,14 +92,10 @@ describe('SidebarNav', () => {
 
   it('produces consistent className output for same pathname across renders', () => {
     mockUsePathname.mockReturnValue('/dashboard/optimization');
-    const { container: firstRender } = render(
-      <RoleProvider><SidebarNav /></RoleProvider>,
-    );
+    const { container: firstRender } = render(<SidebarNav />);
     const firstHTML = firstRender.innerHTML;
 
-    const { container: secondRender } = render(
-      <RoleProvider><SidebarNav /></RoleProvider>,
-    );
+    const { container: secondRender } = render(<SidebarNav />);
     const secondHTML = secondRender.innerHTML;
 
     expect(firstHTML).toBe(secondHTML);
@@ -118,14 +110,10 @@ describe('SidebarNav — role-based filtering', () => {
   it('shows all seven links for admin role', () => {
     jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
       role: 'admin',
-      setRole: jest.fn(),
+
     });
 
-    render(
-      <RoleProvider>
-        <SidebarNav />
-      </RoleProvider>,
-    );
+    render(<SidebarNav />);
 
     const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');
@@ -138,14 +126,10 @@ describe('SidebarNav — role-based filtering', () => {
   it('shows all links for manager role', () => {
     jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
       role: 'manager',
-      setRole: jest.fn(),
+
     });
 
-    render(
-      <RoleProvider>
-        <SidebarNav />
-      </RoleProvider>,
-    );
+    render(<SidebarNav />);
 
     const nav = getDesktopNav();
     const links = within(nav).getAllByRole('link');

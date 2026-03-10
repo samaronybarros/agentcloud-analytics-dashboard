@@ -1,6 +1,6 @@
+import { Suspense } from 'react';
 import SidebarNav from '@/components/dashboard/sidebar-nav';
 import { DateRangeProvider } from '@/lib/hooks/use-date-range';
-import { RoleProvider } from '@/lib/hooks/use-role';
 import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 
 export default function DashboardLayout({
@@ -9,7 +9,7 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RoleProvider>
+    <Suspense>
       <div className="flex min-h-screen">
         <SidebarNav />
         <DateRangeProvider>
@@ -19,6 +19,6 @@ export default function DashboardLayout({
           </main>
         </DateRangeProvider>
       </div>
-    </RoleProvider>
+    </Suspense>
   );
 }

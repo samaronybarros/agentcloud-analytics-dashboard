@@ -31,7 +31,7 @@ jest.mock('@/lib/hooks/use-date-range', () => ({
 }));
 
 jest.mock('@/lib/hooks/use-role', () => ({
-  useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+  useRole: () => ({ role: 'admin' }),
 }));
 
 import ModelsPage from '@/app/dashboard/models/page';

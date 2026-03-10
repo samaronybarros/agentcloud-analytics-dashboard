@@ -134,10 +134,9 @@ const mockInsights: InsightsResponse = {
 
 // ---------- Helpers ----------
 
-// Mock useRole to avoid requiring RoleProvider in test wrapper
+// Mock useRole — role is now read from URL search params, no provider needed
 jest.mock('@/lib/hooks/use-role', () => ({
-  useRole: () => ({ role: 'admin', setRole: jest.fn() }),
-  RoleProvider: ({ children }: { children: React.ReactNode }) => children,
+  useRole: () => ({ role: 'admin' }),
 }));
 
 function createWrapper() {

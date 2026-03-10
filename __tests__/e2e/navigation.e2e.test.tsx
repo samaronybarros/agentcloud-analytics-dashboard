@@ -8,18 +8,18 @@ import { render, screen, within } from '@testing-library/react';
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(),
+  useSearchParams: () => new URLSearchParams(),
 }));
 
 jest.mock('@/lib/hooks/use-role', () => {
   const actual = jest.requireActual('@/lib/hooks/use-role');
   return {
     ...actual,
-    useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+    useRole: () => ({ role: 'admin' }),
   };
 });
 
 import SidebarNav from '@/components/dashboard/sidebar-nav';
-import { RoleProvider } from '@/lib/hooks/use-role';
 import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
@@ -42,7 +42,7 @@ function getDesktopNav(): HTMLElement {
 }
 
 function renderNav() {
-  return render(<RoleProvider><SidebarNav /></RoleProvider>);
+  return render(<SidebarNav />);
 }
 
 describe('Navigation (e2e)', () => {
