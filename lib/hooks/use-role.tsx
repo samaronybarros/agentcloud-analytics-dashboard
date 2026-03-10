@@ -11,7 +11,7 @@ interface RoleContextValue {
 
 const RoleContext = createContext<RoleContextValue | null>(null);
 
-const DEFAULT_ROLE: UserRole = 'admin';
+const DEFAULT_ROLE: UserRole = 'engineer';
 
 export function RoleProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<UserRole>(DEFAULT_ROLE);

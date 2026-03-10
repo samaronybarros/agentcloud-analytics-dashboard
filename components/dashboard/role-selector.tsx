@@ -25,6 +25,7 @@ export function RoleSelector() {
       </label>
       <select
         id="role-selector"
+        aria-label="Select viewing role"
         value={role}
         onChange={(e) => {
           const value = e.target.value;

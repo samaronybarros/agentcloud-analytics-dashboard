@@ -12,6 +12,7 @@ export function AgentErrorTable({ data }: { data: AgentErrorBreakdown[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
+        <caption className="sr-only">Agent error breakdown showing error counts, top error types, and remediation steps</caption>
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
             <th className="px-3 py-3">Agent</th>

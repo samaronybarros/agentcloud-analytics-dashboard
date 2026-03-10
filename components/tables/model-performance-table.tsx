@@ -16,6 +16,7 @@ export function ModelPerformanceTable({
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
+        <caption className="sr-only">Model performance showing runs, success rate, latency, cost, and token usage per model</caption>
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
             <th className="px-3 py-3">Model</th>

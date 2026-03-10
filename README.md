@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-599%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-697%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -55,7 +55,7 @@ All pages support date range filtering (7d / 14d / 30d / all), role-based views 
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (66 suites, 599 tests)       |
+| `npm test`              | Run all tests (71 suites, 697 tests)       |
 | `npm run test:unit`     | Run unit tests only (47 suites)            |
 | `npm run test:integration` | Run API integration tests only (8 suites) |
 | `npm run test:e2e`      | Run E2E page tests only (8 suites)         |
@@ -104,10 +104,12 @@ app/
       models/
       alerts/
       troubleshooting/
-    __tests__/            # Backend tests (17 suites — analytics unit + API integration + API utility)
+    __tests__/            # Backend tests (22 suites — analytics, API middleware, authz, integration)
       unit/analytics/
-      unit/api/
+      unit/api/           # Handler, logger, rate limiter
+      unit/authz/         # Role-auth, response-redaction
       integration/api/
+      integration/authz/
   dashboard/              # 7 pages + layout with role-based nav highlighting
 components/
   charts/                 # 9 chart components (Recharts wrappers)
@@ -135,6 +137,11 @@ docs/                     # Product specs, decisions, workflow docs
 6. **TDD workflow** — tests written before implementation for all analytics logic and components.
 7. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
 8. **Role-based views** — a "Viewing as" selector lets users switch between Org Admin, Eng Manager, and Platform Engineer personas. Each role sees different pages, KPIs, and table columns based on a declarative visibility config. Cost-sensitive data is restricted to leadership roles.
+9. **Server-side authorization** — `withRoleAccess` enforces page-level gating and field-level redaction on all API routes.
+10. **Structured logging** — JSON logging with requestId, method, path, status, durationMs, and role on all API responses.
+11. **Rate limiting** — in-memory token bucket (100 req/60s) with Retry-After header on all API routes.
+12. **Responsive layout** — sidebar collapses to a hamburger menu on mobile viewports.
+13. **CI pipeline** — GitHub Actions for lint, test, and build gates.
 
 See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions, PD-001 through PD-025).
 
@@ -151,8 +158,9 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 | Hooks, utilities & role visibility                        | 9      | 126     |
 | API integration                                           | 8      | 60      |
 | E2E (fetch-level)                                         | 8      | 51      |
-| API utility                                               | 1      | 6       |
-| **Total**                                                 | **66** | **599** |
+| API utility & middleware (handler, logger, rate limiter)   | 3      | —       |
+| Authorization (role-auth, redaction, integration)         | 3      | —       |
+| **Total**                                                 | **71** | **697** |
 
 Tests are deterministic, fast (~3s), and isolated. No network, no database.
 
@@ -191,7 +199,7 @@ The dataset supports meaningful aggregation for adoption, reliability, performan
 ### Process & Workflow
 | Document                                                       | Description                                     |
 | -------------------------------------------------------------- | ----------------------------------------------- |
-| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (9 phases)  |
+| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (10 phases) |
 | [`docs/development-workflow.md`](docs/development-workflow.md) | Phase-based workflow with mermaid diagram       |
 
 ### Research & Design
@@ -230,8 +238,8 @@ Quick summary:
 | Performance metrics | Full | Latency KPIs, p50/p95 trends |
 | Cost / optimization | Full | Teams page, cost trends, insight cards |
 | DDD architecture | Full | 8 vertical slices, repository pattern |
-| TDD workflow | Full | 66 suites, 599 tests, tests-first |
-| Role-based views | Full | 3 personas, client-side (server spec in authz-spec.md) |
+| TDD workflow | Full | 71 suites, 697 tests, tests-first |
+| Role-based views | Full | 3 personas, server-side authz with page gating + field redaction |
 | Documentation | Full | 17 docs covering specs, design, process, readiness |
 
 ---

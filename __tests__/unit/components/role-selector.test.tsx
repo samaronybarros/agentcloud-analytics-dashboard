@@ -17,10 +17,10 @@ describe('RoleSelector', () => {
     expect(screen.getByLabelText('Viewing as')).toBeInTheDocument();
   });
 
-  it('defaults to Org Admin', () => {
+  it('defaults to Platform Engineer (least-privileged)', () => {
     renderWithProvider();
     const select = screen.getByLabelText('Viewing as') as HTMLSelectElement;
-    expect(select.value).toBe('admin');
+    expect(select.value).toBe('engineer');
   });
 
   it('shows all three role options', () => {

@@ -4,7 +4,13 @@
 import { GET } from '@/app/api/analytics/teams/route';
 import type { TeamUsageEntry, CostByModelEntry, TopUserEntry } from '@/lib/types';
 
-const req = (params = '') => new Request(`http://localhost/api/analytics/teams${params}`);
+const req = (params = '') => {
+  const separator = params.includes('?') ? '&' : '?';
+  const url = params
+    ? `http://localhost/api/analytics/teams${params}${separator}role=admin`
+    : `http://localhost/api/analytics/teams?role=admin`;
+  return new Request(url);
+};
 
 describe('GET /api/analytics/teams', () => {
   it('returns a valid JSON response', async () => {

@@ -2,11 +2,17 @@
 
 ## Current State
 
-**Implementation:** Client-side only (demo-grade).
+**Implementation:** Server-side role-based authorization (demo-grade authentication).
 
-The API returns full, unfiltered data to all callers. The UI conditionally renders pages and data based on the active role selected in a client-side dropdown. There is no authentication, no server-side authorization, and no request-level access control.
+The API enforces role-based access control at two levels:
+1. **Page-level gating** — `withRoleAccess(page, handler)` checks `canAccessPage(role, page)` and returns 403 if denied
+2. **Field-level redaction** — controllers use per-context redaction functions to omit cost-sensitive fields based on role
 
-This design is intentional for a demo/interview context (see PD-024) but would be insufficient for production. This document defines the server-side enforcement plan.
+Role is determined from the request via `?role=` query parameter or `X-User-Role` header, defaulting to `engineer` (least-privileged) when no valid role is provided. The frontend forwards the active role from the `useRole` context to all API calls.
+
+**What's enforced:** Role-based page access + field-level response filtering. An engineer calling `/api/analytics/teams` directly gets 403. An engineer calling `/api/analytics/overview` gets a response without `estimatedCost`.
+
+**What's NOT enforced:** Authentication (no login, no JWT — anyone can set `?role=admin`). This is a demo convenience, not a security boundary. See the Production Migration Plan for the full auth path.
 
 ---
 
@@ -24,14 +30,14 @@ This design is intentional for a demo/interview context (see PD-024) but would b
 
 | Endpoint | org_admin | eng_manager | platform_engineer | Current Status |
 |----------|-----------|-------------|-------------------|----------------|
-| `GET /api/analytics/overview` | Full response | Cost fields redacted | Cost fields redacted | Unprotected (client-side only) |
-| `GET /api/analytics/agents` | Full response | Cost fields redacted | Cost fields redacted | Unprotected (client-side only) |
-| `GET /api/analytics/teams` | Full response | Full response (no cost-by-model) | **403 Forbidden** | Unprotected (client-side only) |
-| `GET /api/analytics/trends` | Full response | Cost trend redacted | Cost trend redacted | Unprotected (client-side only) |
-| `GET /api/analytics/insights` | Full response | Cost insights filtered | Cost insights filtered | Unprotected (client-side only) |
-| `GET /api/analytics/models` | Full response | Cost-per-token redacted | Cost-per-token redacted | Unprotected (client-side only) |
-| `GET /api/analytics/alerts` | Full response | Cost alerts filtered | Cost alerts filtered | Unprotected (client-side only) |
-| `GET /api/analytics/troubleshooting` | Full response | Full response | Full response | Unprotected (client-side only) |
+| `GET /api/analytics/overview` | Full response | Cost fields redacted | Cost fields redacted | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/agents` | Full response | Cost fields redacted | Cost fields redacted | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/teams` | Full response | Full response (no cost-by-model) | **403 Forbidden** | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/trends` | Full response | Cost trend redacted | Cost trend redacted | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/insights` | Full response | Cost insights filtered | Cost insights filtered | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/models` | Full response | Cost-per-token redacted | Cost-per-token redacted | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/alerts` | Full response | Cost alerts filtered | Cost alerts filtered | **Enforced** (server-side redaction + page gating) |
+| `GET /api/analytics/troubleshooting` | Full response | Full response | Full response | **Enforced** (server-side redaction + page gating) |
 
 ---
 
@@ -84,11 +90,11 @@ This design is intentional for a demo/interview context (see PD-024) but would b
 
 | ID | Threat | Severity | Current Risk | Mitigation |
 |----|--------|----------|-------------|------------|
-| T1 | Any user can call API endpoints directly and access all data including cost | High | **Active** — no server-side protection | Planned: add auth middleware + role-based response filtering |
+| T1 | User can set `?role=admin` to bypass role restrictions | Medium | **Mitigated partially** — server enforces redaction but role is not authenticated | Planned: authenticate role via JWT/session |
 | T2 | No authentication — anyone with the URL can access the dashboard and API | High | **Active** — no auth exists | Planned: add session-based or JWT authentication |
-| T3 | No rate limiting — API can be abused | Medium | **Active** — no rate limiting | Planned: add rate limiting middleware |
-| T4 | No audit logging — access patterns are not tracked | Low | **Active** — no logging | Planned: add structured access logging |
-| T5 | Client-side role can be manipulated via browser devtools | Medium | **Active** — role is in React context | Planned: server-side role enforcement from auth token |
+| T3 | No rate limiting — API can be abused | Medium | **Mitigated** — in-memory token bucket (100 req/60s) with Retry-After header | Done: rate limiting middleware on all API routes |
+| T4 | No audit logging — access patterns are not tracked | Low | **Mitigated** — structured JSON logging with requestId, method, path, status, durationMs, role | Done: structured access logging on all API responses |
+| T5 | Client-side role can be manipulated via browser devtools | Low | **Mitigated** — server enforces redaction regardless of client state | Remaining: role parameter in URL is not authenticated |
 | T6 | No CORS configuration — API accessible from any origin | Medium | **Active** — default Next.js behavior | Planned: configure CORS for production domain |
 | T7 | No CSP headers — potential XSS vector | Low | **Low risk** — no user-generated content | Planned: add Content-Security-Policy headers |
 
@@ -143,11 +149,12 @@ This design is intentional for a demo/interview context (see PD-024) but would b
 
 | Component | Status |
 |-----------|--------|
-| Role definitions | Done (client-side) |
-| Visibility configuration | Done (client-side) |
+| Role definitions | Done (shared between client and server) |
+| Visibility configuration | Done (single source of truth in `role-visibility.ts`) |
 | UI conditional rendering | Done |
-| Authentication | Not started |
-| Server-side authorization | Not started |
-| Field-level response filtering | Not started |
-| Audit logging | Not started |
-| Rate limiting | Not started |
+| Server-side page-level access | Done (`withRoleAccess` in all 8 routes) |
+| Server-side field-level redaction | Done (7 redaction functions in `response-redaction.ts`) |
+| Frontend role forwarding | Done (hooks pass `?role=` to all API calls) |
+| Authentication | Not started (role is set via query param, not authenticated) |
+| Audit logging | Done (structured JSON logging with requestId on all API responses) |
+| Rate limiting | Done (in-memory token bucket, 100 req/60s, Retry-After header) |

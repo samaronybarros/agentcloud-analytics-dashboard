@@ -1,8 +1,10 @@
 import { parseDateParams } from '@/lib/utils/date-filter';
 import { getInsights } from './insights.service';
-import type { InsightsResponse } from '@/lib/types';
+import { redactInsightsResponse } from '@/lib/utils/response-redaction';
+import type { UserRole } from '@/lib/types';
 
-export function handleInsightsRequest(request: Request): InsightsResponse {
+export function handleInsightsRequest(request: Request, role: UserRole): object {
   const { from, to } = parseDateParams(request);
-  return getInsights(from, to);
+  const data = getInsights(from, to);
+  return redactInsightsResponse(data, role);
 }

@@ -22,7 +22,7 @@ function OverviewSkeleton({ role }: { role: UserRole }) {
   const showCostTrend = canSeeSection(role, 'chart-cost-trend');
   return (
     <>
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: kpiCount }, (_, i) => (
           <KPICardSkeleton key={i} />
         ))}
@@ -50,7 +50,7 @@ function OverviewContent({
 
   return (
     <>
-      <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <KPICard label="Total Runs" value={formatNumber(kpis.totalRuns)} />
         <KPICard label="Active Users" value={formatNumber(kpis.activeUsers)} />
         <KPICard label="Active Agents" value={formatNumber(kpis.activeAgents)} />

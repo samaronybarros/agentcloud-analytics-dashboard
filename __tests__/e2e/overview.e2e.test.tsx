@@ -28,6 +28,14 @@ jest.mock('recharts', () => {
   };
 });
 
+jest.mock('@/lib/hooks/use-role', () => {
+  const actual = jest.requireActual('@/lib/hooks/use-role');
+  return {
+    ...actual,
+    useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+  };
+});
+
 import OverviewPage from '@/app/dashboard/page';
 
 const overviewData: OverviewResponse = {

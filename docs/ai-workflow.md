@@ -6,7 +6,7 @@ This document records how AI was used in building the dashboard, what was human-
 
 ## Workflow Summary
 
-The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 7 phases with clear checkpoints.
+The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 10 phases with clear checkpoints.
 
 ## Phase Log
 
@@ -194,6 +194,27 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Updated README with links to all new docs and evidence section
 
 **Result:** 8 existing docs → 17 total docs. All assignment requirements mapped with explicit coverage status. No contradictory status labels remaining.
+
+---
+
+### Phase 10: Production Hardening
+
+**Human-led decisions:**
+- Identified production readiness gaps: no server-side authz enforcement, no logging, no rate limiting, no responsive layout, no CI
+- Prioritized hardening scope: security (authz + rate limiting), observability (structured logging), UX (responsive), CI pipeline, browser E2E
+- Required in-memory token bucket approach for rate limiting (no external dependencies)
+
+**AI-assisted work:**
+- Server-side role-based authorization: `withRoleAccess` middleware for page-level gating, per-context response redaction functions for field-level filtering
+- Structured JSON logging: `api-logger.ts` emitting JSON logs with requestId, method, path, status, durationMs, role on all API responses
+- Rate limiting: `rate-limiter.ts` implementing in-memory token bucket (100 req/60s) with Retry-After header
+- Responsive sidebar: mobile hamburger menu with collapsible sidebar navigation
+- Playwright E2E: configuration and smoke tests for browser-level testing
+- GitHub Actions CI pipeline: lint, test, build gates on push and PR
+- TDD test suites: api-handler tests (logging, rate limiting, request IDs), api-logger tests, rate-limiter tests, role-auth unit tests, response-redaction unit tests, authz integration tests
+- Documentation updates across 7 files
+
+**Result:** 66 suites / 599 tests -> 71 suites / 697 tests. Rate limiting, structured logging, server-side authz, responsive layout, Playwright E2E, and CI pipeline shipped.
 
 ---
 

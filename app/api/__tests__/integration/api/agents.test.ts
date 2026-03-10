@@ -4,7 +4,13 @@
 import { GET } from '@/app/api/analytics/agents/route';
 import type { AgentLeaderboardEntry, FailureTaxonomyEntry } from '@/lib/types';
 
-const req = (params = '') => new Request(`http://localhost/api/analytics/agents${params}`);
+const req = (params = '') => {
+  const separator = params.includes('?') ? '&' : '?';
+  const url = params
+    ? `http://localhost/api/analytics/agents${params}${separator}role=admin`
+    : `http://localhost/api/analytics/agents?role=admin`;
+  return new Request(url);
+};
 
 describe('GET /api/analytics/agents', () => {
   it('returns a valid JSON response', async () => {

@@ -1,6 +1,6 @@
 # Roadmap
 
-Current status: **Core dashboard feature-complete** (66 test suites, 599 tests passing, production build green). Documentation hardening in progress.
+Current status: **Core dashboard feature-complete with production hardening** (71 test suites, 697 tests passing, production build green). CI pipeline, structured logging, rate limiting, server-side authz, and responsive layout shipped.
 
 ---
 
@@ -31,6 +31,7 @@ Current status: **Core dashboard feature-complete** (66 test suites, 599 tests p
 - [x] ESLint config cleanup — extended test file rule overrides to cover backend test files
 - [x] Role-based dashboard views — RoleProvider context, role selector, page/section visibility config, conditional rendering across all 7 pages
 - [x] Documentation hardening — research artifacts, wireframes, authz spec, traceability matrix, production readiness, limitations, interview FAQ, testing taxonomy clarification, doc consistency fixes
+- [x] Production hardening — server-side role-based authorization (page gating + field redaction), structured JSON logging with request IDs, in-memory token bucket rate limiting (100 req/60s), responsive sidebar with mobile hamburger menu, Playwright E2E config + smoke tests, GitHub Actions CI pipeline
 
 ---
 
@@ -52,7 +53,7 @@ Current status: **Core dashboard feature-complete** (66 test suites, 599 tests p
 - [x] ~~E2E tests~~ (8 suites, 51 tests — fetch-level mocking for all pages + navigation)
 - [x] ~~Increase chart component test coverage~~ (now 100% statements/functions/branches)
 - [ ] Accessibility audit — keyboard navigation, ARIA labels, color contrast
-- [ ] Responsive layout — mobile/tablet breakpoints for sidebar + grid
+- [x] ~~Responsive layout~~ — responsive sidebar with mobile hamburger menu + grid breakpoints
 - [ ] Runs trend chart on Overview page (component exists but not wired to Overview)
 - [ ] Dark mode support
 - [ ] Update product decisions log — document new decisions as features are added
@@ -76,8 +77,8 @@ Current status: **Core dashboard feature-complete** (66 test suites, 599 tests p
 ## Future — Infrastructure
 
 - [ ] Docker — containerize the application for consistent dev/prod environments
-- [ ] CI/CD pipeline — lint, test, build gates (GitHub Actions or similar)
-- [ ] Linting enforcement (ESLint config exists but not in CI)
+- [x] ~~CI/CD pipeline~~ — GitHub Actions for lint, test, build gates on push/PR
+- [x] ~~Linting enforcement~~ — ESLint enforced in CI pipeline
 - [ ] Performance budgets — bundle size tracking, Lighthouse CI
 - [ ] Real data source integration — replace mock data with database/API
 - [ ] Authentication and multi-tenancy

@@ -29,8 +29,13 @@ app/api/__tests__/
       models.test.ts
       alerts.test.ts
       troubleshooting.test.ts
-    api/                    # API utility (1 suite)
-      api-handler.test.ts
+    api/                    # API utility + middleware (3 suites)
+      api-handler.test.ts   # Error handling, logging, rate limiting, request IDs
+      api-logger.test.ts    # Structured JSON logging
+      rate-limiter.test.ts  # Token bucket rate limiting
+    authz/                  # Authorization (2 suites)
+      role-auth.test.ts     # Role-based access control unit tests
+      response-redaction.test.ts  # Field-level redaction unit tests
   integration/
     api/                    # Route response shape validation (8 suites, 60 tests)
       overview.test.ts
@@ -41,6 +46,8 @@ app/api/__tests__/
       models.test.ts
       alerts.test.ts
       troubleshooting.test.ts
+    authz/                  # Authorization integration tests
+      authz.test.ts         # End-to-end role gating + redaction across endpoints
 ```
 
 ### Frontend tests (`__tests__/`)
@@ -91,8 +98,9 @@ __tests__/
 | Hooks, utilities & role visibility | 9 | 126 |
 | API integration | 8 | 60 |
 | E2E (fetch-level) | 8 | 51 |
-| API utility | 1 | 6 |
-| **Total** | **66** | **599** |
+| API utility & middleware (handler, logger, rate limiter) | 3 | — |
+| Authorization (role-auth, response-redaction, integration) | 3 | — |
+| **Total** | **71** | **697** |
 
 ## Priority Coverage
 
@@ -197,7 +205,7 @@ render(<OverviewPage />, { wrapper: createE2EWrapper() });
 - Client-side navigation between pages
 - JavaScript hydration behavior
 
-True browser E2E tests (Playwright or Cypress) are **planned but not yet implemented**.
+True browser E2E tests are implemented via **Playwright** (config + smoke tests).
 
 ## Risk Coverage
 
@@ -222,9 +230,9 @@ True browser E2E tests (Playwright or Cypress) are **planned but not yet impleme
 | Hydration mismatches | jsdom doesn't hydrate server HTML | Runtime errors in browser | Addressed architecturally (PD-006) |
 | API under concurrent load | No load testing | Performance degradation | Planned — not critical for demo |
 | Accessibility compliance | No automated a11y testing | WCAG violations | Planned — axe-core integration |
-| Server-side authorization | No auth middleware exists | Data exposure via direct API calls | Documented in authz-spec.md |
+| Server-side authorization | Covered — role-auth, redaction, and integration tests | — | — |
 | Cross-browser compatibility | Only jsdom tested | Browser-specific bugs | Manual testing in Chrome/Firefox/Safari |
-| Mobile/responsive layout | No responsive tests, no responsive CSS | Broken on small screens | Planned — responsive layout not implemented |
+| Mobile/responsive layout | Responsive sidebar implemented; no visual regression tests | Layout bugs on edge-case viewports | Manual testing + planned Playwright visual tests |
 
 ## Running Tests
 

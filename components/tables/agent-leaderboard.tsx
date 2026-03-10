@@ -11,6 +11,7 @@ export function AgentLeaderboard({ data, showCostColumn = true }: AgentLeaderboa
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
+        <caption className="sr-only">Agent leaderboard showing performance, reliability, and cost metrics per agent</caption>
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
             <th className="px-3 py-3">Agent</th>

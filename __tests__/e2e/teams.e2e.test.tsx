@@ -27,6 +27,14 @@ jest.mock('recharts', () => {
   };
 });
 
+jest.mock('@/lib/hooks/use-role', () => {
+  const actual = jest.requireActual('@/lib/hooks/use-role');
+  return {
+    ...actual,
+    useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+  };
+});
+
 import TeamsPage from '@/app/dashboard/teams/page';
 
 const teamsData: TeamsResponse = {

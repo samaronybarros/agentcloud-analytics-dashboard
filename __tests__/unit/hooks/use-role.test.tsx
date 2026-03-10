@@ -23,13 +23,13 @@ describe('useRole', () => {
     spy.mockRestore();
   });
 
-  it('defaults to admin role', () => {
+  it('defaults to engineer role (least-privileged)', () => {
     render(
       <RoleProvider>
         <TestConsumer />
       </RoleProvider>,
     );
-    expect(screen.getByTestId('role').textContent).toBe('admin');
+    expect(screen.getByTestId('role').textContent).toBe('engineer');
   });
 
   it('switches to manager role', () => {

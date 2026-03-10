@@ -19,11 +19,11 @@ This document tracks what is production-ready, what is partial, and what remains
 |------|--------|-------|
 | TypeScript strict mode | Done | `strict: true` in tsconfig, enforced across all files |
 | Zero `any` usage | Done | Linting rule prevents introduction of `any` |
-| ESLint configuration | Done | Configured but not enforced in CI (no CI pipeline yet) |
+| ESLint configuration | Done | Configured and enforced in CI (GitHub Actions) |
 | TDD workflow | Done | Tests written before implementation across all analytics logic |
 | Readable variable naming | Done | Single-letter variables banned per CLAUDE.md conventions |
 
-**Next action:** Add ESLint to a CI pipeline so linting is enforced on every push.
+**Next action:** None — ESLint is enforced in CI via GitHub Actions.
 
 ---
 
@@ -31,15 +31,15 @@ This document tracks what is production-ready, what is partial, and what remains
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Unit tests (services, utils) | Done | 66 suites, 599 tests, all deterministic |
+| Unit tests (services, utils) | Done | 71 suites, 697 tests, all deterministic |
 | API integration tests | Done | Controller and route-level tests for all 8 API contexts |
 | Fetch-level E2E tests | Done | Full page render tests with mocked fetch responses |
-| Browser E2E (Playwright/Cypress) | Planned | No browser automation tests exist yet |
+| Browser E2E (Playwright/Cypress) | Done | Playwright config + smoke tests |
 | Accessibility tests (axe/jest-axe) | Planned | No automated a11y testing configured |
 | Visual regression tests | Not Started | No screenshot comparison tooling |
 | Load/performance tests | Not Started | No benchmarking or stress testing |
 
-**Next action:** Add Playwright for browser E2E tests and jest-axe for accessibility assertions.
+**Next action:** Add jest-axe for accessibility assertions. Playwright smoke tests are now in place.
 
 ---
 
@@ -50,11 +50,11 @@ This document tracks what is production-ready, what is partial, and what remains
 | DDD backend (vertical slices) | Done | 8 API contexts, each with repository/service/controller/route |
 | Repository pattern | Done | Mock data accessed through repositories, swappable for DB |
 | Thin API routes | Done | Routes delegate to controllers via `withErrorHandler` |
-| Role-based views | Partial | Client-side role switching only; no server enforcement |
+| Role-based views | Done | Server-side page gating + field-level redaction; client-side conditional rendering |
 | No cross-context dependencies | Done | Each API context is self-contained |
-| Error handling middleware | Done | `withErrorHandler` wraps all route handlers |
+| Error handling middleware | Done | `withErrorHandler` wraps all route handlers, handles ForbiddenError (403), rate limiting (429), structured JSON logging with request IDs |
 
-**Next action:** Move role enforcement to server-side middleware with proper authentication.
+**Next action:** Add authentication (JWT/session) so role is not user-settable.
 
 ---
 
@@ -62,9 +62,9 @@ This document tracks what is production-ready, what is partial, and what remains
 
 | Item | Status | Notes |
 |------|--------|-------|
-| Authentication | Not Started | No login, no session management, no JWT/OAuth |
-| Server-side authorization | Not Started | Role gating is client-side only (demo purposes) |
-| Rate limiting | Not Started | No request throttling on API routes |
+| Authentication | Not Started | No login, no session management — role is sent via query param |
+| Server-side authorization | Done | `withRoleAccess` enforces page-level access + field-level redaction |
+| Rate limiting | Done | In-memory token bucket, 100 req/60s, Retry-After header |
 | Input validation | Partial | Date range parameters validated; no comprehensive schema validation |
 | CORS configuration | Not Started | Relies on Next.js defaults (same-origin) |
 | CSP headers | Not Started | No Content-Security-Policy configured |
@@ -80,14 +80,14 @@ This document tracks what is production-ready, what is partial, and what remains
 | Item | Status | Notes |
 |------|--------|-------|
 | Docker containerization | Not Started | No Dockerfile or docker-compose |
-| CI/CD pipeline | Not Started | No GitHub Actions, no automated test runs on push |
+| CI/CD pipeline | Done | GitHub Actions — lint, test, build gates on push/PR |
 | Monitoring/APM | Not Started | No application performance monitoring |
 | Error tracking (Sentry etc.) | Not Started | No runtime error capture |
-| Structured logging | Not Started | Console logging only |
+| Structured logging | Done | JSON logging with requestId, method, path, status, durationMs, role |
 | Health check endpoint | Not Started | No `/api/health` route |
 | Environment configuration | Not Started | No `.env` management (not needed for mock data) |
 
-**Next action:** Add GitHub Actions for lint + test on PR, then Dockerfile for deployment.
+**Next action:** Add Dockerfile for deployment. GitHub Actions CI pipeline is now in place.
 
 ---
 
@@ -127,13 +127,13 @@ This document tracks what is production-ready, what is partial, and what remains
 | Loading states | Done | Skeleton/spinner states on all dashboard pages |
 | Error states | Done | Error boundaries and error UI on all pages |
 | Empty states | Done | Handled when filters return no data |
-| Responsive layout | Not Started | Desktop-optimized only, no mobile breakpoints |
+| Responsive layout | Done | Responsive sidebar with mobile hamburger menu, grid breakpoints |
 | Accessibility (WCAG) | Not Started | No audit performed, no ARIA attributes reviewed |
 | Dark mode | Not Started | Light theme only |
 | Keyboard navigation | Not Started | Not tested or optimized |
 | Internationalization | Not Started | English only, no i18n framework |
 
-**Next action:** Add responsive breakpoints for tablet/mobile, then run Lighthouse accessibility audit.
+**Next action:** Run Lighthouse accessibility audit. Responsive layout is now implemented.
 
 ---
 
@@ -142,12 +142,12 @@ This document tracks what is production-ready, what is partial, and what remains
 | Category | Done | Partial | Planned | Not Started |
 |----------|------|---------|---------|-------------|
 | Code Quality | 5 | 0 | 0 | 0 |
-| Testing | 3 | 0 | 2 | 2 |
+| Testing | 4 | 0 | 1 | 2 |
 | Architecture | 5 | 1 | 0 | 0 |
-| Security | 0 | 1 | 0 | 7 |
-| Infrastructure | 0 | 0 | 0 | 7 |
+| Security | 2 | 1 | 0 | 5 |
+| Infrastructure | 2 | 0 | 0 | 5 |
 | Performance | 1 | 2 | 0 | 3 |
 | Data | 1 | 0 | 0 | 4 |
-| UX | 3 | 0 | 0 | 5 |
+| UX | 4 | 0 | 0 | 4 |
 
 This dashboard is demo/interview-quality with strong analytics logic and test coverage. The primary gaps are in security, infrastructure, and operational readiness -- all expected for a take-home exercise without a deployment target.

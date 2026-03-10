@@ -6,6 +6,7 @@ export function TopUsersTable({ data }: { data: TopUserEntry[] }) {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-left text-sm">
+        <caption className="sr-only">Top users by run count and cost</caption>
         <thead>
           <tr className="border-b border-gray-200 text-xs font-medium uppercase text-gray-500">
             <th className="px-3 py-3">User</th>

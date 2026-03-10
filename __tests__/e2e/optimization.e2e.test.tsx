@@ -7,6 +7,14 @@ import { render, screen, waitFor } from '@testing-library/react';
 import type { InsightsResponse } from '@/lib/types';
 import { createE2EWrapper, setupFetchMock, jsonResponse, errorResponse } from './helpers';
 
+jest.mock('@/lib/hooks/use-role', () => {
+  const actual = jest.requireActual('@/lib/hooks/use-role');
+  return {
+    ...actual,
+    useRole: () => ({ role: 'admin', setRole: jest.fn() }),
+  };
+});
+
 import OptimizationPage from '@/app/dashboard/optimization/page';
 
 const insightsData: InsightsResponse = {

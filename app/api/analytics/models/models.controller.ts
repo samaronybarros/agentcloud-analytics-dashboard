@@ -1,8 +1,10 @@
 import { parseDateParams } from '@/lib/utils/date-filter';
 import { getModelAnalytics } from './models.service';
-import type { ModelsResponse } from '@/lib/types';
+import { redactModelsResponse } from '@/lib/utils/response-redaction';
+import type { UserRole } from '@/lib/types';
 
-export function handleModelsRequest(request: Request): ModelsResponse {
+export function handleModelsRequest(request: Request, role: UserRole): object {
   const { from, to } = parseDateParams(request);
-  return getModelAnalytics(from, to);
+  const data = getModelAnalytics(from, to);
+  return redactModelsResponse(data, role);
 }
