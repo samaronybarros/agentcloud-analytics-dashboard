@@ -33,6 +33,10 @@ const mockTrends: TrendsResponse = {
   runsTrend: [{ date: '2026-03-01', total: 20, success: 15, error: 3, retry: 2 }],
   latencyTrend: [{ date: '2026-03-01', p50: 1000, p95: 3000 }],
   costTrend: [{ date: '2026-03-01', cost: 50 }],
+  runsByDayOfWeek: [
+    { day: 'Mon', runs: 20 }, { day: 'Tue', runs: 0 }, { day: 'Wed', runs: 0 },
+    { day: 'Thu', runs: 0 }, { day: 'Fri', runs: 0 }, { day: 'Sat', runs: 0 }, { day: 'Sun', runs: 0 },
+  ],
 };
 
 const mockAgents: AgentsResponse = {
@@ -52,7 +56,7 @@ const mockAgents: AgentsResponse = {
 
 const mockTeams: TeamsResponse = {
   teamUsage: [
-    { team: 'Platform', totalRuns: 80, activeAgents: 3, activeUsers: 4, totalCost: 100 },
+    { team: 'Platform', totalRuns: 80, activeAgents: 3, activeUsers: 4, totalCost: 100, successRate: 0.85, avgLatencyMs: 2400 },
   ],
   costByModel: [
     { model: 'claude-sonnet-4-20250514', totalCost: 80, percentage: 0.8 },

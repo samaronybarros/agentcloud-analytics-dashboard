@@ -12,6 +12,8 @@ export function TeamUsageTable({ data }: { data: TeamUsageEntry[] }) {
             <th className="px-3 py-3 text-right">Runs</th>
             <th className="px-3 py-3 text-right">Active Agents</th>
             <th className="px-3 py-3 text-right">Active Users</th>
+            <th className="px-3 py-3 text-right">Success</th>
+            <th className="px-3 py-3 text-right">Avg Latency</th>
             <th className="px-3 py-3 text-right">Cost</th>
           </tr>
         </thead>
@@ -22,6 +24,8 @@ export function TeamUsageTable({ data }: { data: TeamUsageEntry[] }) {
               <td className="px-3 py-3 text-right">{entry.totalRuns}</td>
               <td className="px-3 py-3 text-right">{entry.activeAgents}</td>
               <td className="px-3 py-3 text-right">{entry.activeUsers}</td>
+              <td className="px-3 py-3 text-right">{(entry.successRate * 100).toFixed(1)}%</td>
+              <td className="px-3 py-3 text-right">{Math.round(entry.avgLatencyMs).toLocaleString()}ms</td>
               <td className="px-3 py-3 text-right">${entry.totalCost.toFixed(2)}</td>
             </tr>
           ))}

@@ -20,7 +20,7 @@ Tests are split between backend and frontend, co-located with the code they test
 ```
 app/api/__tests__/
   unit/
-    analytics/              # Service logic (5 suites, 77 tests)
+    analytics/              # Service logic (5 suites, 81 tests)
       overview.test.ts
       agents.test.ts
       teams.test.ts
@@ -29,7 +29,7 @@ app/api/__tests__/
     api/                    # API utility (1 suite)
       api-handler.test.ts
   integration/
-    api/                    # Route response shape validation (5 suites, 32 tests)
+    api/                    # Route response shape validation (5 suites, 35 tests)
       overview.test.ts
       agents.test.ts
       teams.test.ts
@@ -52,7 +52,7 @@ __tests__/
       use-date-range.test.tsx
       use-analytics.test.tsx
     components/               # Component rendering with mocked data
-      charts/                 # Chart components (5 suites)
+      charts/                 # Chart components (8 suites)
       dashboard/              # KPI card, section, sidebar nav, etc. (8 suites)
       tables/                 # Data tables (3 suites)
       insights/               # Insight cards (1 suite)
@@ -71,15 +71,15 @@ __tests__/
 
 | Category | Suites | Tests |
 |----------|--------|-------|
-| Analytics logic | 5 | 77 |
-| Components (charts, tables, insights, dashboard) | 12 | 83 |
-| Pages | 4 | 26 |
+| Analytics logic | 5 | 81 |
+| Components (charts, tables, insights, dashboard) | 15 | 106 |
+| Pages | 4 | 30 |
 | Layout & nav | 2 | 25 |
 | Hooks & utilities | 9 | 66 |
-| API integration | 5 | 32 |
+| API integration | 5 | 35 |
 | E2E (fetch-level) | 5 | 33 |
 | API utility | 1 | 11 |
-| **Total** | **44** | **395** |
+| **Total** | **47** | **429** |
 
 ## Priority Coverage
 

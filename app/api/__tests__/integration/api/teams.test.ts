@@ -28,6 +28,16 @@ describe('GET /api/analytics/teams', () => {
     expect(entry).toHaveProperty('activeAgents');
     expect(entry).toHaveProperty('activeUsers');
     expect(entry).toHaveProperty('totalCost');
+    expect(entry).toHaveProperty('successRate');
+    expect(entry).toHaveProperty('avgLatencyMs');
+  });
+
+  it('teamUsage successRate values are between 0 and 1', async () => {
+    const data = await (await GET(req())).json();
+    for (const entry of data.teamUsage) {
+      expect(entry.successRate).toBeGreaterThanOrEqual(0);
+      expect(entry.successRate).toBeLessThanOrEqual(1);
+    }
   });
 
   it('costByModel entries have required fields', async () => {
@@ -64,6 +74,8 @@ describe('GET /api/analytics/teams', () => {
       expect(Number.isFinite(entry.activeAgents)).toBe(true);
       expect(Number.isFinite(entry.activeUsers)).toBe(true);
       expect(Number.isFinite(entry.totalCost)).toBe(true);
+      expect(Number.isFinite(entry.successRate)).toBe(true);
+      expect(Number.isFinite(entry.avgLatencyMs)).toBe(true);
     }
     for (const entry of data.costByModel) {
       expect(Number.isFinite(entry.totalCost)).toBe(true);

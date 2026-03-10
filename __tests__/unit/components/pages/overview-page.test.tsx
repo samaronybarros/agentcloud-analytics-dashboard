@@ -18,6 +18,10 @@ const mockTrends = {
   runsTrend: [{ date: '2026-03-01', total: 20, success: 15, error: 3, retry: 2 }] as DailyRunsTrend[],
   latencyTrend: [{ date: '2026-03-01', p50: 1200, p95: 4500 }] as DailyLatencyTrend[],
   costTrend: [{ date: '2026-03-01', cost: 100 }] as DailyCostTrend[],
+  runsByDayOfWeek: [
+    { day: 'Mon', runs: 20 }, { day: 'Tue', runs: 0 }, { day: 'Wed', runs: 0 },
+    { day: 'Thu', runs: 0 }, { day: 'Fri', runs: 0 }, { day: 'Sat', runs: 0 }, { day: 'Sun', runs: 0 },
+  ],
 };
 
 // Mock recharts before importing page
@@ -30,8 +34,10 @@ jest.mock('recharts', () => {
     ResponsiveContainer: mock('responsive-container'),
     AreaChart: mock('area-chart'),
     LineChart: mock('line-chart'),
+    BarChart: mock('bar-chart'),
     Area: mock('area'),
     Line: mock('line'),
+    Bar: mock('bar'),
     XAxis: mock('x-axis'),
     YAxis: mock('y-axis'),
     CartesianGrid: mock('cartesian-grid'),
@@ -88,6 +94,7 @@ describe('OverviewPage', () => {
     render(<OverviewPage />);
     expect(screen.getByRole('heading', { name: 'Runs Over Time' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Latency Trend (p50 / p95)' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Runs by Day of Week' })).toBeInTheDocument();
     expect(screen.getByRole('heading', { name: 'Cost Trend' })).toBeInTheDocument();
   });
 
@@ -97,7 +104,7 @@ describe('OverviewPage', () => {
     render(<OverviewPage />);
     expect(screen.getByRole('heading', { name: 'Overview' })).toBeInTheDocument();
     expect(screen.getAllByTestId('kpi-skeleton').length).toBe(8);
-    expect(screen.getAllByTestId('chart-skeleton').length).toBe(3);
+    expect(screen.getAllByTestId('chart-skeleton').length).toBe(4);
   });
 
   it('shows empty state when totalRuns is zero', () => {
@@ -105,7 +112,7 @@ describe('OverviewPage', () => {
       totalRuns: 0, activeUsers: 0, activeAgents: 0, successRate: 0,
       avgLatencyMs: 0, p95LatencyMs: 0, totalTokens: 0, estimatedCost: 0,
     };
-    const emptyTrends = { runsTrend: [], latencyTrend: [], costTrend: [] };
+    const emptyTrends = { runsTrend: [], latencyTrend: [], costTrend: [], runsByDayOfWeek: [] };
     mockUseOverviewKPIs.mockReturnValue({ data: emptyKPIs, isLoading: false });
     mockUseTrends.mockReturnValue({ data: emptyTrends, isLoading: false });
     render(<OverviewPage />);

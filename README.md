@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-395%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-429%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -36,9 +36,9 @@ The dashboard answers five core questions for org admins, engineering managers, 
 
 | Page             | Question                    | Key Metrics                                                              |
 | ---------------- | --------------------------- | ------------------------------------------------------------------------ |
-| **Overview**     | Are teams adopting agents?  | 8 KPI cards + trend charts (runs, latency, cost)                         |
-| **Agents**       | Which agents are reliable?  | Agent leaderboard, failure taxonomy breakdown                            |
-| **Teams**        | Where is cost concentrated? | Usage by team, cost by model, top users                                  |
+| **Overview**     | Are teams adopting agents?  | 8 KPI cards + trend charts (runs, day-of-week, latency, cost)            |
+| **Agents**       | Which agents are reliable?  | Agent leaderboard, cost vs reliability scatter, failure taxonomy          |
+| **Teams**        | Where is cost concentrated? | Usage by team (with success/latency), team comparison, cost by model, top users |
 | **Optimization** | Where can we improve?       | Insight cards — high-cost/low-success, degraded latency, rising failures |
 
 All pages support date range filtering (7d / 14d / 30d / all) and include loading, error, and empty states.
@@ -52,7 +52,7 @@ All pages support date range filtering (7d / 14d / 30d / all) and include loadin
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (44 suites, 395 tests)       |
+| `npm test`              | Run all tests (47 suites, 429 tests)       |
 | `npm run test:unit`     | Run unit tests only (34 suites)            |
 | `npm run test:integration` | Run API integration tests only (5 suites) |
 | `npm run test:e2e`      | Run E2E page tests only (5 suites)         |
@@ -104,7 +104,7 @@ app/
       integration/api/
   dashboard/              # 4 pages + layout with active nav highlighting
 components/
-  charts/                 # 5 chart components (Recharts wrappers)
+  charts/                 # 8 chart components (Recharts wrappers)
   dashboard/              # KPI card, section header, sidebar nav, date picker
   tables/                 # 3 table components
   insights/               # Severity-styled insight cards
@@ -136,15 +136,15 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 
 | Category                                         | Suites | Tests   |
 | ------------------------------------------------ | ------ | ------- |
-| Analytics logic                                  | 5      | 77      |
-| Components (charts, tables, insights, dashboard) | 12     | 83      |
-| Pages                                            | 4      | 26      |
+| Analytics logic                                  | 5      | 81      |
+| Components (charts, tables, insights, dashboard) | 15     | 106     |
+| Pages                                            | 4      | 30      |
 | Layout & nav                                     | 2      | 25      |
 | Hooks & utilities                                | 9      | 66      |
-| API integration                                  | 5      | 32      |
+| API integration                                  | 5      | 35      |
 | E2E (fetch-level)                                | 5      | 33      |
 | API utility                                      | 1      | 11      |
-| **Total**                                        | **44** | **395** |
+| **Total**                                        | **47** | **429** |
 
 Tests are deterministic, fast (~3s), and isolated. No network, no database.
 

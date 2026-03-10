@@ -2,7 +2,7 @@
  * @jest-environment node
  */
 import { GET } from '@/app/api/analytics/trends/route';
-import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend } from '@/lib/types';
+import type { DailyRunsTrend, DailyLatencyTrend, DailyCostTrend, DayOfWeekEntry } from '@/lib/types';
 
 const req = (params = '') => new Request(`http://localhost/api/analytics/trends${params}`);
 
@@ -13,11 +13,13 @@ describe('GET /api/analytics/trends', () => {
     expect(response.headers.get('content-type')).toContain('application/json');
   });
 
-  it('returns runsTrend, latencyTrend, and costTrend arrays', async () => {
+  it('returns runsTrend, latencyTrend, costTrend, and runsByDayOfWeek arrays', async () => {
     const data = await (await GET(req())).json();
     expect(Array.isArray(data.runsTrend)).toBe(true);
     expect(Array.isArray(data.latencyTrend)).toBe(true);
     expect(Array.isArray(data.costTrend)).toBe(true);
+    expect(Array.isArray(data.runsByDayOfWeek)).toBe(true);
+    expect(data.runsByDayOfWeek).toHaveLength(7);
   });
 
   it('runsTrend entries have required fields', async () => {
@@ -77,6 +79,10 @@ describe('GET /api/analytics/trends', () => {
     }
     for (const entry of data.costTrend) {
       expect(Number.isFinite(entry.cost)).toBe(true);
+    }
+    for (const entry of data.runsByDayOfWeek) {
+      expect(Number.isFinite(entry.runs)).toBe(true);
+      expect(typeof entry.day).toBe('string');
     }
   });
 

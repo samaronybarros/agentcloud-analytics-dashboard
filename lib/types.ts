@@ -103,6 +103,8 @@ export interface TeamUsageEntry {
   activeAgents: number;
   activeUsers: number;
   totalCost: number;
+  successRate: number; // 0–1
+  avgLatencyMs: number;
 }
 
 export interface CostByModelEntry {
@@ -153,6 +155,11 @@ export interface DailyCostTrend {
   cost: number;
 }
 
+export interface DayOfWeekEntry {
+  day: string; // Mon, Tue, Wed, Thu, Fri, Sat, Sun
+  runs: number;
+}
+
 // ---------------------------------------------------------------------------
 // API response types — shared contract between routes and hooks
 // ---------------------------------------------------------------------------
@@ -174,6 +181,7 @@ export interface TrendsResponse {
   runsTrend: DailyRunsTrend[];
   latencyTrend: DailyLatencyTrend[];
   costTrend: DailyCostTrend[];
+  runsByDayOfWeek: DayOfWeekEntry[];
 }
 
 export interface InsightsResponse {

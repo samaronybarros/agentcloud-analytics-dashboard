@@ -109,6 +109,25 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
+### Phase 6: Review Graphics & Dashboard
+
+**Human-led decisions:**
+- Selected which new views to add: cost vs reliability scatter, runs by day of week, team comparison chart
+- Decided where each view belongs (Agents, Overview, Teams pages respectively)
+- Chose to augment `TeamUsageEntry` with `successRate` and `avgLatencyMs` rather than creating a separate type
+
+**AI-assisted work:**
+- TDD implementation: 34 new tests written before components (10 scatter, 7 team comparison, 6 runs-by-day, 11 backend/integration)
+- 3 new chart components: `CostReliabilityScatter`, `TeamComparisonChart`, `RunsByDayChart`
+- Backend augmentation: `computeRunsByDayOfWeek` in trends service, `successRate`/`avgLatencyMs` in teams service
+- Updated `TeamUsageTable` with 2 new columns (success rate, avg latency)
+- Updated all affected test mocks across 12 existing test files
+- Documentation updates: README, roadmap, testing-spec, technical-spec
+
+**Result:** 47 suites, 429 tests passing. Three new decision-making views added to the dashboard.
+
+---
+
 ## Decision Authority
 
 | Area | Led by |

@@ -1,6 +1,6 @@
 # Roadmap
 
-Current status: **Core dashboard feature-complete** (44 test suites, 395 tests passing, production build green).
+Current status: **Core dashboard feature-complete** (47 test suites, 429 tests passing, production build green).
 
 ---
 
@@ -10,9 +10,9 @@ Current status: **Core dashboard feature-complete** (44 test suites, 395 tests p
 - [x] Deterministic mock data (10 agents, 8 users, 500 runs, seeded PRNG)
 - [x] Analytics logic layer (overview, agents, teams, trends, insights)
 - [x] 5 API contexts with repository → service → controller → route layers
-- [x] Overview page — 8 KPI cards + 3 trend charts
-- [x] Agents page — leaderboard table + failure taxonomy chart
-- [x] Teams page — team usage table, cost by model chart, top users table
+- [x] Overview page — 8 KPI cards + 4 trend charts (runs, day-of-week, latency, cost)
+- [x] Agents page — leaderboard table + cost vs reliability scatter + failure taxonomy chart
+- [x] Teams page — team usage table (with success rate + latency), team comparison chart, cost by model chart, top users table
 - [x] Optimization page — severity-grouped insight cards
 - [x] Date range filtering end-to-end (7d / 14d / 30d / all)
 - [x] Sidebar navigation with active route highlighting
@@ -45,7 +45,7 @@ Current status: **Core dashboard feature-complete** (44 test suites, 395 tests p
 ## Up Next — Polish & Quality
 
 - [ ] Review filters — add team-based filtering across pages (agents, trends, overview)
-- [ ] Review graphics and dashboard — add additional views to improve decision-making (e.g., cost vs reliability scatter, usage heatmap, team comparison board)
+- [x] ~~Review graphics and dashboard~~ — added cost vs reliability scatter (Agents), runs by day of week (Overview), team comparison chart (Teams), augmented team usage table with success rate + avg latency
 - [ ] Add troubleshooting page/section — help users diagnose agent failures, surface error patterns and remediation steps
 - [x] ~~E2E tests~~ (5 suites, 33 tests — fetch-level mocking for all pages + navigation)
 - [x] ~~Increase chart component test coverage~~ (now 100% statements/functions/branches)

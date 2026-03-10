@@ -34,8 +34,8 @@ app/
       teams/                # Team usage + cost by model + top users
       trends/               # Daily runs, latency, cost time series
       insights/             # Insight generation (thresholds, severity)
-    __tests__/              # Backend tests (11 suites, 128 tests)
-      unit/analytics/       # Service logic unit tests (5 suites, 77 tests)
+    __tests__/              # Backend tests (11 suites, 132 tests)
+      unit/analytics/       # Service logic unit tests (5 suites, 81 tests)
       unit/api/             # API utility tests (1 suite, 11 tests)
       integration/api/      # Route response shape validation (5 suites, 40 tests)
   dashboard/                # Page composition — thin, delegates to components
@@ -55,8 +55,8 @@ lib/                        # Shared frontend concerns — no business logic
   utils/                    # Formatting, date filtering, API handler
   types.ts                  # Shared domain and API response types
 
-__tests__/                  # Frontend tests (33 suites, 267 tests)
-  unit/                     # Components, pages, hooks, utils (28 suites)
+__tests__/                  # Frontend tests (36 suites, 297 tests)
+  unit/                     # Components, pages, hooks, utils (31 suites)
   e2e/                      # Full page rendering with fetch-level mocking (5 suites, 33 tests)
 ```
 

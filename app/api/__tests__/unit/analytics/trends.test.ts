@@ -2,6 +2,7 @@ import {
   computeRunsTrend,
   computeLatencyTrend,
   computeCostTrend,
+  computeRunsByDayOfWeek,
 } from '@/app/api/analytics/trends/trends.service';
 import { runs } from '@/app/api/_mock-data/runs';
 import type { Run } from '@/lib/types';
@@ -126,6 +127,39 @@ describe('computeCostTrend', () => {
     const trendTotal = trend.reduce((sum, d) => sum + d.cost, 0);
     const runsTotal = runs.reduce((sum, r) => sum + r.estimatedCost, 0);
     expect(trendTotal).toBeCloseTo(runsTotal, 2);
+  });
+});
+
+describe('computeRunsByDayOfWeek', () => {
+  it('returns 7 entries for Mon through Sun', () => {
+    const result = computeRunsByDayOfWeek(twoDateRuns);
+    expect(result).toHaveLength(7);
+    expect(result.map((entry) => entry.day)).toEqual([
+      'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
+    ]);
+  });
+
+  it('counts runs per day of week correctly', () => {
+    // 2026-03-01 is a Sunday, 2026-03-02 is a Monday
+    const result = computeRunsByDayOfWeek(twoDateRuns);
+    const sundayEntry = result.find((entry) => entry.day === 'Sun');
+    const mondayEntry = result.find((entry) => entry.day === 'Mon');
+    expect(sundayEntry!.runs).toBe(2); // r1, r2
+    expect(mondayEntry!.runs).toBe(2); // r3, r4
+  });
+
+  it('returns all zeros for empty runs', () => {
+    const result = computeRunsByDayOfWeek([]);
+    expect(result).toHaveLength(7);
+    for (const entry of result) {
+      expect(entry.runs).toBe(0);
+    }
+  });
+
+  it('total runs across all days matches input length', () => {
+    const result = computeRunsByDayOfWeek(runs);
+    const totalFromDays = result.reduce((sum, entry) => sum + entry.runs, 0);
+    expect(totalFromDays).toBe(runs.length);
   });
 });
 
