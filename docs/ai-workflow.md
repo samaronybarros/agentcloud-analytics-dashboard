@@ -84,9 +84,9 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 **AI-assisted work:**
 - Service branch coverage: edge cases for insights, teams, and trends services (unknown agents, orphaned runs, user fallbacks) — brought insights and teams to 100% branch coverage
-- React Query hook tests: dedicated suite for all 5 `use-analytics` hooks (success, error, loading, date range forwarding)
+- React Query hook tests: dedicated suite for `use-analytics` hooks (success, error, loading, date range forwarding) — initially 5 hooks, later expanded to 8 in Phase 7
 - Chart formatter tests: coverage for inline `tickFormatter`/`formatter` functions via Recharts prop capture mocking — brought chart components to 100%
-- E2E tests: 5 suites with fetch-level mocking testing full data flow (API → React Query → hooks → components → DOM) for all 4 pages + navigation
+- E2E tests: initially 5 suites with fetch-level mocking testing full data flow (API → React Query → hooks → components → DOM) for the original 4 pages + navigation — later expanded to 8 suites in Phase 7
 - ESLint config cleanup: extended test file rule overrides to backend test files
 - Added isolated test scripts (`test:unit`, `test:integration`, `test:e2e`)
 - Documentation updates across README, testing-spec, roadmap, and technical-spec
@@ -172,6 +172,28 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Documentation updates: README, roadmap, testing-spec, technical-spec, product-decisions, user-stories, ai-workflow
 
 **Result:** 63 suites / 552 tests → 66 suites / 599 tests. Two new product decisions documented (PD-024, PD-025). User story US-036 implemented.
+
+---
+
+### Phase 9: Documentation Hardening & Assignment Evidence
+
+**Human-led decisions:**
+- Identified evidence gaps for assignment requirements (AI-first process, spec-driven planning, production readiness)
+- Defined the 10-step documentation execution plan
+- Required honest status labels (done/partial/planned) with no overstated claims
+
+**AI-assisted work:**
+- Baseline audit of all existing docs — identified 8 inconsistencies (stale counts, status mismatches, missing pages in specs)
+- Created research artifacts: `research-scope.md`, `competitive-analysis.md`, `metric-rationale.md`
+- Created wireframe/prototype evidence: `wireframes.md`, `prototype-notes.md`
+- Created server-side authorization specification: `authz-spec.md`
+- Created assignment traceability matrix: `assignment-traceability.md`
+- Fixed documentation consistency: user stories status corrections (6 stories moved from planned to implemented), README product decision count fix, requirements-spec page list update, ai-workflow stale count fixes
+- Clarified test taxonomy in testing-spec: distinguished fetch-level E2E from true browser E2E, added risk coverage and uncovered risk tables
+- Created production readiness package: `production-readiness.md`, `limitations.md`, `interview-faq.md`
+- Updated README with links to all new docs and evidence section
+
+**Result:** 8 existing docs → 17 total docs. All assignment requirements mapped with explicit coverage status. No contradictory status labels remaining.
 
 ---
 

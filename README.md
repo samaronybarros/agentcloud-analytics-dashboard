@@ -136,7 +136,7 @@ docs/                     # Product specs, decisions, workflow docs
 7. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
 8. **Role-based views** — a "Viewing as" selector lets users switch between Org Admin, Eng Manager, and Platform Engineer personas. Each role sees different pages, KPIs, and table columns based on a declarative visibility config. Cost-sensitive data is restricted to leadership roles.
 
-See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions).
+See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions, PD-001 through PD-025).
 
 ---
 
@@ -178,16 +178,61 @@ The dataset supports meaningful aggregation for adoption, reliability, performan
 
 ## Documentation
 
+### Core Specs
 | Document                                                       | Description                                     |
 | -------------------------------------------------------------- | ----------------------------------------------- |
-| [`docs/requirements-spec.md`](docs/requirements-spec.md)       | Product requirements and user personas          |
-| [`docs/user-stories.md`](docs/user-stories.md)                 | 42 user stories mapped to personas and features |
+| [`docs/requirements-spec.md`](docs/requirements-spec.md)       | Product requirements, personas, and dashboard pages |
+| [`docs/user-stories.md`](docs/user-stories.md)                 | 44 user stories mapped to personas and features |
 | [`docs/technical-spec.md`](docs/technical-spec.md)             | Architecture, stack, data flow                  |
-| [`docs/testing-spec.md`](docs/testing-spec.md)                 | TDD approach and test organization              |
-| [`docs/product-decisions.md`](docs/product-decisions.md)       | 23 product decisions with rationale             |
+| [`docs/testing-spec.md`](docs/testing-spec.md)                 | TDD approach, test taxonomy, and risk coverage  |
+| [`docs/product-decisions.md`](docs/product-decisions.md)       | 25 product decisions with rationale             |
 | [`docs/roadmap.md`](docs/roadmap.md)                           | Completed, in-progress, and planned work        |
-| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led             |
+
+### Process & Workflow
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/ai-workflow.md`](docs/ai-workflow.md)                   | How AI was used, what was human-led (9 phases)  |
 | [`docs/development-workflow.md`](docs/development-workflow.md) | Phase-based workflow with mermaid diagram       |
+
+### Research & Design
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/research-scope.md`](docs/research-scope.md)             | Problem framing, personas, scope boundaries     |
+| [`docs/competitive-analysis.md`](docs/competitive-analysis.md) | Landscape positioning and alternatives          |
+| [`docs/metric-rationale.md`](docs/metric-rationale.md)         | Per-metric justification by persona and use case|
+| [`docs/wireframes.md`](docs/wireframes.md)                     | Low-fidelity ASCII wireframes for all 7 pages   |
+| [`docs/prototype-notes.md`](docs/prototype-notes.md)           | Design iterations and component patterns        |
+
+### Production & Security
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/authz-spec.md`](docs/authz-spec.md)                     | Authorization spec, threat model, migration plan|
+| [`docs/production-readiness.md`](docs/production-readiness.md) | Checklist with done/partial/planned status       |
+| [`docs/limitations.md`](docs/limitations.md)                   | Known limitations and honest scope boundaries   |
+
+### Traceability
+| Document                                                       | Description                                     |
+| -------------------------------------------------------------- | ----------------------------------------------- |
+| [`docs/assignment-traceability.md`](docs/assignment-traceability.md) | Requirement → implementation → test mapping |
+
+---
+
+## Evidence for Assignment Requirements
+
+For a complete mapping of every assignment requirement to its implementation, test, and documentation evidence, see [`docs/assignment-traceability.md`](docs/assignment-traceability.md).
+
+Quick summary:
+
+| Dimension | Status | Evidence |
+|-----------|--------|----------|
+| Adoption metrics | Full | Overview page, 8 KPIs, trend charts |
+| Reliability metrics | Full | Agents page, failure taxonomy, troubleshooting |
+| Performance metrics | Full | Latency KPIs, p50/p95 trends |
+| Cost / optimization | Full | Teams page, cost trends, insight cards |
+| DDD architecture | Full | 8 vertical slices, repository pattern |
+| TDD workflow | Full | 66 suites, 599 tests, tests-first |
+| Role-based views | Full | 3 personas, client-side (server spec in authz-spec.md) |
+| Documentation | Full | 17 docs covering specs, design, process, readiness |
 
 ---
 

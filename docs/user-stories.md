@@ -55,12 +55,40 @@
 
 ---
 
-## Planned — New Dashboards & Views
+## Implemented — New Dashboards & Views
 
 ### Alerts Dashboard
 
-- [ ] **US-021:** As a Platform Engineer, I want an alerts dashboard that surfaces threshold breaches and anomalies so that I can respond to critical issues quickly.
-- [ ] **US-022:** As an Engineering Manager, I want to see alerts grouped by severity so that I can prioritize which problems to address first.
+- [x] **US-021:** As a Platform Engineer, I want an alerts dashboard that surfaces threshold breaches and anomalies so that I can respond to critical issues quickly.
+- [x] **US-022:** As an Engineering Manager, I want to see alerts grouped by severity so that I can prioritize which problems to address first.
+
+### Model Reliability & Efficiency
+
+- [x] **US-029:** As a Platform Engineer, I want to compare models by success rate, latency, and cost per token so that I can recommend the best model for each use case.
+- [x] **US-030:** As an Org Admin, I want to see which models deliver the best reliability per dollar so that I can guide model selection policy.
+
+---
+
+## Implemented — Troubleshooting
+
+- [x] **US-034:** As a Platform Engineer, I want a troubleshooting view that surfaces error patterns and suggests remediation steps so that I can resolve agent failures faster.
+- [x] **US-035:** As an Engineering Manager, I want to see which error types are most common for my team's agents so that I can allocate engineering effort effectively.
+
+---
+
+## Implemented — User Roles & Permissions
+
+- [x] **US-036:** As an Org Admin, I want role-based views (admin, manager, engineer) so that users only see data relevant to their scope.
+
+---
+
+## Implemented — Infrastructure (Partial)
+
+- [x] **US-042:** As a developer, I want the backend structured with DDD so that swapping mock data for a real database requires minimal changes.
+
+---
+
+## Planned — New Dashboards & Views
 
 ### Time Saved
 
@@ -77,11 +105,6 @@
 - [ ] **US-027:** As an Org Admin, I want to compare team output and reliability against their cost so that I can evaluate efficiency across teams.
 - [ ] **US-028:** As an Engineering Manager, I want to benchmark my team's agent performance against other teams so that I can identify improvement opportunities.
 
-### Model Reliability & Efficiency
-
-- [ ] **US-029:** As a Platform Engineer, I want to compare models by success rate, latency, and cost per token so that I can recommend the best model for each use case.
-- [ ] **US-030:** As an Org Admin, I want to see which models deliver the best reliability per dollar so that I can guide model selection policy.
-
 ---
 
 ## Planned — Filtering & Navigation
@@ -89,19 +112,6 @@
 - [ ] **US-031:** As an Engineering Manager, I want to filter dashboards by team so that I can focus on my team's agents and metrics.
 - [ ] **US-032:** As a Platform Engineer, I want to filter the agent leaderboard by model or status so that I can narrow down to specific agent types.
 - [ ] **US-033:** As any user, I want to select a custom date range with a calendar picker so that I can analyze specific time windows beyond the presets.
-
----
-
-## Planned — Troubleshooting
-
-- [ ] **US-034:** As a Platform Engineer, I want a troubleshooting view that surfaces error patterns and suggests remediation steps so that I can resolve agent failures faster.
-- [ ] **US-035:** As an Engineering Manager, I want to see which error types are most common for my team's agents so that I can allocate engineering effort effectively.
-
----
-
-## Implemented — User Roles & Permissions
-
-- [x] **US-036:** As an Org Admin, I want role-based views (admin, manager, engineer) so that users only see data relevant to their scope.
 - [ ] **US-037:** As an Engineering Manager, I want my dashboard to default to my team's data so that I see relevant information without manual filtering.
 
 ---
@@ -124,7 +134,6 @@
 
 - [ ] **US-040:** As a developer, I want the application containerized with Docker so that I can run it consistently across environments.
 - [ ] **US-041:** As a developer, I want CI/CD pipelines that run lint, test, and build gates so that code quality is enforced automatically on every change.
-- [ ] **US-042:** As a developer, I want the backend structured with DDD so that swapping mock data for a real database requires minimal changes.
 
 ---
 

@@ -182,13 +182,57 @@ fetchMock.mockImplementation((url: string) => {
 render(<OverviewPage />, { wrapper: createE2EWrapper() });
 ```
 
+## Test Taxonomy Clarification
+
+| Label in This Project | What It Actually Tests | Environment | Real Network? | Real Browser? |
+|---|---|---|---|---|
+| **Unit tests** | Individual functions, services, utilities, component rendering | jsdom / Node | No | No |
+| **API integration tests** | Full route handler → controller → service → repository chain | Node (`@jest-environment node`) | No | No |
+| **E2E (fetch-level)** | Full page rendering with mocked `global.fetch`, real React Query + providers | jsdom | No (fetch mocked) | No (jsdom) |
+| **True browser E2E** | Real browser, real server, real network | Playwright/Cypress | Yes | Yes |
+
+**Important**: The "E2E" tests in this project are **fetch-level integration tests**, not true browser E2E tests. They mock `global.fetch` and render pages in jsdom with real React Query clients. They exercise the full frontend data flow (fetch → hook → component → DOM) but do not test:
+- Real HTTP requests to the Next.js server
+- Browser rendering, layout, or CSS
+- Client-side navigation between pages
+- JavaScript hydration behavior
+
+True browser E2E tests (Playwright or Cypress) are **planned but not yet implemented**.
+
+## Risk Coverage
+
+### Covered Risks
+
+| Risk | Coverage | Test Type |
+|------|----------|-----------|
+| Incorrect metric aggregation | High | Unit tests (8 service suites, 111 tests) |
+| API response shape regression | High | Integration tests (8 suites, 60 tests) |
+| Component rendering with various states | High | Unit tests (24 component suites) |
+| Date range filtering logic | High | Unit + integration tests |
+| Role visibility configuration | High | Unit tests (role-visibility suite) |
+| Hook error/loading state handling | Medium | Unit tests (use-analytics suite) |
+| Page-level data flow | Medium | Fetch-level E2E (8 suites) |
+
+### Uncovered Risks
+
+| Risk | Why Uncovered | Impact | Mitigation |
+|------|--------------|--------|------------|
+| Browser rendering / CSS layout | No real browser tests | Layout bugs visible only in browser | Manual testing, planned Playwright suite |
+| Client-side routing transitions | jsdom doesn't support Next.js navigation | Broken nav in production | Manual testing |
+| Hydration mismatches | jsdom doesn't hydrate server HTML | Runtime errors in browser | Addressed architecturally (PD-006) |
+| API under concurrent load | No load testing | Performance degradation | Planned — not critical for demo |
+| Accessibility compliance | No automated a11y testing | WCAG violations | Planned — axe-core integration |
+| Server-side authorization | No auth middleware exists | Data exposure via direct API calls | Documented in authz-spec.md |
+| Cross-browser compatibility | Only jsdom tested | Browser-specific bugs | Manual testing in Chrome/Firefox/Safari |
+| Mobile/responsive layout | No responsive tests, no responsive CSS | Broken on small screens | Planned — responsive layout not implemented |
+
 ## Running Tests
 
 ```bash
 npm test                 # Run all tests once
 npm run test:unit        # Unit tests only (frontend + backend)
 npm run test:integration # API integration tests only
-npm run test:e2e         # E2E page tests only
+npm run test:e2e         # E2E page tests only (fetch-level, not browser)
 npm run test:watch       # Watch mode for TDD
 npm run test:coverage    # Generate coverage report
 ```

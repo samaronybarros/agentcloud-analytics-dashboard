@@ -1,6 +1,6 @@
 # Roadmap
 
-Current status: **Core dashboard feature-complete** (66 test suites, 599 tests passing, production build green).
+Current status: **Core dashboard feature-complete** (66 test suites, 599 tests passing, production build green). Documentation hardening in progress.
 
 ---
 
@@ -30,6 +30,7 @@ Current status: **Core dashboard feature-complete** (66 test suites, 599 tests p
 - [x] E2E tests — 8 suites covering all 7 pages + navigation with fetch-level mocking (full data flow)
 - [x] ESLint config cleanup — extended test file rule overrides to cover backend test files
 - [x] Role-based dashboard views — RoleProvider context, role selector, page/section visibility config, conditional rendering across all 7 pages
+- [x] Documentation hardening — research artifacts, wireframes, authz spec, traceability matrix, production readiness, limitations, interview FAQ, testing taxonomy clarification, doc consistency fixes
 
 ---
 
