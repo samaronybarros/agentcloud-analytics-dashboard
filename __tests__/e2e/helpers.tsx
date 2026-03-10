@@ -7,10 +7,11 @@
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { DateRangeProvider } from '@/lib/hooks/use-date-range';
+import { RoleProvider } from '@/lib/hooks/use-role';
 
 /**
- * Wraps children with QueryClient + DateRangeProvider, matching the real
- * DashboardLayout providers without the sidebar/header chrome.
+ * Wraps children with QueryClient + DateRangeProvider + RoleProvider, matching
+ * the real DashboardLayout providers without the sidebar/header chrome.
  */
 export function createE2EWrapper() {
   const queryClient = new QueryClient({
@@ -24,9 +25,11 @@ export function createE2EWrapper() {
   return function E2EWrapper({ children }: { children: React.ReactNode }) {
     return (
       <QueryClientProvider client={queryClient}>
-        <DateRangeProvider>
-          {children}
-        </DateRangeProvider>
+        <RoleProvider>
+          <DateRangeProvider>
+            {children}
+          </DateRangeProvider>
+        </RoleProvider>
       </QueryClientProvider>
     );
   };

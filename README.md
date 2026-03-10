@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-552%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-599%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -44,7 +44,7 @@ The dashboard answers five core questions for org admins, engineering managers, 
 | **Alerts**          | What needs attention now?         | Alert cards — threshold breaches, anomalies, critical events by severity |
 | **Troubleshooting** | Why are agents failing?           | Error timeline, agent error breakdown, failure pattern analysis          |
 
-All pages support date range filtering (7d / 14d / 30d / all) and include loading, error, and empty states.
+All pages support date range filtering (7d / 14d / 30d / all), role-based views (Org Admin / Eng Manager / Platform Engineer), and include loading, error, and empty states.
 
 ---
 
@@ -55,7 +55,7 @@ All pages support date range filtering (7d / 14d / 30d / all) and include loadin
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (63 suites, 552 tests)       |
+| `npm test`              | Run all tests (66 suites, 599 tests)       |
 | `npm run test:unit`     | Run unit tests only (47 suites)            |
 | `npm run test:integration` | Run API integration tests only (8 suites) |
 | `npm run test:e2e`      | Run E2E page tests only (8 suites)         |
@@ -108,17 +108,18 @@ app/
       unit/analytics/
       unit/api/
       integration/api/
-  dashboard/              # 7 pages + layout with active nav highlighting
+  dashboard/              # 7 pages + layout with role-based nav highlighting
 components/
   charts/                 # 9 chart components (Recharts wrappers)
-  dashboard/              # KPI card, section header, sidebar nav, date picker
-  tables/                 # 5 table components
+  dashboard/              # KPI card, section header, sidebar nav, date picker, role selector
+  tables/                 # 5 table components (with role-aware column visibility)
   insights/               # Severity-styled insight cards
 lib/
-  hooks/                  # React Query hooks
+  hooks/                  # React Query hooks + role context (useRole)
   utils/                  # Formatting, date filtering, API handler
   types.ts                # Shared domain and API response types
-__tests__/                # Frontend tests (46 suites — components, pages, hooks, utils, e2e)
+  role-visibility.ts      # Role-based page/section visibility config
+__tests__/                # Frontend tests (49 suites — components, pages, hooks, utils, e2e)
   unit/
   e2e/                    # 8 suites — fetch-level page integration tests
 docs/                     # Product specs, decisions, workflow docs
@@ -133,8 +134,9 @@ docs/                     # Product specs, decisions, workflow docs
 5. **Deterministic mock data** — seeded PRNG (seed=42), same output every run. 10 agents, 8 users, 500 runs across 30 days.
 6. **TDD workflow** — tests written before implementation for all analytics logic and components.
 7. **Insight cards over raw charts** — the Optimization page surfaces actionable conclusions, not just data.
+8. **Role-based views** — a "Viewing as" selector lets users switch between Org Admin, Eng Manager, and Platform Engineer personas. Each role sees different pages, KPIs, and table columns based on a declarative visibility config. Cost-sensitive data is restricted to leadership roles.
 
-See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (23 documented decisions).
+See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions).
 
 ---
 
@@ -143,14 +145,14 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 | Category                                                  | Suites | Tests   |
 | --------------------------------------------------------- | ------ | ------- |
 | Analytics logic                                           | 8      | 111     |
-| Components (charts, tables, insights, alerts, dashboard)  | 23     | 163     |
+| Components (charts, tables, insights, alerts, dashboard)  | 24     | 167     |
 | Pages                                                     | 7      | 52      |
 | Layout & nav                                              | 2      | 28      |
-| Hooks & utilities                                         | 6      | 81      |
+| Hooks, utilities & role visibility                        | 9      | 126     |
 | API integration                                           | 8      | 60      |
 | E2E (fetch-level)                                         | 8      | 51      |
 | API utility                                               | 1      | 6       |
-| **Total**                                                 | **63** | **552** |
+| **Total**                                                 | **66** | **599** |
 
 Tests are deterministic, fast (~3s), and isolated. No network, no database.
 

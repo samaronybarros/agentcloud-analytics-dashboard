@@ -2,6 +2,8 @@
 
 import { useAlerts } from '@/lib/hooks/use-analytics';
 import { useDateRange } from '@/lib/hooks/use-date-range';
+import { useRole } from '@/lib/hooks/use-role';
+import { canSeeSection } from '@/lib/role-visibility';
 import { Section } from '@/components/dashboard/section';
 import { Skeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
@@ -22,18 +24,23 @@ function AlertsSkeleton() {
   );
 }
 
-function AlertsContent({ alerts, breachedCount }: { alerts: Alert[]; breachedCount: number }) {
-  if (alerts.length === 0) {
-    return <EmptyState message="No alerts configured. Set up threshold alerts to monitor your agents." />;
+function AlertsContent({ alerts, breachedCount, showCostAlerts }: { alerts: Alert[]; breachedCount: number; showCostAlerts: boolean }) {
+  const filtered = showCostAlerts
+    ? alerts
+    : alerts.filter((alert) => alert.metric !== 'cost');
+
+  if (filtered.length === 0) {
+    return <EmptyState message="No alerts available for your role." />;
   }
 
-  const breached = alerts.filter((alert) => alert.status === 'breached');
-  const ok = alerts.filter((alert) => alert.status === 'ok');
+  const breached = filtered.filter((alert) => alert.status === 'breached');
+  const ok = filtered.filter((alert) => alert.status === 'ok');
+  const visibleBreachedCount = showCostAlerts ? breachedCount : breached.length;
 
   return (
     <>
       <p className="mt-4 text-sm text-gray-600">
-        {breachedCount} of {alerts.length} alerts breached
+        {visibleBreachedCount} of {filtered.length} alerts breached
       </p>
 
       {breached.length > 0 && (
@@ -65,7 +72,10 @@ function AlertsContent({ alerts, breachedCount }: { alerts: Alert[]; breachedCou
 
 export default function AlertsPage() {
   const { range } = useDateRange();
+  const { role } = useRole();
   const { data, isLoading, isError, error } = useAlerts(range);
+
+  const showCostAlerts = canSeeSection(role, 'cost-alerts');
 
   return (
     <div>
@@ -81,7 +91,7 @@ export default function AlertsPage() {
       ) : !data ? (
         <ErrorState />
       ) : (
-        <AlertsContent alerts={data.alerts} breachedCount={data.breachedCount} />
+        <AlertsContent alerts={data.alerts} breachedCount={data.breachedCount} showCostAlerts={showCostAlerts} />
       )}
     </div>
   );

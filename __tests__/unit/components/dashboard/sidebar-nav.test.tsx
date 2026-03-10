@@ -15,9 +15,18 @@ jest.mock('next/link', () => {
 });
 
 import SidebarNav from '@/components/dashboard/sidebar-nav';
+import { RoleProvider } from '@/lib/hooks/use-role';
 import { usePathname } from 'next/navigation';
 
 const mockUsePathname = usePathname as jest.Mock;
+
+function renderNav() {
+  return render(
+    <RoleProvider>
+      <SidebarNav />
+    </RoleProvider>,
+  );
+}
 
 describe('SidebarNav', () => {
   beforeEach(() => {
@@ -25,12 +34,12 @@ describe('SidebarNav', () => {
   });
 
   it('renders the brand name', () => {
-    render(<SidebarNav />);
+    renderNav();
     expect(screen.getByText('AgentCloud')).toBeInTheDocument();
   });
 
-  it('renders all seven nav links', () => {
-    render(<SidebarNav />);
+  it('renders all seven nav links for admin role (default)', () => {
+    renderNav();
     const nav = screen.getByRole('navigation');
     const links = within(nav).getAllByRole('link');
     expect(links).toHaveLength(7);
@@ -38,7 +47,7 @@ describe('SidebarNav', () => {
 
   it('applies active styles to the current route', () => {
     mockUsePathname.mockReturnValue('/dashboard/teams');
-    render(<SidebarNav />);
+    renderNav();
     const teamsLink = screen.getByText('Teams').closest('a')!;
     expect(teamsLink.className).toContain('font-medium');
     expect(teamsLink.className).toContain('text-gray-900');
@@ -46,7 +55,7 @@ describe('SidebarNav', () => {
 
   it('applies inactive styles to non-current routes', () => {
     mockUsePathname.mockReturnValue('/dashboard/teams');
-    render(<SidebarNav />);
+    renderNav();
     const overviewLink = screen.getByText('Overview').closest('a')!;
     const agentsLink = screen.getByText('Agents').closest('a')!;
     const optimizationLink = screen.getByText('Optimization').closest('a')!;
@@ -57,14 +66,14 @@ describe('SidebarNav', () => {
 
   it('does not highlight Overview when on a sub-page', () => {
     mockUsePathname.mockReturnValue('/dashboard/agents');
-    render(<SidebarNav />);
+    renderNav();
     const overviewLink = screen.getByText('Overview').closest('a')!;
     expect(overviewLink.className).toContain('text-gray-600');
     expect(overviewLink.className).not.toContain('font-medium');
   });
 
   it('uses Next.js Link for client-side navigation', () => {
-    render(<SidebarNav />);
+    renderNav();
     const nav = screen.getByRole('navigation');
     const nextLinks = within(nav).getAllByTestId('next-link');
     expect(nextLinks).toHaveLength(7);
@@ -72,12 +81,61 @@ describe('SidebarNav', () => {
 
   it('produces consistent className output for same pathname across renders', () => {
     mockUsePathname.mockReturnValue('/dashboard/optimization');
-    const { container: firstRender } = render(<SidebarNav />);
+    const { container: firstRender } = render(
+      <RoleProvider><SidebarNav /></RoleProvider>,
+    );
     const firstHTML = firstRender.innerHTML;
 
-    const { container: secondRender } = render(<SidebarNav />);
+    const { container: secondRender } = render(
+      <RoleProvider><SidebarNav /></RoleProvider>,
+    );
     const secondHTML = secondRender.innerHTML;
 
     expect(firstHTML).toBe(secondHTML);
+  });
+});
+
+describe('SidebarNav — role-based filtering', () => {
+  beforeEach(() => {
+    mockUsePathname.mockReturnValue('/dashboard');
+  });
+
+  it('hides Teams link for engineer role', () => {
+    jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
+      role: 'engineer',
+      setRole: jest.fn(),
+    });
+
+    render(
+      <RoleProvider>
+        <SidebarNav />
+      </RoleProvider>,
+    );
+
+    const nav = screen.getByRole('navigation');
+    const links = within(nav).getAllByRole('link');
+    expect(links).toHaveLength(6);
+    expect(screen.queryByText('Teams')).not.toBeInTheDocument();
+
+    jest.restoreAllMocks();
+  });
+
+  it('shows all links for manager role', () => {
+    jest.spyOn(require('@/lib/hooks/use-role'), 'useRole').mockReturnValue({
+      role: 'manager',
+      setRole: jest.fn(),
+    });
+
+    render(
+      <RoleProvider>
+        <SidebarNav />
+      </RoleProvider>,
+    );
+
+    const nav = screen.getByRole('navigation');
+    const links = within(nav).getAllByRole('link');
+    expect(links).toHaveLength(7);
+
+    jest.restoreAllMocks();
   });
 });

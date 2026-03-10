@@ -54,12 +54,15 @@ __tests__/
       date-filter.test.ts
       build-url.test.ts
       parse-date-params.test.ts
-    hooks/                    # React Query hooks (2 suites)
+    hooks/                    # React Query hooks + role context (3 suites)
       use-date-range.test.tsx
       use-analytics.test.tsx
+      use-role.test.tsx
+    lib/                      # Shared library tests (1 suite)
+      role-visibility.test.ts
     components/               # Component rendering with mocked data
       charts/                 # Chart components (9 suites)
-      dashboard/              # KPI card, section, sidebar nav, etc. (8 suites)
+      dashboard/              # KPI card, section, sidebar nav, role selector, etc. (9 suites)
       tables/                 # Data tables (5 suites)
       insights/               # Insight cards (1 suite)
       alerts/                 # Alert card (1 suite)
@@ -82,14 +85,14 @@ __tests__/
 | Category | Suites | Tests |
 |----------|--------|-------|
 | Analytics logic | 8 | 111 |
-| Components (charts, tables, insights, alerts, dashboard) | 23 | 163 |
+| Components (charts, tables, insights, alerts, dashboard) | 24 | 167 |
 | Pages | 7 | 52 |
 | Layout & nav | 2 | 28 |
-| Hooks & utilities | 6 | 81 |
+| Hooks, utilities & role visibility | 9 | 126 |
 | API integration | 8 | 60 |
 | E2E (fetch-level) | 8 | 51 |
 | API utility | 1 | 6 |
-| **Total** | **63** | **552** |
+| **Total** | **66** | **599** |
 
 ## Priority Coverage
 
@@ -168,7 +171,7 @@ expect(tickFormatter('2026-02-01')).toBe('02-01');
 ```
 
 ### Fetch-level mocking (E2E tests)
-E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider`, testing the full data flow:
+E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider + RoleProvider`, testing the full data flow:
 ```tsx
 const fetchMock = jest.fn();
 global.fetch = fetchMock;

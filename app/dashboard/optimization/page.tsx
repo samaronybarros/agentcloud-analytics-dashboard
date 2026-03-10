@@ -2,12 +2,19 @@
 
 import { useInsights } from '@/lib/hooks/use-analytics';
 import { useDateRange } from '@/lib/hooks/use-date-range';
+import { useRole } from '@/lib/hooks/use-role';
+import { canSeeSection } from '@/lib/role-visibility';
 import { Section } from '@/components/dashboard/section';
 import { InsightCard } from '@/components/insights/insight-card';
 import { Skeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
 import { ErrorState } from '@/components/dashboard/error-state';
 import type { Insight } from '@/lib/types';
+
+const COST_INSIGHT_TYPES: ReadonlySet<string> = new Set([
+  'high-cost-low-success',
+  'top-cost-driver',
+]);
 
 function OptimizationSkeleton() {
   return (
@@ -22,14 +29,18 @@ function OptimizationSkeleton() {
   );
 }
 
-function OptimizationContent({ insights }: { insights: Insight[] }) {
-  const critical = insights.filter((i) => i.severity === 'critical');
-  const warnings = insights.filter((i) => i.severity === 'warning');
-  const info = insights.filter((i) => i.severity === 'info');
+function OptimizationContent({ insights, showCostInsights }: { insights: Insight[]; showCostInsights: boolean }) {
+  const filtered = showCostInsights
+    ? insights
+    : insights.filter((insight) => !COST_INSIGHT_TYPES.has(insight.type));
 
-  if (insights.length === 0) {
+  const critical = filtered.filter((insight) => insight.severity === 'critical');
+  const warnings = filtered.filter((insight) => insight.severity === 'warning');
+  const info = filtered.filter((insight) => insight.severity === 'info');
+
+  if (filtered.length === 0) {
     return (
-      <EmptyState message="No optimization insights at this time. All agents are performing well." />
+      <EmptyState message="No optimization insights available for your role. All visible agents are performing well." />
     );
   }
 
@@ -76,7 +87,10 @@ function OptimizationContent({ insights }: { insights: Insight[] }) {
 
 export default function OptimizationPage() {
   const { range } = useDateRange();
+  const { role } = useRole();
   const { data, isLoading, isError, error } = useInsights(range);
+
+  const showCostInsights = canSeeSection(role, 'cost-insights');
 
   return (
     <div>
@@ -92,7 +106,7 @@ export default function OptimizationPage() {
       ) : !data ? (
         <ErrorState />
       ) : (
-        <OptimizationContent insights={data.insights} />
+        <OptimizationContent insights={data.insights} showCostInsights={showCostInsights} />
       )}
     </div>
   );

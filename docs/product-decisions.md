@@ -189,3 +189,31 @@ This document records key product decisions, their rationale, and alternatives c
 **Decision:** 10 hardcoded agents and 8 hardcoded users across 4 teams (Platform, Data, Backend, Frontend), declared as `readonly` arrays.
 
 **Rationale:** Hardcoding ensures complete determinism and makes data review trivial. The distribution (e.g., 3 agents in Platform, 2 in others) provides interesting aggregation scenarios without being unbalanced. Matches a plausible small org structure.
+
+---
+
+## PD-024: Client-side role-based views instead of server-side enforcement
+
+**Decision:** Role switching is implemented as a client-side context (`RoleProvider`) with a "Viewing as" dropdown. The API returns full data; the UI conditionally renders pages and sections based on the active role.
+
+**Rationale:** For a demo/interview dashboard with mock data, server-side enforcement adds complexity without value. The client-side approach lets reviewers instantly switch personas and see how the dashboard adapts. A production system would enforce access server-side, but the architectural pattern (declarative visibility config) would carry over.
+
+**Alternatives considered:** Server-side role filtering in API routes. Rejected because it would require duplicating API endpoints or adding middleware, with no user-facing benefit for a demo.
+
+---
+
+## PD-025: Cost data as the primary role sensitivity boundary
+
+**Decision:** The main distinction between roles is access to cost-sensitive data. Engineers see reliability and performance metrics but no cost KPIs, cost trends, cost table columns, cost insights, or cost alerts. Managers see most cost data but not org-wide model cost allocation (admin-only). Admins see everything.
+
+**Rationale:** In real organizations, financial data (cloud spend, cost-per-model) is restricted to leadership. Platform engineers care about reliability, latency, and failure diagnosis — not budget allocation. This boundary is realistic, easy to explain, and creates a meaningful difference between roles without fragmenting the UX.
+
+**Visibility summary:**
+
+| Boundary | Admin | Manager | Engineer |
+|----------|-------|---------|----------|
+| Cost KPIs & trends | Yes | Yes | No |
+| Cost table columns | Yes | Some | No |
+| Teams page | Yes | Yes | No |
+| Cost-by-model chart | Yes | No | No |
+| Cost insights/alerts | Yes | Yes | No |

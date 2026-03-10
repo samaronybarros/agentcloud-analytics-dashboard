@@ -2,6 +2,8 @@
 
 import { useModelAnalytics } from '@/lib/hooks/use-analytics';
 import { useDateRange } from '@/lib/hooks/use-date-range';
+import { useRole } from '@/lib/hooks/use-role';
+import { canSeeSection } from '@/lib/role-visibility';
 import { Section } from '@/components/dashboard/section';
 import { TableSkeleton } from '@/components/dashboard/skeleton';
 import { EmptyState } from '@/components/dashboard/empty-state';
@@ -15,11 +17,23 @@ function ModelsSkeleton() {
   );
 }
 
-function ModelsContent({ models }: { models: ModelPerformanceEntry[] }) {
+function ModelsContent({
+  models,
+  showCostColumn,
+  showCostPerTokenColumn,
+}: {
+  models: ModelPerformanceEntry[];
+  showCostColumn: boolean;
+  showCostPerTokenColumn: boolean;
+}) {
   return (
     <Section title="Model Performance">
       <div className="rounded-lg border border-gray-200 bg-white">
-        <ModelPerformanceTable data={models} />
+        <ModelPerformanceTable
+          data={models}
+          showCostColumn={showCostColumn}
+          showCostPerTokenColumn={showCostPerTokenColumn}
+        />
       </div>
     </Section>
   );
@@ -27,7 +41,11 @@ function ModelsContent({ models }: { models: ModelPerformanceEntry[] }) {
 
 export default function ModelsPage() {
   const { range } = useDateRange();
+  const { role } = useRole();
   const { data, isLoading, isError, error } = useModelAnalytics(range);
+
+  const showCostColumn = canSeeSection(role, 'model-cost-column');
+  const showCostPerTokenColumn = canSeeSection(role, 'model-cost-per-token-column');
 
   return (
     <div>
@@ -45,7 +63,11 @@ export default function ModelsPage() {
       ) : data.models.length === 0 ? (
         <EmptyState />
       ) : (
-        <ModelsContent models={data.models} />
+        <ModelsContent
+          models={data.models}
+          showCostColumn={showCostColumn}
+          showCostPerTokenColumn={showCostPerTokenColumn}
+        />
       )}
     </div>
   );

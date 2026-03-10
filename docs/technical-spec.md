@@ -52,16 +52,17 @@ app/
 
 components/                 # Reusable presentational UI
   charts/                   # Chart wrappers (Recharts)
-  dashboard/                # Shared dashboard UI (KPI cards, section headers)
-  tables/                   # Data tables
+  dashboard/                # Shared dashboard UI (KPI cards, section headers, role selector)
+  tables/                   # Data tables (with role-aware column visibility)
   insights/                 # Insight cards
 
 lib/                        # Shared frontend concerns — no business logic
-  hooks/                    # React Query hooks
+  hooks/                    # React Query hooks + role context (useRole)
   utils/                    # Formatting, date filtering, API handler
   types.ts                  # Shared domain and API response types
+  role-visibility.ts        # Role-based page/section visibility config
 
-__tests__/                  # Frontend tests (46 suites, 375 tests)
+__tests__/                  # Frontend tests (49 suites, 422 tests)
   unit/                     # Components, pages, hooks, utils (38 suites)
   e2e/                      # Full page rendering with fetch-level mocking (8 suites, 51 tests)
 ```
@@ -89,6 +90,7 @@ Mock Data (app/api/_mock-data)
 6. **Mock data is deterministic** — seeded, no `Math.random()`. Same output every run.
 7. **TDD** — tests written before implementation for all analytics logic.
 8. **No unnecessary abstractions** — no state management library, no custom design system, no ORM.
+9. **Role-based views** — a declarative visibility config maps each role (admin, manager, engineer) to accessible pages and sections. Sections are nested under their parent page. Visibility is resolved at module load into flat sets for O(1) lookups. Client-side only — the API returns full data; the UI controls what is rendered.
 
 ## TypeScript Conventions
 

@@ -99,10 +99,17 @@
 
 ---
 
-## Planned — User Roles & Permissions
+## Implemented — User Roles & Permissions
 
-- [ ] **US-036:** As an Org Admin, I want role-based access (admin, manager, viewer) so that users only see data relevant to their scope.
+- [x] **US-036:** As an Org Admin, I want role-based views (admin, manager, engineer) so that users only see data relevant to their scope.
 - [ ] **US-037:** As an Engineering Manager, I want my dashboard to default to my team's data so that I see relevant information without manual filtering.
+
+---
+
+## Planned — AI Analytics Assistant
+
+- [ ] **US-043:** As an Org Admin, I want an AI-powered chat panel that can cross-reference dashboard data (adoption, cost, reliability, performance) and suggest new dashboard views, KPIs, or optimizations so that I can uncover insights I might not think to look for.
+- [ ] **US-044:** As an Engineering Manager, I want to ask the AI assistant questions about my team's metrics (e.g., "Which agents are getting worse?", "Where should I cut cost?") so that I can get actionable recommendations without manually analyzing charts.
 
 ---
 
