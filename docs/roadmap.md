@@ -29,7 +29,7 @@ Current status: **Core dashboard feature-complete with production hardening** (7
 - [x] Chart formatter tests — coverage for inline `tickFormatter`/`formatter` functions via prop capture mocks
 - [x] E2E tests — 8 suites covering all 7 pages + navigation with fetch-level mocking (full data flow)
 - [x] ESLint config cleanup — extended test file rule overrides to cover backend test files
-- [x] Role-based dashboard views — RoleProvider context, role selector, page/section visibility config, conditional rendering across all 7 pages
+- [x] Role-based dashboard views — URL-based role switching via `useRole()` hook (`?role=admin`), page/section visibility config, conditional rendering across all 7 pages
 - [x] Documentation hardening — research artifacts, wireframes, authz spec, traceability matrix, production readiness, limitations, interview FAQ, testing taxonomy clarification, doc consistency fixes
 - [x] Production hardening — server-side role-based authorization (page gating + field redaction), structured JSON logging with request IDs, in-memory token bucket rate limiting (100 req/60s), responsive sidebar with mobile hamburger menu, Playwright E2E config + smoke tests, GitHub Actions CI pipeline
 

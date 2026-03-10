@@ -192,13 +192,13 @@ This document records key product decisions, their rationale, and alternatives c
 
 ---
 
-## PD-024: Client-side role-based views instead of server-side enforcement
+## PD-024: Client-side role switching for demo purposes
 
-**Decision:** Role switching is implemented as a client-side context (`RoleProvider`) with a "Viewing as" dropdown. The API returns full data; the UI conditionally renders pages and sections based on the active role.
+**Decision:** Role switching is implemented client-side via a declarative visibility config (`role-visibility.ts`). Pages and sections conditionally render based on the active role. The API enforces server-side redaction and page-level gating, but role identity comes from the request (`?role=` param), not from authentication.
 
-**Rationale:** For a demo/interview dashboard with mock data, server-side enforcement adds complexity without value. The client-side approach lets reviewers instantly switch personas and see how the dashboard adapts. A production system would enforce access server-side, but the architectural pattern (declarative visibility config) would carry over.
+**Rationale:** For a demo/interview dashboard with mock data, full authentication adds complexity without value. The client-side approach lets reviewers switch personas and see how the dashboard adapts. A production system would enforce role from JWT/session, but the architectural pattern (declarative visibility config + server-side redaction) would carry over unchanged.
 
-**Alternatives considered:** Server-side role filtering in API routes. Rejected because it would require duplicating API endpoints or adding middleware, with no user-facing benefit for a demo.
+**Alternatives considered:** Server-side-only enforcement with no client-side visibility config. Rejected because the UI still needs to know which sections to render — a shared config avoids duplicating role logic across components.
 
 ---
 
@@ -217,3 +217,13 @@ This document records key product decisions, their rationale, and alternatives c
 | Teams page | Yes | Yes | No |
 | Cost-by-model chart | Yes | No | No |
 | Cost insights/alerts | Yes | Yes | No |
+
+---
+
+## PD-026: URL-based role selection replacing dropdown selector
+
+**Decision:** Replaced the `RoleSelector` dropdown and `RoleProvider` context with URL search param–based role selection (`?role=admin`). The `useRole()` hook reads from `useSearchParams()` directly. Default role is `engineer` (least-privileged).
+
+**Rationale:** The dropdown created a client-side state that was disconnected from the URL, making it impossible to share a specific role view via link. URL-based selection aligns client and server: both read the same `?role=` param, creating a single source of truth. It also eliminates the need for a React context provider, simplifying the component tree. Defaulting to `engineer` (least-privileged) follows the principle of least privilege — unauthenticated or unspecified requests see the most restricted view. This approach is also more production-ready: in a real system, the `?role=` param would be replaced by a JWT/session claim, and the `useRole()` hook would read from that instead — the rest of the architecture (visibility config, server-side redaction, conditional rendering) stays unchanged.
+
+**What was removed:** `RoleSelector` component, `RoleProvider` context, `setRole` state setter. **What was added:** `useSearchParams()`-based `useRole()` hook, `<Suspense>` boundary in dashboard layout for Next.js static rendering compatibility.

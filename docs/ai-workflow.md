@@ -162,13 +162,13 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Reviewed and requested refactor of visibility config to nest sections under pages
 
 **AI-assisted work:**
-- TDD implementation: 47 new tests written before implementation (35 visibility config, 5 role context hook, 4 role selector component, 3 sidebar role-filtering)
-- New modules: `RoleProvider` context, `role-visibility.ts` declarative config, `RoleSelector` component
+- TDD implementation: 47 new tests written before implementation (35 visibility config, 5 role hook, 3 sidebar role-filtering)
+- New modules: `useRole()` hook (reads role from URL search params), `role-visibility.ts` declarative config
 - Page-centric visibility config: sections nested under parent pages with `'all'` shorthand, resolved to flat sets at module load
 - Updated all 7 dashboard pages with conditional rendering (cost KPIs, cost trends, cost columns, cost insights, cost alerts)
 - Added `showCostColumn` props to `AgentLeaderboard` and `ModelPerformanceTable`
 - "Restricted access" state for Teams page when viewed as engineer
-- Updated 14 existing test files to wrap with `RoleProvider` or mock `useRole`
+- Updated 14 existing test files to mock `useRole`
 - Documentation updates: README, roadmap, testing-spec, technical-spec, product-decisions, user-stories, ai-workflow
 
 **Result:** 63 suites / 552 tests → 66 suites / 599 tests. Two new product decisions documented (PD-024, PD-025). User story US-036 implemented.
@@ -190,7 +190,7 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Created assignment traceability matrix: `assignment-traceability.md`
 - Fixed documentation consistency: user stories status corrections (6 stories moved from planned to implemented), README product decision count fix, requirements-spec page list update, ai-workflow stale count fixes
 - Clarified test taxonomy in testing-spec: distinguished fetch-level E2E from true browser E2E, added risk coverage and uncovered risk tables
-- Created production readiness package: `production-readiness.md`, `limitations.md`, `interview-faq.md`
+- Created production readiness package: `production-readiness.md`, `limitations.md`
 - Updated README with links to all new docs and evidence section
 
 **Result:** 8 existing docs → 17 total docs. All assignment requirements mapped with explicit coverage status. No contradictory status labels remaining.

@@ -69,7 +69,7 @@ __tests__/
       role-visibility.test.ts
     components/               # Component rendering with mocked data
       charts/                 # Chart components (9 suites)
-      dashboard/              # KPI card, section, sidebar nav, role selector, etc. (9 suites)
+      dashboard/              # KPI card, section, sidebar nav, etc. (9 suites)
       tables/                 # Data tables (5 suites)
       insights/               # Insight cards (1 suite)
       alerts/                 # Alert card (1 suite)
@@ -179,7 +179,7 @@ expect(tickFormatter('2026-02-01')).toBe('02-01');
 ```
 
 ### Fetch-level mocking (E2E tests)
-E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider + RoleProvider`, testing the full data flow:
+E2E tests mock `global.fetch` and wrap pages with real `QueryClient + DateRangeProvider`, mocking `useRole` directly to control the active role during tests:
 ```tsx
 const fetchMock = jest.fn();
 global.fetch = fetchMock;

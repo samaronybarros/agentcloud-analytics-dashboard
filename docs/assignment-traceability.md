@@ -94,7 +94,7 @@ All files located under `app/api/analytics/<context>/`. Tests under `app/api/__t
 | Loading states | `components/dashboard/skeleton.tsx` | `__tests__/unit/components/dashboard/skeleton.test.tsx` | Full |
 | Error states | `components/dashboard/error-state.tsx` | `__tests__/unit/components/dashboard/error-state.test.tsx` | Full |
 | Empty states | `components/dashboard/empty-state.tsx` | `__tests__/unit/components/dashboard/empty-state.test.tsx` | Full |
-| Role-based views | `lib/role-visibility.ts`, `lib/hooks/use-role.tsx`, `components/dashboard/role-selector.tsx` | `__tests__/unit/lib/role-visibility.test.ts`, `__tests__/unit/hooks/use-role.test.tsx`, `__tests__/unit/components/role-selector.test.tsx` | Full |
+| Role-based views | `lib/role-visibility.ts`, `lib/hooks/use-role.tsx` | `__tests__/unit/lib/role-visibility.test.ts`, `__tests__/unit/hooks/use-role.test.tsx` | Full |
 | API error handler | `lib/utils/api-handler.ts` | `app/api/__tests__/unit/api/api-handler.test.ts` | Full |
 | Domain types | `lib/types.ts` (Agent, Run, User, all aggregation types, all response types) | Type-checked at compile time | Full |
 | Dashboard layout (sidebar, header) | `app/dashboard/layout.tsx`, `components/dashboard/dashboard-header.tsx`, `components/dashboard/sidebar-nav.tsx` | `__tests__/unit/components/layout/dashboard-layout.test.tsx`, `__tests__/unit/components/dashboard/dashboard-header.test.tsx`, `__tests__/unit/components/dashboard/sidebar-nav.test.tsx` | Full |
@@ -146,7 +146,7 @@ All required documents from CLAUDE.md section 15 are present. An additional `dev
 | **US-018** | Loading states | `skeleton.tsx` | `skeleton.test.tsx` | Full |
 | **US-019** | Error states | `error-state.tsx` | `error-state.test.tsx` | Full |
 | **US-020** | Empty states | `empty-state.tsx` | `empty-state.test.tsx` | Full |
-| **US-036** | Role-based views (admin, manager, engineer) | `role-visibility.ts`, `use-role.tsx`, `role-selector.tsx` | `role-visibility.test.ts`, `use-role.test.tsx`, `role-selector.test.tsx` | Full |
+| **US-036** | Role-based views (admin, manager, engineer) | `role-visibility.ts`, `use-role.tsx` | `role-visibility.test.ts`, `use-role.test.tsx` | Full |
 
 ### 5.2 Planned Stories -- Actual Implementation Status
 
@@ -194,7 +194,7 @@ These stories are listed as "Planned" in `docs/user-stories.md` but some have be
 
 | Suite | Location | Files |
 |---|---|---|
-| Component unit tests | `__tests__/unit/components/` | charts (8), dashboard (8), insights (1), tables (5), alerts (1), layout (1), pages (7), role-selector (1) -- 32 files |
+| Component unit tests | `__tests__/unit/components/` | charts (8), dashboard (8), insights (1), tables (5), alerts (1), layout (1), pages (7) -- 31 files |
 | Hook unit tests | `__tests__/unit/hooks/` | use-date-range, use-analytics, use-role (3 files) |
 | Utility unit tests | `__tests__/unit/utils/` | build-url, date-filter, format, parse-date-params (4 files) |
 | Lib unit tests | `__tests__/unit/lib/` | role-visibility (1 file) |
