@@ -98,6 +98,13 @@ describe('OverviewPage', () => {
     expect(screen.getByRole('heading', { name: 'Cost Trend' })).toBeInTheDocument();
   });
 
+  it('wraps each chart in a card container matching other pages', () => {
+    const { container } = render(<OverviewPage />);
+    const chartCards = container.querySelectorAll('.rounded-lg.border.border-gray-200.bg-white.p-4');
+    // 4 chart sections: Runs Over Time, Runs by Day of Week, Latency Trend, Cost Trend
+    expect(chartCards.length).toBe(4);
+  });
+
   it('shows loading state with skeletons', () => {
     mockUseOverviewKPIs.mockReturnValue({ data: undefined, isLoading: true });
     mockUseTrends.mockReturnValue({ data: undefined, isLoading: true });

@@ -55,19 +55,27 @@ function OverviewContent({
       </div>
 
       <Section title="Runs Over Time">
-        <RunsTrendChart data={trends.runsTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <RunsTrendChart data={trends.runsTrend} />
+        </div>
       </Section>
 
       <Section title="Runs by Day of Week">
-        <RunsByDayChart data={trends.runsByDayOfWeek} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <RunsByDayChart data={trends.runsByDayOfWeek} />
+        </div>
       </Section>
 
       <Section title="Latency Trend (p50 / p95)">
-        <LatencyTrendChart data={trends.latencyTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <LatencyTrendChart data={trends.latencyTrend} />
+        </div>
       </Section>
 
       <Section title="Cost Trend">
-        <CostTrendChart data={trends.costTrend} />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <CostTrendChart data={trends.costTrend} />
+        </div>
       </Section>
     </>
   );
