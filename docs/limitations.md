@@ -34,13 +34,13 @@ This document honestly describes what this dashboard does not do, why each limit
 
 ---
 
-## No Responsive Layout
+## Basic Responsive Layout (Not Fully Polished)
 
-**What:** The dashboard is designed for desktop viewports (1280px+). It does not adapt gracefully to tablet or mobile screens. Tables and charts may overflow or become unreadable on small screens.
+**What:** A responsive layout has been implemented — sidebar collapses to a hamburger menu on mobile, KPI grids stack on narrow viewports, and the header wraps gracefully. However, tables and charts may still overflow on very small screens, and no formal responsive QA has been performed.
 
-**Why:** Time was allocated to analytics depth, test coverage, and architectural quality rather than responsive CSS. The target audience (engineering managers, platform teams) primarily uses desktop.
+**Why:** Responsive support was added as part of production hardening, but the primary target audience (engineering managers, platform teams) uses desktop. Full mobile polish was deprioritized.
 
-**Fix:** Add Tailwind responsive breakpoints (`md:`, `lg:`) to the grid layouts in dashboard pages. Collapse sidebar navigation to a hamburger menu on mobile. Stack chart cards vertically on narrow viewports.
+**Fix:** Add horizontal scroll wrappers for remaining wide tables, test on real devices, and run Lighthouse mobile audit.
 
 ---
 

@@ -2,7 +2,7 @@
 
 A production-quality analytics dashboard that helps engineering organizations monitor, optimize, and control their cloud-hosted AI agent fleet.
 
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-697%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white) ![Next.js](https://img.shields.io/badge/Next%2Ejs-15-000000?logo=nextdotjs&logoColor=white) ![Tests](https://img.shields.io/badge/tests-694%20passing-brightgreen) ![TDD](https://img.shields.io/badge/workflow-TDD-blue) ![License](https://img.shields.io/badge/license-MIT-green)
 
 <!-- TODO: Replace with actual screenshots -->
 <!-- ![Dashboard Overview](docs/assets/screenshot-overview.png) -->
@@ -55,7 +55,7 @@ All pages support date range filtering (7d / 14d / 30d / all), role-based views 
 | `npm run dev`           | Start development server at localhost:3000 |
 | `npm run build`         | Create production build                    |
 | `npm start`             | Serve production build                     |
-| `npm test`              | Run all tests (71 suites, 697 tests)       |
+| `npm test`              | Run all tests (70 suites, 694 tests)       |
 | `npm run test:unit`     | Run unit tests only (47 suites)            |
 | `npm run test:integration` | Run API integration tests only (8 suites) |
 | `npm run test:e2e`      | Run E2E page tests only (8 suites)         |
@@ -143,7 +143,7 @@ docs/                     # Product specs, decisions, workflow docs
 12. **Responsive layout** — sidebar collapses to a hamburger menu on mobile viewports.
 13. **CI pipeline** — GitHub Actions for lint, test, and build gates.
 
-See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (25 documented decisions, PD-001 through PD-025).
+See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decision log (26 documented decisions, PD-001 through PD-026).
 
 ---
 
@@ -160,7 +160,7 @@ See [`docs/product-decisions.md`](docs/product-decisions.md) for the full decisi
 | E2E (fetch-level)                                         | 8      | 51      |
 | API utility & middleware (handler, logger, rate limiter)   | 3      | —       |
 | Authorization (role-auth, redaction, integration)         | 3      | —       |
-| **Total**                                                 | **71** | **697** |
+| **Total**                                                 | **70** | **694** |
 
 Tests are deterministic, fast (~3s), and isolated. No network, no database.
 
@@ -193,7 +193,7 @@ The dataset supports meaningful aggregation for adoption, reliability, performan
 | [`docs/user-stories.md`](docs/user-stories.md)                 | 44 user stories mapped to personas and features |
 | [`docs/technical-spec.md`](docs/technical-spec.md)             | Architecture, stack, data flow                  |
 | [`docs/testing-spec.md`](docs/testing-spec.md)                 | TDD approach, test taxonomy, and risk coverage  |
-| [`docs/product-decisions.md`](docs/product-decisions.md)       | 25 product decisions with rationale             |
+| [`docs/product-decisions.md`](docs/product-decisions.md)       | 26 product decisions with rationale             |
 | [`docs/roadmap.md`](docs/roadmap.md)                           | Completed, in-progress, and planned work        |
 
 ### Process & Workflow
@@ -238,7 +238,7 @@ Quick summary:
 | Performance metrics | Full | Latency KPIs, p50/p95 trends |
 | Cost / optimization | Full | Teams page, cost trends, insight cards |
 | DDD architecture | Full | 8 vertical slices, repository pattern |
-| TDD workflow | Full | 71 suites, 697 tests, tests-first |
+| TDD workflow | Full | 70 suites, 694 tests, tests-first |
 | Role-based views | Full | 3 personas, server-side authz with page gating + field redaction |
 | Documentation | Full | 17 docs covering specs, design, process, readiness |
 

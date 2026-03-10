@@ -1,6 +1,6 @@
 # Roadmap
 
-Current status: **Core dashboard feature-complete with production hardening** (71 test suites, 697 tests passing, production build green). CI pipeline, structured logging, rate limiting, server-side authz, and responsive layout shipped.
+Current status: **Core dashboard feature-complete with production hardening** (70 test suites, 694 tests passing, production build green). CI pipeline, structured logging, rate limiting, server-side authz, and responsive layout shipped.
 
 ---
 

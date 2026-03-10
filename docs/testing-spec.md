@@ -100,7 +100,7 @@ __tests__/
 | E2E (fetch-level) | 8 | 51 |
 | API utility & middleware (handler, logger, rate limiter) | 3 | — |
 | Authorization (role-auth, response-redaction, integration) | 3 | — |
-| **Total** | **71** | **697** |
+| **Total** | **70** | **694** |
 
 ## Priority Coverage
 
