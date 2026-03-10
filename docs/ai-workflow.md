@@ -6,7 +6,9 @@ This document records how AI was used in building the dashboard, what was human-
 
 ## Workflow Summary
 
-The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 10 phases with clear checkpoints.
+The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. AI assists with implementation; humans lead on architecture, product decisions, and quality standards. Work was organized in 11 phases with clear checkpoints.
+
+---
 
 ## Phase Log
 
@@ -24,6 +26,8 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Writing initial documentation from product spec
 - Setting up app shell (layout, routing, providers)
 
+---
+
 ### Phase 2: Types, Mock Data & TDD Tests
 
 **Human-led decisions:**
@@ -37,6 +41,8 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Deterministic mock data generation (10 agents, 8 users, 500 runs)
 - TDD test suites for all analytics logic
 
+---
+
 ### Phase 3: Analytics Logic & API Routes
 
 **Human-led decisions:**
@@ -49,6 +55,8 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - API route handlers
 - React Query hooks
 - Formatting utilities
+
+---
 
 ### Phase 4: Dashboard Pages & Component Tests
 
@@ -64,6 +72,8 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Component and page test suites
 - Sidebar nav extraction for hydration safety
 
+---
+
 ### Phase 5: Integration Tests, README Polish & Summary
 
 **Human-led decisions:**
@@ -75,6 +85,8 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - README rewrite with architecture summary
 - Documentation updates
 
+---
+
 ### Phase 6: Test Coverage Hardening & E2E Tests
 
 **Human-led decisions:**
@@ -84,9 +96,9 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 **AI-assisted work:**
 - Service branch coverage: edge cases for insights, teams, and trends services (unknown agents, orphaned runs, user fallbacks) — brought insights and teams to 100% branch coverage
-- React Query hook tests: dedicated suite for `use-analytics` hooks (success, error, loading, date range forwarding) — initially 5 hooks, later expanded to 8 in Phase 7
+- React Query hook tests: dedicated suite for `use-analytics` hooks (success, error, loading, date range forwarding) — initially 5 hooks, later expanded to 8 in Phase 8
 - Chart formatter tests: coverage for inline `tickFormatter`/`formatter` functions via Recharts prop capture mocking — brought chart components to 100%
-- E2E tests: initially 5 suites with fetch-level mocking testing full data flow (API → React Query → hooks → components → DOM) for the original 4 pages + navigation — later expanded to 8 suites in Phase 7
+- E2E tests: initially 5 suites with fetch-level mocking testing full data flow (API → React Query → hooks → components → DOM) for the original 4 pages + navigation — later expanded to 8 suites in Phase 8
 - ESLint config cleanup: extended test file rule overrides to backend test files
 - Added isolated test scripts (`test:unit`, `test:integration`, `test:e2e`)
 - Documentation updates across README, testing-spec, roadmap, and technical-spec
@@ -95,21 +107,7 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
-## Key Observations
-
-1. **CLAUDE.md as guardrails** — The detailed CLAUDE.md prevented scope creep and kept the AI focused on the product goals. Every implementation decision could be traced back to a documented requirement.
-
-2. **TDD accelerated development** — Writing tests first gave the AI clear targets. Implementation was faster and more focused because the expected behavior was already defined.
-
-3. **Phased approach worked** — Breaking work into foundation → types → logic → UI → polish prevented the AI from jumping ahead and creating tightly coupled code.
-
-4. **Bugs came from environment, not logic** — The main issues (Recharts circular require, jsdom missing Web APIs, hydration mismatches from browser extensions) were environment/tooling problems, not business logic errors.
-
-5. **Human oversight caught real issues** — The human caught the `suppressHydrationWarning` anti-pattern and directed the proper fix (extracting a client component boundary instead of hiding the warning).
-
----
-
-### Phase 6: Review Graphics & Dashboard
+### Phase 7: Review Graphics & Dashboard
 
 **Human-led decisions:**
 - Selected which new views to add: cost vs reliability scatter, runs by day of week, team comparison chart
@@ -124,11 +122,11 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 - Updated all affected test mocks across 12 existing test files
 - Documentation updates: README, roadmap, testing-spec, technical-spec
 
-**Result:** 47 suites, 429 tests passing. Three new decision-making views added to the dashboard.
+**Result:** 44 suites / 395 tests → 47 suites / 429 tests. Three new decision-making views added to the dashboard.
 
 ---
 
-### Phase 7: New Dashboard Pages — Models, Alerts, Troubleshooting
+### Phase 8: New Dashboard Pages — Models, Alerts, Troubleshooting
 
 **Human-led decisions:**
 - Selected three new pages to add: Models (model performance comparison), Alerts (threshold breaches and anomalies), Troubleshooting (error diagnosis and failure patterns)
@@ -153,7 +151,7 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
-### Phase 8: Role-Based Dashboard Views
+### Phase 9: Role-Based Dashboard Views
 
 **Human-led decisions:**
 - Decided to implement role-based views split by user persona (Org Admin, Eng Manager, Platform Engineer)
@@ -175,7 +173,7 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
-### Phase 9: Documentation Hardening & Assignment Evidence
+### Phase 10: Documentation Hardening & Assignment Evidence
 
 **Human-led decisions:**
 - Identified evidence gaps for assignment requirements (AI-first process, spec-driven planning, production readiness)
@@ -197,24 +195,46 @@ The project follows a disciplined, TDD-first methodology defined in CLAUDE.md. A
 
 ---
 
-### Phase 10: Production Hardening
+### Phase 11: Production Hardening
 
 **Human-led decisions:**
 - Identified production readiness gaps: no server-side authz enforcement, no logging, no rate limiting, no responsive layout, no CI
 - Prioritized hardening scope: security (authz + rate limiting), observability (structured logging), UX (responsive), CI pipeline, browser E2E
 - Required in-memory token bucket approach for rate limiting (no external dependencies)
+- Changed default role from admin to engineer (least-privilege principle)
+- Decided to replace RoleSelector dropdown and RoleProvider context with URL-based role selection (`?role=` search param)
+- Required sidebar links to preserve role param during navigation
 
 **AI-assisted work:**
 - Server-side role-based authorization: `withRoleAccess` middleware for page-level gating, per-context response redaction functions for field-level filtering
-- Structured JSON logging: `api-logger.ts` emitting JSON logs with requestId, method, path, status, durationMs, role on all API responses
+- Structured JSON logging: `api-logger.ts` emitting JSON logs with requestId, method, path, status, durationMs, role on all API responses; suppressed in test environment
 - Rate limiting: `rate-limiter.ts` implementing in-memory token bucket (100 req/60s) with Retry-After header
 - Responsive sidebar: mobile hamburger menu with collapsible sidebar navigation
 - Playwright E2E: configuration and smoke tests for browser-level testing
 - GitHub Actions CI pipeline: lint, test, build gates on push and PR
 - TDD test suites: api-handler tests (logging, rate limiting, request IDs), api-logger tests, rate-limiter tests, role-auth unit tests, response-redaction unit tests, authz integration tests
-- Documentation updates across 7 files
+- URL-based role selection: removed `RoleSelector` component and `RoleProvider` context, rewrote `useRole()` to read from `useSearchParams()`, added `<Suspense>` boundary in dashboard layout, sidebar links preserve `?role=` param across navigation
+- Default role change to engineer: updated `parseRole()` server-side default, updated 15+ test files (API integration, E2E, sidebar, layout), updated Playwright smoke tests with `?role=admin` for admin-only assertions
+- Documentation audit: fixed 9 stale references across README, testing-spec, roadmap, limitations, production-readiness, ai-workflow
+- New product decision: PD-026 documenting URL-based role selection rationale
 
-**Result:** 66 suites / 599 tests -> 70 suites / 694 tests. Rate limiting, structured logging, server-side authz, responsive layout, Playwright E2E, and CI pipeline shipped.
+**Result:** 66 suites / 599 tests → 70 suites / 694 tests. Rate limiting, structured logging, server-side authz, responsive layout, Playwright E2E, CI pipeline, URL-based role selection, and least-privilege defaults shipped.
+
+---
+
+## Key Observations
+
+1. **CLAUDE.md as guardrails** — The detailed CLAUDE.md prevented scope creep and kept the AI focused on the product goals. Every implementation decision could be traced back to a documented requirement.
+
+2. **TDD accelerated development** — Writing tests first gave the AI clear targets. Implementation was faster and more focused because the expected behavior was already defined.
+
+3. **Phased approach worked** — Breaking work into foundation → types → logic → UI → polish prevented the AI from jumping ahead and creating tightly coupled code.
+
+4. **Bugs came from environment, not logic** — The main issues (Recharts circular require, jsdom missing Web APIs, hydration mismatches from browser extensions) were environment/tooling problems, not business logic errors.
+
+5. **Human oversight caught real issues** — The human caught the `suppressHydrationWarning` anti-pattern and directed the proper fix (extracting a client component boundary instead of hiding the warning).
+
+6. **Default role change had wide blast radius** — Changing the default from admin to engineer required updates across 15+ test files, all API integration tests, and all Playwright smoke tests. This validated the importance of running the full test suite after every change.
 
 ---
 
