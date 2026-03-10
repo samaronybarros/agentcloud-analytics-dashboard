@@ -7,7 +7,7 @@ test.describe('Dashboard smoke tests', () => {
   });
 
   test('displays all 7 sidebar navigation items for admin', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard?role=admin');
 
     const nav = page.locator('nav');
     const expectedItems = [
@@ -27,13 +27,13 @@ test.describe('Dashboard smoke tests', () => {
 
   test.describe('page navigation', () => {
     const pages = [
-      { name: 'Overview', path: '/dashboard', heading: 'Overview' },
-      { name: 'Agents', path: '/dashboard/agents', heading: 'Agents' },
-      { name: 'Teams', path: '/dashboard/teams', heading: 'Teams' },
-      { name: 'Models', path: '/dashboard/models', heading: 'Models' },
-      { name: 'Optimization', path: '/dashboard/optimization', heading: 'Optimization' },
-      { name: 'Alerts', path: '/dashboard/alerts', heading: 'Alerts' },
-      { name: 'Troubleshooting', path: '/dashboard/troubleshooting', heading: 'Troubleshooting' },
+      { name: 'Overview', path: '/dashboard?role=admin', heading: 'Overview' },
+      { name: 'Agents', path: '/dashboard/agents?role=admin', heading: 'Agents' },
+      { name: 'Teams', path: '/dashboard/teams?role=admin', heading: 'Teams' },
+      { name: 'Models', path: '/dashboard/models?role=admin', heading: 'Models' },
+      { name: 'Optimization', path: '/dashboard/optimization?role=admin', heading: 'Optimization' },
+      { name: 'Alerts', path: '/dashboard/alerts?role=admin', heading: 'Alerts' },
+      { name: 'Troubleshooting', path: '/dashboard/troubleshooting?role=admin', heading: 'Troubleshooting' },
     ];
 
     for (const { name, path, heading } of pages) {
@@ -67,7 +67,7 @@ test.describe('Dashboard smoke tests', () => {
   });
 
   test('sidebar navigation links work when clicked', async ({ page }) => {
-    await page.goto('/dashboard');
+    await page.goto('/dashboard?role=admin');
 
     // Click on Agents in the sidebar
     const nav = page.locator('nav');

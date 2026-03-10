@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useState, useCallback, useEffect } from 'react';
 import { useRole } from '@/lib/hooks/use-role';
 import { canAccessPage } from '@/lib/role-visibility';
@@ -19,8 +19,16 @@ const navItems: { label: string; href: string; page: DashboardPage }[] = [
 
 export default function SidebarNav() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { role } = useRole();
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  const roleParam = searchParams.get('role');
+  const buildHref = useCallback(
+    (basePath: string) =>
+      roleParam ? `${basePath}?role=${roleParam}` : basePath,
+    [roleParam],
+  );
 
   const toggleMobile = useCallback(() => {
     setMobileOpen((prev) => !prev);
@@ -57,7 +65,7 @@ export default function SidebarNav() {
             return (
               <li key={href}>
                 <Link
-                  href={href}
+                  href={buildHref(href)}
                   aria-current={isActive ? 'page' : undefined}
                   className={`block rounded-md px-3 py-2 hover:bg-gray-100 ${
                     isActive
