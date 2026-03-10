@@ -293,10 +293,17 @@ Prefer:
 
 ### Step 6 - Validate
 
-After implementation verify:
+After implementation, **always run the full test suites** before considering the task complete:
+
+1. `npm test` — all Jest tests (unit, integration, E2E fetch-level) must pass
+2. `npm run test:playwright` — all Playwright browser tests must pass
+3. `npm run build` — production build must succeed
+
+Do not skip any suite. If a test fails, fix the root cause before moving on.
+
+Additionally verify:
 
 - types compile
-- tests pass
 - existing UX still works
 - empty/loading/error states still make sense
 - changes fit the architecture
