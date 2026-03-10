@@ -106,6 +106,13 @@
 
 ---
 
+## Planned — AI Analytics Assistant
+
+- [ ] **US-043:** As an Org Admin, I want an AI-powered chat panel that can cross-reference dashboard data (adoption, cost, reliability, performance) and suggest new dashboard views, KPIs, or optimizations so that I can uncover insights I might not think to look for.
+- [ ] **US-044:** As an Engineering Manager, I want to ask the AI assistant questions about my team's metrics (e.g., "Which agents are getting worse?", "Where should I cut cost?") so that I can get actionable recommendations without manually analyzing charts.
+
+---
+
 ## Planned — Export & Reporting
 
 - [ ] **US-038:** As an Org Admin, I want to export dashboard data as CSV or PDF so that I can share reports with stakeholders who don't use the dashboard.

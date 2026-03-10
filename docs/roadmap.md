@@ -61,6 +61,7 @@ Current status: **Core dashboard feature-complete** (66 test suites, 599 tests p
 ## Future — Feature Enhancements
 
 - [x] ~~User roles~~ — role-based views (admin, manager, engineer) with client-side visibility config, role selector, and per-page section control
+- [ ] AI analytics assistant — chat panel (admin/manager only) backed by an AI agent that cross-references dashboard data to suggest new views, KPIs, and optimizations
 - [ ] Agent detail page (`/dashboard/agents/[id]`) — run history, latency distribution, error timeline
 - [ ] Comparison view — compare two agents or two time periods side by side
 - [ ] Export/download — CSV or PDF export for reports
