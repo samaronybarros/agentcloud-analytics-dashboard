@@ -29,11 +29,11 @@ describe('SidebarNav', () => {
     expect(screen.getByText('AgentCloud')).toBeInTheDocument();
   });
 
-  it('renders all four nav links', () => {
+  it('renders all seven nav links', () => {
     render(<SidebarNav />);
     const nav = screen.getByRole('navigation');
     const links = within(nav).getAllByRole('link');
-    expect(links).toHaveLength(4);
+    expect(links).toHaveLength(7);
   });
 
   it('applies active styles to the current route', () => {
@@ -67,7 +67,7 @@ describe('SidebarNav', () => {
     render(<SidebarNav />);
     const nav = screen.getByRole('navigation');
     const nextLinks = within(nav).getAllByTestId('next-link');
-    expect(nextLinks).toHaveLength(4);
+    expect(nextLinks).toHaveLength(7);
   });
 
   it('produces consistent className output for same pathname across renders', () => {

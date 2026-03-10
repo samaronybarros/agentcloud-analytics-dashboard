@@ -50,7 +50,7 @@ describe('DashboardLayout', () => {
     expect(screen.getByRole('heading', { name: 'AgentCloud' })).toBeInTheDocument();
   });
 
-  it('renders all four navigation links', () => {
+  it('renders all seven navigation links', () => {
     render(
       <DashboardLayout>
         <p>Content</p>
@@ -59,10 +59,13 @@ describe('DashboardLayout', () => {
     expect(screen.getByText('Overview')).toBeInTheDocument();
     expect(screen.getByText('Agents')).toBeInTheDocument();
     expect(screen.getByText('Teams')).toBeInTheDocument();
+    expect(screen.getByText('Models')).toBeInTheDocument();
     expect(screen.getByText('Optimization')).toBeInTheDocument();
+    expect(screen.getByText('Alerts')).toBeInTheDocument();
+    expect(screen.getByText('Troubleshooting')).toBeInTheDocument();
   });
 
-  it('renders exactly four navigation links', () => {
+  it('renders exactly seven navigation links', () => {
     render(
       <DashboardLayout>
         <p>Content</p>
@@ -70,7 +73,7 @@ describe('DashboardLayout', () => {
     );
     const nav = screen.getByRole('navigation');
     const links = within(nav).getAllByRole('link');
-    expect(links).toHaveLength(4);
+    expect(links).toHaveLength(7);
   });
 
   it('links point to correct paths', () => {
@@ -82,7 +85,10 @@ describe('DashboardLayout', () => {
     expect(screen.getByText('Overview').closest('a')).toHaveAttribute('href', '/dashboard');
     expect(screen.getByText('Agents').closest('a')).toHaveAttribute('href', '/dashboard/agents');
     expect(screen.getByText('Teams').closest('a')).toHaveAttribute('href', '/dashboard/teams');
+    expect(screen.getByText('Models').closest('a')).toHaveAttribute('href', '/dashboard/models');
     expect(screen.getByText('Optimization').closest('a')).toHaveAttribute('href', '/dashboard/optimization');
+    expect(screen.getByText('Alerts').closest('a')).toHaveAttribute('href', '/dashboard/alerts');
+    expect(screen.getByText('Troubleshooting').closest('a')).toHaveAttribute('href', '/dashboard/troubleshooting');
   });
 
   it('navigation links are inside the nav element', () => {
@@ -95,7 +101,10 @@ describe('DashboardLayout', () => {
     expect(within(nav).getByText('Overview')).toBeInTheDocument();
     expect(within(nav).getByText('Agents')).toBeInTheDocument();
     expect(within(nav).getByText('Teams')).toBeInTheDocument();
+    expect(within(nav).getByText('Models')).toBeInTheDocument();
     expect(within(nav).getByText('Optimization')).toBeInTheDocument();
+    expect(within(nav).getByText('Alerts')).toBeInTheDocument();
+    expect(within(nav).getByText('Troubleshooting')).toBeInTheDocument();
   });
 
   it('renders children in the main area', () => {
@@ -154,7 +163,7 @@ describe('DashboardLayout', () => {
     );
     const nav = screen.getByRole('navigation');
     const listItems = within(nav).getAllByRole('listitem');
-    expect(listItems).toHaveLength(4);
+    expect(listItems).toHaveLength(7);
   });
 
   it('nav and main are sibling sections of the layout', () => {

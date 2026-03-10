@@ -7,6 +7,9 @@ import {
   useAgentAnalytics,
   useTeamAnalytics,
   useInsights,
+  useModelAnalytics,
+  useAlerts,
+  useTroubleshooting,
 } from '@/lib/hooks/use-analytics';
 import type {
   OverviewResponse,
@@ -14,6 +17,9 @@ import type {
   AgentsResponse,
   TeamsResponse,
   InsightsResponse,
+  ModelsResponse,
+  AlertsResponse,
+  TroubleshootingResponse,
 } from '@/lib/types';
 
 // ---------- Mock data fixtures ----------
@@ -64,6 +70,52 @@ const mockTeams: TeamsResponse = {
   topUsers: [
     { userId: 'user-01', userName: 'Alice Chen', team: 'Platform', totalRuns: 30, totalCost: 40 },
   ],
+};
+
+const mockModels: ModelsResponse = {
+  models: [
+    {
+      model: 'claude-sonnet-4-20250514',
+      totalRuns: 200,
+      successRate: 0.92,
+      avgLatencyMs: 1800,
+      totalCost: 180.0,
+      costPerThousandTokens: 0.003,
+      totalTokens: 60000,
+    },
+  ],
+};
+
+const mockAlerts: AlertsResponse = {
+  alerts: [
+    {
+      id: 'alert-1',
+      metric: 'success-rate',
+      status: 'breached',
+      title: 'Low success rate',
+      description: 'Success rate below threshold',
+      currentValue: 0.65,
+      threshold: 0.8,
+    },
+  ],
+  breachedCount: 1,
+};
+
+const mockTroubleshooting: TroubleshootingResponse = {
+  errorTimeline: [{ date: '2026-03-01', errors: 5, retries: 3 }],
+  agentErrors: [
+    {
+      agentId: 'agent-01',
+      agentName: 'Code Generator',
+      team: 'Platform',
+      totalErrors: 5,
+      errorsByType: { timeout: 3, 'rate-limit': 2 },
+      topErrorType: 'timeout',
+      remediation: 'Increase timeout threshold',
+    },
+  ],
+  totalErrors: 5,
+  totalRetries: 3,
 };
 
 const mockInsights: InsightsResponse = {
@@ -282,6 +334,105 @@ describe('useInsights', () => {
   it('enters error state on fetch failure', async () => {
     mockFetchFailure();
     const { result } = renderHook(() => useInsights(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.error).toBeInstanceOf(Error);
+  });
+});
+
+describe('useModelAnalytics', () => {
+  it('fetches model analytics data successfully', async () => {
+    mockFetchSuccess(mockModels);
+    const { result } = renderHook(() => useModelAnalytics(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(mockModels);
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/models');
+  });
+
+  it('includes date range parameters in the URL', async () => {
+    mockFetchSuccess(mockModels);
+    const range = { from: '2026-03-01', to: '2026-03-09' };
+    const { result } = renderHook(() => useModelAnalytics(range), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/analytics/models?from=2026-03-01&to=2026-03-09',
+    );
+  });
+
+  it('enters error state on fetch failure', async () => {
+    mockFetchFailure();
+    const { result } = renderHook(() => useModelAnalytics(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.error).toBeInstanceOf(Error);
+  });
+});
+
+describe('useAlerts', () => {
+  it('fetches alerts data successfully', async () => {
+    mockFetchSuccess(mockAlerts);
+    const { result } = renderHook(() => useAlerts(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(mockAlerts);
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/alerts');
+  });
+
+  it('includes date range parameters in the URL', async () => {
+    mockFetchSuccess(mockAlerts);
+    const range = { from: '2026-03-01', to: '2026-03-09' };
+    const { result } = renderHook(() => useAlerts(range), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/analytics/alerts?from=2026-03-01&to=2026-03-09',
+    );
+  });
+
+  it('enters error state on fetch failure', async () => {
+    mockFetchFailure();
+    const { result } = renderHook(() => useAlerts(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    expect(result.current.error).toBeInstanceOf(Error);
+  });
+});
+
+describe('useTroubleshooting', () => {
+  it('fetches troubleshooting data successfully', async () => {
+    mockFetchSuccess(mockTroubleshooting);
+    const { result } = renderHook(() => useTroubleshooting(), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(result.current.data).toEqual(mockTroubleshooting);
+    expect(fetchMock).toHaveBeenCalledWith('/api/analytics/troubleshooting');
+  });
+
+  it('includes date range parameters in the URL', async () => {
+    mockFetchSuccess(mockTroubleshooting);
+    const range = { from: '2026-03-01', to: '2026-03-09' };
+    const { result } = renderHook(() => useTroubleshooting(range), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/api/analytics/troubleshooting?from=2026-03-01&to=2026-03-09',
+    );
+  });
+
+  it('enters error state on fetch failure', async () => {
+    mockFetchFailure();
+    const { result } = renderHook(() => useTroubleshooting(), { wrapper: createWrapper() });
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 

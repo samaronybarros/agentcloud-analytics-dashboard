@@ -20,21 +20,27 @@ Tests are split between backend and frontend, co-located with the code they test
 ```
 app/api/__tests__/
   unit/
-    analytics/              # Service logic (5 suites, 81 tests)
+    analytics/              # Service logic (8 suites, 111 tests)
       overview.test.ts
       agents.test.ts
       teams.test.ts
       insights.test.ts
       trends.test.ts
+      models.test.ts
+      alerts.test.ts
+      troubleshooting.test.ts
     api/                    # API utility (1 suite)
       api-handler.test.ts
   integration/
-    api/                    # Route response shape validation (5 suites, 35 tests)
+    api/                    # Route response shape validation (8 suites, 60 tests)
       overview.test.ts
       agents.test.ts
       teams.test.ts
       insights.test.ts
       trends.test.ts
+      models.test.ts
+      alerts.test.ts
+      troubleshooting.test.ts
 ```
 
 ### Frontend tests (`__tests__/`)

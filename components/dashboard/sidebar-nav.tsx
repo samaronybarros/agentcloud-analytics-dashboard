@@ -7,7 +7,10 @@ const navItems = [
   { label: 'Overview', href: '/dashboard' },
   { label: 'Agents', href: '/dashboard/agents' },
   { label: 'Teams', href: '/dashboard/teams' },
+  { label: 'Models', href: '/dashboard/models' },
   { label: 'Optimization', href: '/dashboard/optimization' },
+  { label: 'Alerts', href: '/dashboard/alerts' },
+  { label: 'Troubleshooting', href: '/dashboard/troubleshooting' },
 ];
 
 export default function SidebarNav() {

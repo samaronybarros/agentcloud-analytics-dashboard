@@ -161,6 +161,59 @@ export interface DayOfWeekEntry {
 }
 
 // ---------------------------------------------------------------------------
+// Model analytics types
+// ---------------------------------------------------------------------------
+
+export interface ModelPerformanceEntry {
+  model: ModelId;
+  totalRuns: number;
+  successRate: number; // 0–1
+  avgLatencyMs: number;
+  totalCost: number;
+  costPerThousandTokens: number;
+  totalTokens: number;
+}
+
+// ---------------------------------------------------------------------------
+// Alert types
+// ---------------------------------------------------------------------------
+
+export type AlertStatus = 'breached' | 'ok';
+export type AlertMetric = 'success-rate' | 'cost' | 'latency' | 'error-spike';
+
+export interface Alert {
+  id: string;
+  metric: AlertMetric;
+  status: AlertStatus;
+  title: string;
+  description: string;
+  currentValue: number;
+  threshold: number;
+  agentId?: string;
+  team?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Troubleshooting types
+// ---------------------------------------------------------------------------
+
+export interface ErrorTimelineEntry {
+  date: string; // YYYY-MM-DD
+  errors: number;
+  retries: number;
+}
+
+export interface AgentErrorBreakdown {
+  agentId: string;
+  agentName: string;
+  team: string;
+  totalErrors: number;
+  errorsByType: Record<string, number>;
+  topErrorType: string;
+  remediation: string;
+}
+
+// ---------------------------------------------------------------------------
 // API response types — shared contract between routes and hooks
 // ---------------------------------------------------------------------------
 
@@ -186,6 +239,22 @@ export interface TrendsResponse {
 
 export interface InsightsResponse {
   insights: Insight[];
+}
+
+export interface ModelsResponse {
+  models: ModelPerformanceEntry[];
+}
+
+export interface AlertsResponse {
+  alerts: Alert[];
+  breachedCount: number;
+}
+
+export interface TroubleshootingResponse {
+  errorTimeline: ErrorTimelineEntry[];
+  agentErrors: AgentErrorBreakdown[];
+  totalErrors: number;
+  totalRetries: number;
 }
 
 // ---------------------------------------------------------------------------
