@@ -2,8 +2,6 @@
 
 Low-fidelity ASCII wireframes representing the layout intent for each dashboard page.
 
-> **Note:** These wireframes reflect the original design intent. The "Viewing as" dropdown was later replaced with URL-based role selection (`?role=admin`) — see PD-026. Sidebar labels use abbreviated names for space; the implementation uses full labels (e.g., "Troubleshooting", "Optimization").
-
 ---
 
 ## Common Layout
@@ -11,23 +9,24 @@ Low-fidelity ASCII wireframes representing the layout intent for each dashboard 
 All pages share a sidebar + header + content grid structure:
 
 ```
-┌──────────┬──────────────────────────────────────────────┐
-│          │  [Date: 7d ▾ 14d  30d  All]  [Viewing as: ▾]│
-│  SIDEBAR │──────────────────────────────────────────────│
-│          │                                              │
-│ Overview │              PAGE CONTENT                    │
-│ Agents   │                                              │
-│ Teams    │                                              │
-│ Models   │                                              │
-│ Optimize │                                              │
-│ Alerts   │                                              │
-│ Trouble  │                                              │
-│          │                                              │
-└──────────┴──────────────────────────────────────────────┘
+┌───────────────┬─────────────────────────────────────────┐
+│               │  [Date: 7d ▾ 14d  30d  All]             │
+│    SIDEBAR    │─────────────────────────────────────────│
+│               │                                         │
+│ Overview      │              PAGE CONTENT               │
+│ Agents        │                                         │
+│ Teams         │                                         │
+│ Models        │                                         │
+│ Optimization  │                                         │
+│ Alerts        │                                         │
+│ Troubleshoot  │                                         │
+│               │                                         │
+└───────────────┴─────────────────────────────────────────┘
 ```
 
-- Sidebar: fixed left, 7 nav items with active route highlighting
-- Header: date range picker (presets) + role selector dropdown
+- Sidebar: fixed left, 7 nav items with active route highlighting (role-filtered)
+- Header: date range picker (presets)
+- Role selection: via URL search param (`?role=admin`, `?role=manager`, `?role=engineer`)
 - Content: responsive grid below header
 
 ---
